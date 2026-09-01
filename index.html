@@ -19,10 +19,16 @@
         </a>
         <div class="topbar-meta">
           <span class="live-dot"></span>
-          <span>Demo feed</span>
+          <span>Seeded feed</span>
           <span class="meta-divider"></span>
-          <span class="mono">02 SEP 2026 · 09:42 UTC</span>
+          <span class="mono">MVP SNAPSHOT · UTC</span>
         </div>
+        <nav class="surface-nav" aria-label="Token Weather surfaces">
+          <button class="surface-link active" type="button" data-scroll-target="workspace-section">Forecast</button>
+          <button class="surface-link" type="button" data-scroll-target="compare-section">Compare</button>
+          <button class="surface-link" type="button" data-scroll-target="planner-section">Plan work</button>
+          <button class="surface-link" type="button" data-scroll-target="changes-section">Changes</button>
+        </nav>
         <button class="icon-button" type="button" aria-label="Open settings">•••</button>
       </header>
 
@@ -34,7 +40,7 @@
             <p class="hero-lede">A clear read on price, capacity, quota, and stability across the models your work depends on.</p>
             <div class="hero-actions">
               <button class="primary-button" type="button" id="refresh-button"><span class="refresh-symbol">↻</span> Refresh snapshot</button>
-              <button class="text-button" type="button" id="sources-button">How we know <span>↗</span></button>
+              <button class="text-button" type="button" id="hero-sources-button">How we know <span>↗</span></button>
             </div>
           </div>
           <div class="weather-orbit" aria-label="Current overall capacity is favorable">
@@ -44,7 +50,7 @@
             <div class="orbit-core">
               <span class="core-kicker">OVERALL CONDITIONS</span>
               <strong>FAVORABLE</strong>
-              <span class="core-time">8 of 12 providers healthy</span>
+              <span class="core-time">6 of 8 seeded providers healthy</span>
             </div>
             <span class="orbit-label label-north">capacity</span>
             <span class="orbit-label label-east">latency</span>
@@ -56,7 +62,7 @@
           <div class="signal-item"><span class="signal-icon mint">↗</span><div><span class="signal-label">Best value now</span><strong>DeepSeek V4 Pro</strong></div></div>
           <div class="signal-item"><span class="signal-icon amber">◷</span><div><span class="signal-label">Next off-peak window</span><strong>DeepSeek · in 3h 18m</strong></div></div>
           <div class="signal-item"><span class="signal-icon lilac">⌁</span><div><span class="signal-label">Most headroom</span><strong>Qwen 3.7 Plus · 76%</strong></div></div>
-          <div class="signal-item signal-note"><span class="tiny-pulse"></span><span>Updated 2 minutes ago</span></div>
+          <div class="signal-item signal-note"><span class="tiny-pulse"></span><span>Seeded snapshot · collectors next</span></div>
         </section>
 
         <section class="workspace-section">
@@ -86,6 +92,53 @@
           </div>
         </section>
 
+        <section class="tool-section" id="compare-section">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">MODEL COMPARISON <span class="slash">/</span> PROMISE VS POSSIBILITY</p>
+              <h2>Put the forecast side by side.</h2>
+            </div>
+            <span class="section-note">Choose up to 3 models</span>
+          </div>
+          <div class="compare-layout">
+            <div class="compare-picker">
+              <p class="field-label">MODELS TO COMPARE</p>
+              <div id="compare-picker-list" class="compare-picker-list"></div>
+            </div>
+            <div id="compare-results" class="compare-results" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="tool-section" id="planner-section">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">WORKLOAD PLANNER <span class="slash">/</span> A RECOMMENDATION, WITH RECEIPTS</p>
+              <h2>Find a good window for the work.</h2>
+            </div>
+            <span class="section-note">Demo calculation · no requests sent</span>
+          </div>
+          <div class="planner-layout">
+            <form id="planner-form" class="planner-form">
+              <label><span class="field-label">TOTAL TOKENS</span><input id="planner-tokens" type="number" min="1" step="100000" value="1000000" /></label>
+              <label><span class="field-label">WORKLOAD SHAPE</span><select id="planner-shape"><option value="balanced">Balanced</option><option value="latency">Latency sensitive</option><option value="batch">Batch / queued</option><option value="cost">Cost first</option></select></label>
+              <label><span class="field-label">REGION</span><select id="planner-region"><option value="all">Any region</option><option value="asia">Asia Pacific</option><option value="west">Western</option></select></label>
+              <button class="primary-button" type="submit">Plan this workload <span>→</span></button>
+            </form>
+            <div id="planner-result" class="planner-result" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="tool-section" id="changes-section">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">RECENT CHANGES <span class="slash">/</span> PROVENANCE LEDGER</p>
+              <h2>What moved recently?</h2>
+            </div>
+            <button class="text-button" type="button" id="sources-button">How we know <span>↗</span></button>
+          </div>
+          <div id="changes-list" class="changes-list"></div>
+        </section>
+
         <section class="principle-band">
           <div class="principle-mark" aria-hidden="true">✳</div>
           <div><p class="eyebrow">THE RULE</p><h2>Separate the promise<br />from the possibility.</h2></div>
@@ -94,7 +147,7 @@
         </section>
       </main>
 
-      <footer class="footer"><span>Token Weather / a clearer forecast for the token economy</span><span class="mono">BUILD 0.1 · SEE SOURCES BEFORE SHIPPING</span></footer>
+      <footer class="footer"><span>Token Weather / a clearer forecast for the token economy</span><span class="mono">MVP 0.2 · SEE SOURCES BEFORE SHIPPING</span></footer>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="app.js"></script>
