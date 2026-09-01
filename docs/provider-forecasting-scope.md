@@ -1,6 +1,6 @@
 # Token Weather provider forecasting scope
 
-This is the authoritative list of AI providers Token Weather is intended to forecast. “Forecast” means tracking the conditions that affect model selection: effective price, guaranteed limits, account quota, available capacity, latency, stability, incidents, maintenance, model changes, and promotions.
+This is the authoritative list of AI providers and inference surfaces Token Weather is intended to forecast. “Forecast” means tracking the conditions that affect model selection: effective price, guaranteed limits, account quota, available capacity, latency, stability, incidents, maintenance, model changes, and promotions.
 
 This is a curated product scope, not a claim to cover every AI provider. Each provider is kept separate from its models, regions, account tiers, and execution classes so those dimensions can expand without changing the provider identity.
 
@@ -33,6 +33,29 @@ These providers are part of the intended forecasting coverage but are not yet in
 | 12 | Tencent Hunyuan | Token pricing, model availability, and TokenHub migration changes | Official pricing, model, and platform documentation |
 | 13 | Mistral | Requests per second, tokens per minute/month, spend tiers, and admin limits | Official pricing/limits pages plus admin-supplied limits |
 | 14 | Cohere | Endpoint limits, trial versus production keys, incidents, and maintenance | Official limits documentation and status history |
+
+## Additional time-window candidates
+
+The following providers were found in a focused search for quotas that change across multiple time windows. They are strong additions because their official documentation exposes more than a single static RPM limit.
+
+| Provider | Documented time windows or changing capacity | First collection strategy |
+| --- | --- | --- |
+| [Cerebras Inference](https://inference-docs.cerebras.ai/support/rate-limits) | Free-tier limits can include TPM/TPH/TPD and RPM/RPH/RPD; response headers expose remaining values and reset times. Paid usage removes hourly and daily restrictions. | Capture official rate-limit headers from an explicitly configured request and store free versus paid tier rules separately. |
+| [Groq](https://console.groq.com/docs/rate-limits) | Model limits can include RPM/RPD/TPM/TPD with reset headers; [Flex processing](https://console.groq.com/docs/flex-processing) offers higher limits while capacity is available and can return `capacity_exceeded`. | Collect account headers, service-tier state, and Flex capacity events separately from normal limits. |
+| [Moonshot AI / Kimi](https://www.kimi.com/code/docs/en/kimi-code/error-reference.html) | Kimi Code documents 5-hour rolling, weekly, and monthly quota windows; the [direct API](https://platform.kimi.ai/docs/introduction) has account-level rate-limit tiers. | Treat Kimi subscription and Moonshot API as separate surfaces under the same model owner. |
+| [SambaNova](https://docs.sambanova.ai/docs/en/models/rate-limits) | Free and developer tiers expose both per-minute and daily request/token limits, including daily remaining/reset headers. | Collect tier tables plus request response headers; keep preview-model limits separate from production limits. |
+
+## Platform surfaces with time-based economics
+
+These are not additional model owners. They are important because a model can have different quota, capacity, or price behavior when accessed through a different inference platform.
+
+| Inference surface | Time-dependent behavior | Scope rule |
+| --- | --- | --- |
+| [Google Gemini Flex / Vertex AI](https://ai.google.dev/gemini-api/docs/generate-content/flex-inference) | Flex inference uses opportunistic off-peak capacity at 50% of standard pricing and is sheddable during traffic spikes. | Model as an execution class under Google Gemini, not as a new provider. |
+| [DigitalOcean AI Platform](https://docs.digitalocean.com/products/ai-platform/details/pricing/) | Kimi K2.5 and MiniMax M2.5 receive a documented 30% discount during 05:00–11:00 UTC daily. | Record `inference_provider=digitalocean` separately from the model owner. |
+| [OpenRouter](https://openrouter.ai/docs/guides/features/workspaces/workspace-budgets) | Free-model limits and workspace budgets can reset daily, weekly, or monthly. | Model as a routing provider with its own account budget, not as the owner of the underlying model. |
+
+These findings change the recommended expansion order after the current nine: MiniMax, Cerebras, Groq, Moonshot/Kimi, SambaNova, ByteDance Doubao/Ark, Tencent Hunyuan, Mistral, and Cohere. Google Flex, DigitalOcean, and OpenRouter should be added as provider-surface adapters when the underlying model integrations are ready.
 
 ## Forecasting signals we collect
 
