@@ -15,7 +15,15 @@ export const sourceDefinitions = Object.freeze([
   { providerId: "gemini-2-5-pro", sourceId: "gemini-rate-limits", sourceType: "rate_limit", url: "https://ai.google.dev/gemini-api/docs/rate-limits" },
   { providerId: "anthropic-claude-opus", sourceId: "anthropic-rate-limits", sourceType: "rate_limit", url: "https://docs.anthropic.com/en/api/rate-limits" },
   { providerId: "xai-grok-46", sourceId: "xai-grok-46", sourceType: "pricing", url: "https://docs.x.ai/developers/grok-4-6" },
-  { providerId: "xai-grok-46", sourceId: "xai-rate-limits", sourceType: "rate_limit", url: "https://docs.x.ai/developers/rate-limits" }
+  { providerId: "xai-grok-46", sourceId: "xai-rate-limits", sourceType: "rate_limit", url: "https://docs.x.ai/developers/rate-limits" },
+  { providerId: "minimax-m27", sourceId: "minimax-token-plan", sourceType: "quota", url: "https://platform.minimax.io/docs/token-plan/intro" },
+  { providerId: "minimax-m27", sourceId: "minimax-api-pricing", sourceType: "pricing", url: "https://platform.minimax.io/subscribe/token-plan?tab=api-enterprise" },
+  { providerId: "groq-gpt-oss-120b", sourceId: "groq-models", sourceType: "pricing", url: "https://console.groq.com/docs/models" },
+  { providerId: "groq-gpt-oss-120b", sourceId: "groq-rate-limits", sourceType: "rate_limit", url: "https://console.groq.com/docs/rate-limits" },
+  { providerId: "moonshot-kimi-k26", sourceId: "kimi-k26-pricing", sourceType: "pricing", url: "https://platform.kimi.ai/docs/pricing/chat-k26" },
+  { providerId: "moonshot-kimi-k26", sourceId: "kimi-rate-limits", sourceType: "rate_limit", url: "https://platform.kimi.ai/docs/pricing/limits" },
+  { providerId: "cerebras-llama-31-8b", sourceId: "cerebras-rate-limits", sourceType: "rate_limit", url: "https://inference-docs.cerebras.ai/support/rate-limits" },
+  { providerId: "sambanova-deepseek-v31", sourceId: "sambanova-rate-limits", sourceType: "rate_limit", url: "https://docs.sambanova.ai/docs/en/models/rate-limits" }
 ]);
 
 export const accountCollectors = Object.freeze([
@@ -24,7 +32,12 @@ export const accountCollectors = Object.freeze([
   { providerId: "glm-5", mode: "console", status: "not_configured", detail: "Account/model limits are exposed in the provider console." },
   { providerId: "baidu-ernie-5", mode: "request_scoped_headers", status: "not_configured", detail: "Quota values arrive on inference response headers and must be captured by a calling workload." },
   { providerId: "stepfun-step-35", mode: "account_api", env: ["STEPFUN_API_KEY"], status: "not_configured", detail: "Account endpoint is reserved for an explicitly configured credentialed run." },
-  { providerId: "xai-grok-46", mode: "console", status: "not_configured", detail: "Account-specific model limits are exposed in the xAI console; public documentation supplies tier examples, not this account's live ceiling." }
+  { providerId: "xai-grok-46", mode: "console", status: "not_configured", detail: "Account-specific model limits are exposed in the xAI console; public documentation supplies tier examples, not this account's live ceiling." },
+  { providerId: "minimax-m27", mode: "console", status: "not_configured", detail: "Token Plan quota depends on the account plan and is exposed in the account surface." },
+  { providerId: "groq-gpt-oss-120b", mode: "request_scoped_headers", env: ["GROQ_API_KEY"], status: "not_configured", detail: "Remaining request/token values and reset times arrive in inference response headers." },
+  { providerId: "moonshot-kimi-k26", mode: "request_scoped_headers", env: ["MOONSHOT_API_KEY"], status: "not_configured", detail: "The account tier controls concurrency, RPM, TPM, and TPD; live remaining values require an authenticated request." },
+  { providerId: "cerebras-llama-31-8b", mode: "request_scoped_headers", env: ["CEREBRAS_API_KEY"], status: "not_configured", detail: "Remaining request/token values and reset times arrive in inference response headers." },
+  { providerId: "sambanova-deepseek-v31", mode: "request_scoped_headers", env: ["SAMBANOVA_API_KEY"], status: "not_configured", detail: "Remaining daily request/token values and reset times arrive in inference response headers." }
 ]);
 
 function now() {

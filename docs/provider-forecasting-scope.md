@@ -19,6 +19,11 @@ These providers are in the current browser forecast, comparison, workload planne
 | 7 | Google Gemini | Gemini 2.5 Pro | RPM, TPM, RPD, project quota, spend tiers, and workload classes | AI Studio/project limits | Implemented |
 | 8 | Anthropic | Claude Opus | Account tiers, rate limits, service stability, and capacity changes | Account tier/API limits | Implemented |
 | 9 | xAI / Grok | Grok 4.6 | Spend tiers, RPS/TPM, model pricing, and capacity by tier | Console-specific limits | Implemented |
+| 10 | MiniMax | M2.7 | Five-hour rolling request quota and daily modality quotas | Token Plan account surface | Implemented |
+| 11 | Groq | GPT-OSS 120B | Per-minute and daily request/token limits, reset headers, and Flex capacity | Request-scoped headers | Implemented |
+| 12 | Moonshot / Kimi | Kimi K2.6 | Tiered concurrency, RPM, TPM, and TPD | Request-scoped headers | Implemented |
+| 13 | Cerebras | Llama 3.1 8B | Minute, hourly, and daily request/token limits with replenishment headers | Request-scoped headers | Implemented |
+| 14 | SambaNova | DeepSeek V3.1 | Per-minute and daily request/token limits with reset headers | Request-scoped headers | Implemented |
 
 The current implementation uses seeded model metrics as a usable fallback and overlays fresh official-source provenance when the local collector is refreshed. A seeded value is not treated as account telemetry or as a live observation unless its record says so.
 
@@ -28,15 +33,14 @@ These providers are part of the intended forecasting coverage but are not yet in
 
 | Expansion order | Provider | Expected forecasting value | First collection strategy |
 | ---: | --- | --- | --- |
-| 10 | MiniMax | Rolling usage windows, request quotas, reset semantics, plan-dependent limits | Official plan documentation, account usage, and reset-time capture |
-| 11 | ByteDance Doubao / Ark | Model catalog, pricing, announcements, retirements, and regional availability | Ark documentation and announcements, then authenticated account telemetry |
-| 12 | Tencent Hunyuan | Token pricing, model availability, and TokenHub migration changes | Official pricing, model, and platform documentation |
-| 13 | Mistral | Requests per second, tokens per minute/month, spend tiers, and admin limits | Official pricing/limits pages plus admin-supplied limits |
-| 14 | Cohere | Endpoint limits, trial versus production keys, incidents, and maintenance | Official limits documentation and status history |
+| 15 | ByteDance Doubao / Ark | Model catalog, pricing, announcements, retirements, and regional availability | Ark documentation and announcements, then authenticated account telemetry |
+| 16 | Tencent Hunyuan | Token pricing, model availability, and TokenHub migration changes | Official pricing, model, and platform documentation |
+| 17 | Mistral | Requests per second, tokens per minute/month, spend tiers, and admin limits | Official pricing/limits pages plus admin-supplied limits |
+| 18 | Cohere | Endpoint limits, trial versus production keys, incidents, and maintenance | Official limits documentation and status history |
 
 ## Additional time-window candidates
 
-The following providers were found in a focused search for quotas that change across multiple time windows. They are strong additions because their official documentation exposes more than a single static RPM limit.
+The following providers were found in a focused search for quotas that change across multiple time windows. They are now wired into the current forecast surface because their official documentation exposes more than a single static RPM limit.
 
 | Provider | Documented time windows or changing capacity | First collection strategy |
 | --- | --- | --- |
@@ -55,7 +59,7 @@ These are not additional model owners. They are important because a model can ha
 | [DigitalOcean AI Platform](https://docs.digitalocean.com/products/ai-platform/details/pricing/) | Kimi K2.5 and MiniMax M2.5 receive a documented 30% discount during 05:00–11:00 UTC daily. | Record `inference_provider=digitalocean` separately from the model owner. |
 | [OpenRouter](https://openrouter.ai/docs/guides/features/workspaces/workspace-budgets) | Free-model limits and workspace budgets can reset daily, weekly, or monthly. | Model as a routing provider with its own account budget, not as the owner of the underlying model. |
 
-These findings change the recommended expansion order after the current nine: MiniMax, Cerebras, Groq, Moonshot/Kimi, SambaNova, ByteDance Doubao/Ark, Tencent Hunyuan, Mistral, and Cohere. Google Flex, DigitalOcean, and OpenRouter should be added as provider-surface adapters when the underlying model integrations are ready.
+The remaining expansion order after the current fourteen is ByteDance Doubao/Ark, Tencent Hunyuan, Mistral, and Cohere. Google Flex, DigitalOcean, and OpenRouter should be added as provider-surface adapters when the underlying model integrations are ready.
 
 ## Forecasting signals we collect
 

@@ -88,6 +88,56 @@ let providers = Object.freeze([
     latencyMs: 860, stability: "Healthy", nextWindow: "Team tier limits apply",
     note: "Grok 4.6 is priced at $2 input and $6 output per million tokens. Tier 0 currently documents 37 RPS and 10M TPM; account-specific limits live in the xAI console.",
     source: { label: "xAI Grok 4.6 & limits", url: "https://docs.x.ai/developers/grok-4-6", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+  },
+  {
+    id: "minimax-m27", name: "MiniMax", model: "M2.7", region: "asia", code: "MM", state: "healthy", condition: "Rolling quota",
+    pricing: { input: 0.30, output: 1.20, multiplier: 1, currency: "USD / 1M tokens" },
+    quota: { remaining: null, window: "5-hour rolling window", reset: "Account" },
+    capacity: { guaranteedTpm: null, observedTpm: null, concurrency: null },
+    rateLimits: { rpm: null, tpm: null, concurrency: null, quota: "requests / 5 hours" },
+    latencyMs: null, stability: "Healthy", nextWindow: "Quota replenishes continuously",
+    note: "MiniMax measures M2.7 usage by requests in a 5-hour rolling window. The account plan determines the request allowance; other modalities use daily quotas.",
+    source: { label: "MiniMax Token Plan", url: "https://platform.minimax.io/docs/token-plan/intro", type: "official plan documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+  },
+  {
+    id: "groq-gpt-oss-120b", name: "Groq", model: "GPT-OSS 120B", region: "west", code: "GQ", state: "healthy", condition: "Fast lane",
+    pricing: { input: 0.15, output: 0.60, multiplier: 1, currency: "USD / 1M tokens" },
+    quota: { remaining: null, window: "minute + daily limits", reset: "Response header" },
+    capacity: { guaranteedTpm: 250000, observedTpm: null, concurrency: null },
+    rateLimits: { rpm: 1000, rpd: 1000, tpm: 250000, tpd: 200000, concurrency: null },
+    latencyMs: null, stability: "Healthy", nextWindow: "Daily request bucket resets from headers",
+    note: "Groq publishes per-minute and per-day request/token limits and returns remaining/reset headers. Flex processing can provide higher limits while capacity is available.",
+    source: { label: "Groq models & limits", url: "https://console.groq.com/docs/models", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+  },
+  {
+    id: "moonshot-kimi-k26", name: "Moonshot / Kimi", model: "Kimi K2.6", region: "asia", code: "MK", state: "healthy", condition: "Tier 0 limits",
+    pricing: { input: 0.95, output: 4.00, multiplier: 1, currency: "USD / 1M tokens" },
+    quota: { remaining: null, window: "account tier", reset: "API response" },
+    capacity: { guaranteedTpm: 500000, observedTpm: null, concurrency: 1 },
+    rateLimits: { rpm: 3, tpm: 500000, tpd: 1500000, concurrency: 1 },
+    latencyMs: null, stability: "Healthy", nextWindow: "Tier follows cumulative recharge",
+    note: "Moonshot's Tier 0 documentation specifies concurrency, RPM, TPM, and TPD together. Higher tiers depend on cumulative account recharge, so live limits must be collected per account.",
+    source: { label: "Kimi pricing & limits", url: "https://platform.kimi.ai/docs/pricing/limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+  },
+  {
+    id: "cerebras-llama-31-8b", name: "Cerebras", model: "Llama 3.1 8B", region: "west", code: "CB", state: "healthy", condition: "Header telemetry",
+    pricing: { input: null, output: null, multiplier: 1, currency: "USD / 1M tokens" },
+    quota: { remaining: null, window: "minute + hour + daily limits", reset: "Response header" },
+    capacity: { guaranteedTpm: 60000, observedTpm: null, concurrency: null },
+    rateLimits: { rpm: 30, rph: 900, rpd: 14400, tpm: 60000, tph: 1000000, tpd: 1000000, concurrency: null },
+    latencyMs: null, stability: "Healthy", nextWindow: "Paid tier removes hourly/daily caps",
+    note: "Cerebras exposes minute, hourly, and daily request/token limits for free access, with remaining and reset values in response headers. Pricing is not seeded until an official model price is available.",
+    source: { label: "Cerebras rate limits", url: "https://inference-docs.cerebras.ai/support/rate-limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+  },
+  {
+    id: "sambanova-deepseek-v31", name: "SambaNova", model: "DeepSeek V3.1", region: "west", code: "SN", state: "healthy", condition: "Daily tier",
+    pricing: { input: null, output: null, multiplier: 1, currency: "USD / 1M tokens" },
+    quota: { remaining: null, window: "minute + daily limits", reset: "Response header" },
+    capacity: { guaranteedTpm: null, observedTpm: null, concurrency: null },
+    rateLimits: { rpm: 60, rpd: 12000, tpd: 20000000, concurrency: null },
+    latencyMs: null, stability: "Healthy", nextWindow: "Daily request bucket resets from headers",
+    note: "SambaNova documents per-minute and per-day limits and returns daily remaining/reset headers. Free, developer, preview, and production model limits must remain separate.",
+    source: { label: "SambaNova model limits", url: "https://docs.sambanova.ai/docs/en/models/rate-limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
   }
 ]);
 
@@ -97,7 +147,12 @@ const recentChanges = Object.freeze([
   { providerId: "glm-5", type: "CAPACITY_EVENT", title: "Peak-time watch is active", detail: "Zhipu documents dynamic throttling during the 15:00–18:00 local window.", age: "Scheduled window", source: "Zhipu rate limits", confidence: "Official" },
   { providerId: "baidu-ernie-5", type: "QUOTA_EVENT", title: "Header telemetry is ready", detail: "Remaining request and token limits can be collected from API response headers.", age: "Integration target", source: "Baidu API headers", confidence: "Official" },
   { providerId: "stepfun-step-35", type: "CAPACITY_EVENT", title: "Temporary limit adjustment documented", detail: "The provider may adjust rate limits when overall capacity reaches its limit.", age: "Standing rule", source: "StepFun tier limits", confidence: "Official" },
-  { providerId: "xai-grok-46", type: "CAPACITY_EVENT", title: "Tiered RPS and TPM limits documented", detail: "xAI publishes per-model request-per-second and token-per-minute caps; the account tier determines the live ceiling.", age: "Standing rule", source: "xAI rate limits", confidence: "Official" }
+  { providerId: "xai-grok-46", type: "CAPACITY_EVENT", title: "Tiered RPS and TPM limits documented", detail: "xAI publishes per-model request-per-second and token-per-minute caps; the account tier determines the live ceiling.", age: "Standing rule", source: "xAI rate limits", confidence: "Official" },
+  { providerId: "minimax-m27", type: "QUOTA_EVENT", title: "Five-hour rolling quota documented", detail: "M2.7 usage is measured in a rolling five-hour request window; other modalities use daily quotas.", age: "Standing rule", source: "MiniMax Token Plan", confidence: "Official" },
+  { providerId: "groq-gpt-oss-120b", type: "QUOTA_EVENT", title: "Minute and daily limits are visible", detail: "Groq returns remaining request/token values and reset times in response headers.", age: "Integration target", source: "Groq models & limits", confidence: "Official" },
+  { providerId: "moonshot-kimi-k26", type: "QUOTA_EVENT", title: "Tier 0 has four limit dimensions", detail: "Kimi documents concurrency, RPM, TPM, and TPD together; higher tiers follow cumulative recharge.", age: "Standing rule", source: "Kimi pricing & limits", confidence: "Official" },
+  { providerId: "cerebras-llama-31-8b", type: "QUOTA_EVENT", title: "Hourly and daily header telemetry available", detail: "Cerebras exposes minute, hourly, and daily limits with remaining/reset response headers.", age: "Integration target", source: "Cerebras rate limits", confidence: "Official" },
+  { providerId: "sambanova-deepseek-v31", type: "QUOTA_EVENT", title: "Daily tier limits documented", detail: "SambaNova separates per-minute limits from daily request/token limits and exposes daily reset headers.", age: "Integration target", source: "SambaNova model limits", confidence: "Official" }
 ]);
 
 const stateClass = { healthy: "green", watch: "yellow", disrupted: "red" };
@@ -118,12 +173,23 @@ function formatTokens(value) {
 }
 
 function formatPrice(value) {
-  if (value == null) return "—";
+  if (!Number.isFinite(value)) return "—";
   return `$${value.toFixed(value >= 10 ? 0 : 2)}`;
 }
 
 function formatQuota(value) {
   return value == null ? "—" : `${value}%`;
+}
+
+function formatLatency(value) {
+  if (!Number.isFinite(value)) return "—";
+  return value >= 1000 ? `${(value / 1000).toFixed(1)} s` : `${value} ms`;
+}
+
+const UNKNOWN_LATENCY_MS = 2500;
+
+function hasPricing(provider) {
+  return Number.isFinite(provider.pricing.input) && Number.isFinite(provider.pricing.output);
 }
 
 function providerWeather(provider) {
@@ -165,7 +231,7 @@ function detailMarkup(provider) {
       <div class="detail-stat"><label>Quota remaining</label><strong>${formatQuota(provider.quota.remaining)}</strong>${provider.quota.remaining == null ? "" : `<div class="meter"><i style="width: ${provider.quota.remaining}%"></i></div>`}</div>
       <div class="detail-stat"><label>Guaranteed TPM</label><strong>${formatTokens(provider.capacity.guaranteedTpm)}</strong></div>
       <div class="detail-stat"><label>Observed available</label><strong>${formatTokens(provider.capacity.observedTpm)}</strong></div>
-      <div class="detail-stat"><label>Typical latency</label><strong>${provider.latencyMs >= 1000 ? `${(provider.latencyMs / 1000).toFixed(1)} s` : `${provider.latencyMs} ms`}</strong></div>
+      <div class="detail-stat"><label>Typical latency</label><strong>${formatLatency(provider.latencyMs)}</strong></div>
       <div class="detail-stat"><label>Source confidence</label><strong>${provider.source.confidence}</strong></div>
     </div>
     <div class="detail-callout"><strong>Forecast note</strong>${provider.note}</div>
@@ -253,7 +319,7 @@ function renderCompare() {
     ${compareRow("Current input / output", selected.map((provider) => `<span class="compare-value">${formatPrice(provider.price.input)} / ${formatPrice(provider.price.output)}</span>`))}
     ${compareRow("Guaranteed TPM", selected.map((provider) => `<span class="compare-value">${formatTokens(provider.capacity.guaranteedTpm)}</span>`))}
     ${compareRow("Observed available", selected.map((provider) => `<span class="compare-value ${provider.capacity.observedTpm > provider.capacity.guaranteedTpm ? "good" : ""}">${formatTokens(provider.capacity.observedTpm)}</span>`))}
-    ${compareRow("Latency", selected.map((provider) => `<span class="compare-value">${provider.latency_ms >= 1000 ? `${(provider.latency_ms / 1000).toFixed(1)} s` : `${provider.latency_ms} ms`}</span>`))}
+    ${compareRow("Latency", selected.map((provider) => `<span class="compare-value">${formatLatency(provider.latency_ms)}</span>`))}
     ${compareRow("Quota remaining", selected.map((provider) => `<span class="compare-value ${provider.quota.remaining == null ? "" : "good"}">${formatQuota(provider.quota.remaining)}</span>`))}`;
 }
 
@@ -262,24 +328,25 @@ function compareRow(label, values) {
 }
 
 function findCheapestWindow() {
-  return [...providers].sort((a, b) => a.pricing.input - b.pricing.input)[0];
+  return [...providers].filter(hasPricing).sort((a, b) => a.pricing.input - b.pricing.input)[0];
 }
 
 function findFastestWindow() {
-  return [...providers].sort((a, b) => a.latencyMs - b.latencyMs)[0];
+  return [...providers].filter((provider) => Number.isFinite(provider.latencyMs)).sort((a, b) => a.latencyMs - b.latencyMs)[0];
 }
 
 function planWorkload({ tokens = 1000000, shape = "balanced", region = "all" } = {}) {
   const totalTokens = Math.max(1, Number(tokens) || 1000000);
   const outputRatio = shape === "batch" ? 0.25 : shape === "latency" ? 0.15 : 0.2;
-  const candidates = providers.filter((provider) => region === "all" || provider.region === region);
+  const candidates = providers.filter((provider) => hasPricing(provider) && (region === "all" || provider.region === region));
   const ranked = candidates.map((provider) => {
     const outputTokens = totalTokens * outputRatio;
     const inputTokens = totalTokens - outputTokens;
     const estimatedCost = (inputTokens / 1000000) * provider.pricing.input + (outputTokens / 1000000) * provider.pricing.output;
     const capacityRatio = provider.capacity.observedTpm ? provider.capacity.observedTpm / provider.capacity.guaranteedTpm : 1;
     const penalty = provider.state === "watch" ? 1.18 : 1;
-    const score = shape === "latency" ? provider.latencyMs * penalty : shape === "cost" ? estimatedCost * penalty : shape === "batch" ? (estimatedCost / Math.max(capacityRatio, 1)) * penalty : (estimatedCost * 0.7 + provider.latencyMs / 1000 * 0.3) * penalty;
+    const latencyMs = Number.isFinite(provider.latencyMs) ? provider.latencyMs : UNKNOWN_LATENCY_MS;
+    const score = shape === "latency" ? latencyMs * penalty : shape === "cost" ? estimatedCost * penalty : shape === "batch" ? (estimatedCost / Math.max(capacityRatio, 1)) * penalty : (estimatedCost * 0.7 + latencyMs / 1000 * 0.3) * penalty;
     return { provider, estimatedCost, score, inputTokens, outputTokens };
   }).sort((a, b) => a.score - b.score);
   const best = ranked[0];
@@ -301,7 +368,7 @@ function publicWorkloadPlan(plan) {
 function renderPlanner(result = planWorkload()) {
   const provider = result.provider;
   const shapeLabel = { balanced: "balanced", latency: "latency-sensitive", batch: "batch / queued", cost: "cost-first" }[result.shape];
-  $("#planner-result").innerHTML = `<div class="recommendation-top"><span class="detail-kicker">Recommended window</span><span class="recommendation-badge">${provider.condition}</span></div><h3>${provider.name} <span>${provider.model}</span></h3><p class="recommendation-copy">For a ${result.totalTokens.toLocaleString()} token ${shapeLabel} workload, ${provider.name} is the strongest current fit.</p><div class="recommendation-metrics"><div><span>Estimated cost</span><strong>${formatPrice(result.estimatedCost)}</strong></div><div><span>Latency</span><strong>${provider.latencyMs} ms</strong></div><div><span>Quota left</span><strong>${formatQuota(provider.quota.remaining)}</strong></div></div><div class="recommendation-explain"><strong>Why this one</strong>${provider.note} The score keeps the provider’s guaranteed capacity and current condition visible.</div><div class="alternatives"><span class="field-label">NEXT BEST</span>${result.alternatives.map((item) => `<button type="button" data-provider-id="${item.provider.id}">${item.provider.name}<span>${formatPrice(item.estimatedCost)} · ${item.provider.latencyMs} ms</span></button>`).join("")}</div>`;
+  $("#planner-result").innerHTML = `<div class="recommendation-top"><span class="detail-kicker">Recommended window</span><span class="recommendation-badge">${provider.condition}</span></div><h3>${provider.name} <span>${provider.model}</span></h3><p class="recommendation-copy">For a ${result.totalTokens.toLocaleString()} token ${shapeLabel} workload, ${provider.name} is the strongest current fit.</p><div class="recommendation-metrics"><div><span>Estimated cost</span><strong>${formatPrice(result.estimatedCost)}</strong></div><div><span>Latency</span><strong>${formatLatency(provider.latencyMs)}</strong></div><div><span>Quota left</span><strong>${formatQuota(provider.quota.remaining)}</strong></div></div><div class="recommendation-explain"><strong>Why this one</strong>${provider.note} The score keeps the provider’s guaranteed capacity and current condition visible.</div><div class="alternatives"><span class="field-label">NEXT BEST</span>${result.alternatives.map((item) => `<button type="button" data-provider-id="${item.provider.id}">${item.provider.name}<span>${formatPrice(item.estimatedCost)} · ${formatLatency(item.provider.latencyMs)}</span></button>`).join("")}</div>`;
 }
 
 function renderChanges() {

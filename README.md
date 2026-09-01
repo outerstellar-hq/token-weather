@@ -6,7 +6,7 @@ The authoritative provider and inference-surface list, including time-window can
 
 The MVP includes four user-facing slices:
 
-- Forecast: nine first-priority providers with region filtering, search, selected-model detail, guaranteed versus observed capacity, and source confidence.
+- Forecast: fourteen first-priority providers with region filtering, search, selected-model detail, guaranteed versus observed capacity, and source confidence.
 - Compare: select up to three models and compare condition, price, guaranteed TPM, observed availability, latency, and quota.
 - Plan work: rank a workload by token volume, workload shape, and region, with an estimated cost and alternatives.
 - Changes: a provenance-led recent-change stream covering price, capacity, and quota events.
@@ -19,7 +19,7 @@ The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
 ## Collector slice
 
-`collector.mjs` is the bounded source collector. It retrieves twelve verified official documentation pages for the nine MVP providers, including Grok 4.6 pricing and xAI's tiered RPS/TPM limits, then emits `SOURCE_FETCH` records containing the URL, timestamp, HTTP status, byte count, SHA-256, and confidence. Responses are capped at 8 MB and requests time out after 10 seconds.
+`collector.mjs` is the bounded source collector. It retrieves twenty verified official documentation pages for the fourteen MVP providers, including time-window quota sources for MiniMax, Groq, Moonshot/Kimi, Cerebras, and SambaNova, then emits `SOURCE_FETCH` records containing the URL, timestamp, HTTP status, byte count, SHA-256, and confidence. Responses are capped at 8 MB and requests time out after 10 seconds.
 
 Run the offline collector contract check with:
 
