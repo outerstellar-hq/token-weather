@@ -1,4 +1,4 @@
-const providers = Object.freeze([
+let providers = Object.freeze([
   {
     id: "deepseek-v4-pro", name: "DeepSeek", model: "V4 Pro", region: "asia", code: "DS", state: "healthy", condition: "Off peak",
     pricing: { input: 0.66, output: 1.98, multiplier: 0.5, currency: "USD / 1M tokens" },
@@ -57,7 +57,7 @@ const providers = Object.freeze([
     rateLimits: { rpm: 5000, tpm: 2000000, concurrency: 500 },
     latencyMs: 780, stability: "Healthy", nextWindow: "No scheduled change",
     note: "Account tier and public status are healthy in this demo snapshot.",
-    source: { label: "OpenAI limits & status", type: "official dashboard + status", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+    source: { label: "OpenAI limits & status", url: "https://platform.openai.com/docs/guides/rate-limits", type: "official dashboard + status", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
   },
   {
     id: "gemini-2-5-pro", name: "Google Gemini", model: "2.5 Pro", region: "west", code: "GG", state: "healthy", condition: "Healthy",
@@ -67,7 +67,7 @@ const providers = Object.freeze([
     rateLimits: { rpm: 3600, tpm: 1000000, concurrency: 300 },
     latencyMs: 690, stability: "Healthy", nextWindow: "Batch window available",
     note: "Project limits vary by tier and workload class. Batch is the lower-cost path for queued work.",
-    source: { label: "Google AI Studio", type: "official documentation + console", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+    source: { label: "Google AI Studio", url: "https://ai.google.dev/gemini-api/docs/rate-limits", type: "official documentation + console", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
   },
   {
     id: "anthropic-claude-opus", name: "Anthropic", model: "Claude Opus", region: "west", code: "AN", state: "healthy", condition: "Healthy",
@@ -77,7 +77,7 @@ const providers = Object.freeze([
     rateLimits: { rpm: 1800, tpm: 400000, concurrency: 150 },
     latencyMs: 1100, stability: "Healthy", nextWindow: "No scheduled change",
     note: "Spend tier and account limits are represented separately from public service status.",
-    source: { label: "Anthropic rate limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+    source: { label: "Anthropic rate limits", url: "https://docs.anthropic.com/en/api/rate-limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
   }
 ]);
 
@@ -175,6 +175,45 @@ function renderForecast() {
   $("#detail-panel").innerHTML = detailMarkup(getProvider(state.selectedId));
   $("#provider-search").value = state.search;
   document.querySelectorAll(".view-button").forEach((button) => button.classList.toggle("active", button.dataset.view === state.activeView));
+}
+
+function applySnapshot(snapshot) {
+  const successfulSources = new Map(snapshot.events.filter((event) => event.event_type === "SOURCE_FETCH" && event.status === "ok").map((event) => [event.provider_id, event]));
+  providers = Object.freeze(providers.map((provider) => {
+    const event = successfulSources.get(provider.id);
+    if (!event) return provider;
+    return { ...provider, source: { ...provider.source, retrievedAt: new Date(event.retrieved_at).toISOString().replace("T", " ").slice(0, 16) + " UTC", collectorStatus: event.status, sha256: event.sha256 } };
+  }));
+  $("#feed-label").textContent = snapshot.mode === "source-connected" ? "Source-connected feed" : snapshot.mode === "degraded" ? "Degraded source feed" : "Seeded feed";
+  $("#snapshot-label").textContent = snapshot.generated_at ? `Sources checked · ${new Date(snapshot.generated_at).toISOString().replace("T", " ").slice(0, 16)} UTC` : "Seeded snapshot · source collector ready";
+  renderForecast();
+  renderCompare();
+  renderChanges();
+}
+
+async function loadSnapshot() {
+  try {
+    const response = await fetch("/api/snapshot", { cache: "no-store" });
+    if (!response.ok) throw new Error(`snapshot returned HTTP ${response.status}`);
+    applySnapshot(await response.json());
+  } catch {
+    // Direct-file use remains useful; the seeded records are the explicit fallback.
+  }
+}
+
+async function refreshSnapshot() {
+  const button = $("#refresh-button");
+  button.disabled = true;
+  try {
+    const response = await fetch("/api/refresh", { method: "POST" });
+    const snapshot = await response.json();
+    applySnapshot(snapshot);
+    showToast(response.ok ? "Source snapshot refreshed." : "Source snapshot is degraded; inspect collector errors.");
+  } catch {
+    showToast("Source refresh needs the local server: npm run server.");
+  } finally {
+    button.disabled = false;
+  }
 }
 
 function compareModels(ids) {
@@ -287,7 +326,7 @@ $("#provider-list").addEventListener("click", (event) => { const row = event.tar
 $("#compare-picker-list").addEventListener("click", (event) => { const button = event.target.closest("[data-toggle-compare]"); if (!button) return; const id = button.dataset.toggleCompare; if (state.compareIds.includes(id)) { if (state.compareIds.length === 1) return showToast("Keep one model selected for comparison."); state.compareIds = state.compareIds.filter((item) => item !== id); } else if (state.compareIds.length < 3) { state.compareIds = [...state.compareIds, id]; } else return showToast("Compare up to three models at a time."); renderCompare(); renderForecast(); });
 document.addEventListener("click", (event) => { const source = event.target.closest("[data-source-id]"); if (source) { const item = getSource(source.dataset.sourceId); showToast(`${item.label} · ${item.confidence} · ${item.retrievedAt}`); } const add = event.target.closest("[data-add-compare]"); if (add) { const id = add.dataset.addCompare; if (!state.compareIds.includes(id) && state.compareIds.length >= 3) return showToast("Compare up to three models at a time."); if (!state.compareIds.includes(id)) state.compareIds = [...state.compareIds, id]; renderCompare(); renderForecast(); showToast(`${getProvider(id).name} added to comparison.`); } const providerLink = event.target.closest("#planner-result [data-provider-id]"); if (providerLink) { state.selectedId = providerLink.dataset.providerId; renderForecast(); showToast(`${getProvider(state.selectedId).name} selected in the forecast.`); } });
 $("#planner-form").addEventListener("submit", (event) => { event.preventDefault(); renderPlanner(planWorkload({ tokens: $("#planner-tokens").value, shape: $("#planner-shape").value, region: $("#planner-region").value })); showToast("Workload plan recalculated from the seeded snapshot."); });
-$("#refresh-button").addEventListener("click", () => showToast("Seeded snapshot refreshed · run npm run collect for source checks."));
+$("#refresh-button").addEventListener("click", refreshSnapshot);
 $("#hero-sources-button").addEventListener("click", () => showToast("Every forecast keeps its source type, confidence, and measurement boundary attached."));
 $("#principle-button").addEventListener("click", () => showToast("Guaranteed capacity is the promise. Observed capacity is the possibility."));
 document.querySelectorAll("[data-scroll-target]").forEach((button) => button.addEventListener("click", () => { document.getElementById(button.dataset.scrollTarget).scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelectorAll(".surface-link").forEach((item) => item.classList.toggle("active", item === button)); }));
@@ -296,3 +335,4 @@ renderForecast();
 renderCompare();
 renderPlanner();
 renderChanges();
+loadSnapshot();

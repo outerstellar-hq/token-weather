@@ -6,6 +6,7 @@
     "check": "node --check app.js && node --check collector.mjs",
     "check:collector": "node collector.mjs --check",
     "collect": "node collector.mjs --json",
-    "test": "node --test collector.test.mjs"
+    "test": "node --test collector.test.mjs",
+    "server": "node server.mjs"
   }
 }

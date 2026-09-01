@@ -10,7 +10,10 @@ export const sourceDefinitions = Object.freeze([
   { providerId: "qwen-3-7-plus", sourceId: "alibaba-list-quotas", sourceType: "rate_limit", url: "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/list-quotas" },
   { providerId: "glm-5", sourceId: "zhipu-rate-limit", sourceType: "rate_limit", url: "https://docs.bigmodel.cn/cn/api/rate-limit" },
   { providerId: "baidu-ernie-5", sourceId: "baidu-rate-limit-headers", sourceType: "quota", url: "https://intl.cloud.baidu.com/en/doc/qianfan/s/3m7of64lb-intl-en" },
-  { providerId: "stepfun-step-35", sourceId: "stepfun-pricing-limits", sourceType: "rate_limit", url: "https://platform.stepfun.com/docs/zh/guides/pricing/details" }
+  { providerId: "stepfun-step-35", sourceId: "stepfun-pricing-limits", sourceType: "rate_limit", url: "https://platform.stepfun.com/docs/zh/guides/pricing/details" },
+  { providerId: "openai-gpt-5", sourceId: "openai-rate-limits", sourceType: "rate_limit", url: "https://platform.openai.com/docs/guides/rate-limits" },
+  { providerId: "gemini-2-5-pro", sourceId: "gemini-rate-limits", sourceType: "rate_limit", url: "https://ai.google.dev/gemini-api/docs/rate-limits" },
+  { providerId: "anthropic-claude-opus", sourceId: "anthropic-rate-limits", sourceType: "rate_limit", url: "https://docs.anthropic.com/en/api/rate-limits" }
 ]);
 
 export const accountCollectors = Object.freeze([
@@ -71,10 +74,34 @@ export function accountReadiness(env = process.env) {
   });
 }
 
-export async function collectDocumentation({ fetchImpl = fetch } = {}) {
+export async function collectQwenAccount({ fetchImpl = fetch, env = process.env } = {}) {
+  const apiKey = env.DASHSCOPE_API_KEY;
+  const workspaceId = env.DASHSCOPE_WORKSPACE_ID;
+  if (!apiKey || !workspaceId) return null;
+  const region = env.DASHSCOPE_REGION || "cn-beijing";
+  const url = `https://${workspaceId}.${region}.maas.aliyuncs.com/api/v1/models/limits?name=qwen&page_no=1&page_size=100`;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const retrievedAt = now();
+  try {
+    const response = await fetchImpl(url, { signal: controller.signal, headers: { accept: "application/json", authorization: `Bearer ${apiKey}` } });
+    const body = await readBoundedBody(response);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const payload = JSON.parse(new TextDecoder().decode(body));
+    const quotas = Array.isArray(payload?.output?.quotas) ? payload.output.quotas : [];
+    return { event_type: "ACCOUNT_QUOTA", provider_id: "qwen-3-7-plus", source_type: "account_api", source_url: url, retrieved_at: retrievedAt, status: "ok", http_status: response.status, bytes: body.byteLength, sha256: sha256(body), official: true, confidence: "official account API", records: quotas.map((quota) => ({ model: quota.model, workspace_id: quota.workspace_id, model_limit: quota.model_limit, workspace_limit: quota.workspace_limit })) };
+  } catch (error) {
+    return { event_type: "ACCOUNT_QUOTA", provider_id: "qwen-3-7-plus", source_type: "account_api", source_url: url, retrieved_at: retrievedAt, status: "error", error: error instanceof Error ? error.message : String(error), official: true, confidence: "account retrieval failed" };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+export async function collectDocumentation({ fetchImpl = fetch, env = process.env, includeAccounts = false } = {}) {
   const events = [];
   for (const source of sourceDefinitions) events.push(await collectSource(source, fetchImpl));
-  return { schema: "token-weather.collector.v1", collected_at: now(), events, account_collectors: accountReadiness() };
+  const accountEvents = includeAccounts ? (await collectQwenAccount({ fetchImpl, env })) : null;
+  return { schema: "token-weather.collector.v1", collected_at: now(), events: accountEvents ? [...events, accountEvents] : events, account_collectors: accountReadiness(env) };
 }
 
 function printCheck() {
@@ -83,7 +110,7 @@ function printCheck() {
 
 if (process.argv.includes("--check")) printCheck();
 if (process.argv.includes("--json")) {
-  const report = await collectDocumentation();
+  const report = await collectDocumentation({ includeAccounts: process.argv.includes("--account") });
   console.log(JSON.stringify(report, null, 2));
   if (report.events.some((event) => event.status === "error")) process.exitCode = 1;
 }

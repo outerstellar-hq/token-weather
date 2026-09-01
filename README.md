@@ -36,11 +36,13 @@ The live command performs read-only documentation requests and exits non-zero if
 
 ## Run locally
 
-Open `index.html` directly, or serve this folder at the canonical local origin `http://127.0.0.1:4173`:
+Open `index.html` directly for the seeded fallback, or run the local snapshot server at the canonical origin `http://127.0.0.1:4173`:
 
 ```powershell
-python -m http.server 4173 --bind 127.0.0.1
+npm run server
 ```
+
+The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized collector events to the ignored local file `data/snapshot.json`; the UI overlays only successful source provenance and falls back to seeded data if the server is unavailable.
 
 ## Check
 
