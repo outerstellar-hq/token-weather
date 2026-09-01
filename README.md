@@ -4,12 +4,12 @@ Token Weather is a responsive forecast surface for AI provider price, capacity, 
 
 The MVP includes four user-facing slices:
 
-- Forecast: eight first-priority providers with region filtering, search, selected-model detail, guaranteed versus observed capacity, and source confidence.
+- Forecast: nine first-priority providers with region filtering, search, selected-model detail, guaranteed versus observed capacity, and source confidence.
 - Compare: select up to three models and compare condition, price, guaranteed TPM, observed availability, latency, and quota.
 - Plan work: rank a workload by token volume, workload shape, and region, with an estimated cost and alternatives.
 - Changes: a provenance-led recent-change stream covering price, capacity, and quota events.
 
-The browser surface still uses a seeded feed so the interface remains useful without credentials. The provider records use one normalized shape and preserve the boundary between official guarantees and observed measurements. Public-source collection is now implemented; credentialed account telemetry, persistent ingestion, and wiring fresh collector output into the UI are the next integration boundary.
+The browser surface starts with a seeded feed so the interface remains useful without credentials. The provider records use one normalized shape and preserve the boundary between official guarantees and observed measurements. Public-source collection is connected to the local snapshot server; account-specific telemetry remains explicitly gated by each provider's supported access path.
 
 The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
@@ -17,7 +17,7 @@ The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
 ## Collector slice
 
-`collector.mjs` is the bounded source collector. It retrieves ten verified official documentation pages for the eight MVP providers, then emits `SOURCE_FETCH` records containing the URL, timestamp, HTTP status, byte count, SHA-256, and confidence. Responses are capped at 8 MB and requests time out after 10 seconds.
+`collector.mjs` is the bounded source collector. It retrieves twelve verified official documentation pages for the nine MVP providers, including Grok 4.6 pricing and xAI's tiered RPS/TPM limits, then emits `SOURCE_FETCH` records containing the URL, timestamp, HTTP status, byte count, SHA-256, and confidence. Responses are capped at 8 MB and requests time out after 10 seconds.
 
 Run the offline collector contract check with:
 
@@ -42,7 +42,7 @@ Open `index.html` directly for the seeded fallback, or run the local snapshot se
 npm run server
 ```
 
-The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized collector events to the ignored local file `data/snapshot.json`; the UI overlays only successful source provenance and falls back to seeded data if the server is unavailable.
+The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized collector events to the ignored local file `data/snapshot.json`; the UI overlays only successful source provenance and falls back to seeded data if the server is unavailable. Grok account limits remain console-only until an explicitly supported account integration is added.
 
 ## Check
 

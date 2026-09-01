@@ -24,6 +24,7 @@ test("account readiness distinguishes credentials from manual sources", () => {
   const unconfigured = accountReadiness({});
   assert.equal(unconfigured.find((item) => item.providerId === "qwen-3-7-plus").status, "not_configured");
   assert.equal(unconfigured.find((item) => item.providerId === "glm-5").status, "not_configured");
+  assert.equal(unconfigured.find((item) => item.providerId === "xai-grok-46").status, "not_configured");
 
   const configured = accountReadiness({ DASHSCOPE_API_KEY: "test-key", DASHSCOPE_WORKSPACE_ID: "test-workspace", STEPFUN_API_KEY: "test-key" });
   assert.equal(configured.find((item) => item.providerId === "qwen-3-7-plus").status, "configured");

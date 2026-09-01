@@ -13,7 +13,9 @@ export const sourceDefinitions = Object.freeze([
   { providerId: "stepfun-step-35", sourceId: "stepfun-pricing-limits", sourceType: "rate_limit", url: "https://platform.stepfun.com/docs/zh/guides/pricing/details" },
   { providerId: "openai-gpt-5", sourceId: "openai-rate-limits", sourceType: "rate_limit", url: "https://platform.openai.com/docs/guides/rate-limits" },
   { providerId: "gemini-2-5-pro", sourceId: "gemini-rate-limits", sourceType: "rate_limit", url: "https://ai.google.dev/gemini-api/docs/rate-limits" },
-  { providerId: "anthropic-claude-opus", sourceId: "anthropic-rate-limits", sourceType: "rate_limit", url: "https://docs.anthropic.com/en/api/rate-limits" }
+  { providerId: "anthropic-claude-opus", sourceId: "anthropic-rate-limits", sourceType: "rate_limit", url: "https://docs.anthropic.com/en/api/rate-limits" },
+  { providerId: "xai-grok-46", sourceId: "xai-grok-46", sourceType: "pricing", url: "https://docs.x.ai/developers/grok-4-6" },
+  { providerId: "xai-grok-46", sourceId: "xai-rate-limits", sourceType: "rate_limit", url: "https://docs.x.ai/developers/rate-limits" }
 ]);
 
 export const accountCollectors = Object.freeze([
@@ -21,7 +23,8 @@ export const accountCollectors = Object.freeze([
   { providerId: "qwen-3-7-plus", mode: "api", env: ["DASHSCOPE_API_KEY", "DASHSCOPE_WORKSPACE_ID"], status: "ready_when_configured", detail: "Read-only model limit query at GET /api/v1/models/limits." },
   { providerId: "glm-5", mode: "console", status: "not_configured", detail: "Account/model limits are exposed in the provider console." },
   { providerId: "baidu-ernie-5", mode: "request_scoped_headers", status: "not_configured", detail: "Quota values arrive on inference response headers and must be captured by a calling workload." },
-  { providerId: "stepfun-step-35", mode: "account_api", env: ["STEPFUN_API_KEY"], status: "not_configured", detail: "Account endpoint is reserved for an explicitly configured credentialed run." }
+  { providerId: "stepfun-step-35", mode: "account_api", env: ["STEPFUN_API_KEY"], status: "not_configured", detail: "Account endpoint is reserved for an explicitly configured credentialed run." },
+  { providerId: "xai-grok-46", mode: "console", status: "not_configured", detail: "Account-specific model limits are exposed in the xAI console; public documentation supplies tier examples, not this account's live ceiling." }
 ]);
 
 function now() {

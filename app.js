@@ -78,6 +78,16 @@ let providers = Object.freeze([
     latencyMs: 1100, stability: "Healthy", nextWindow: "No scheduled change",
     note: "Spend tier and account limits are represented separately from public service status.",
     source: { label: "Anthropic rate limits", url: "https://docs.anthropic.com/en/api/rate-limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+  },
+  {
+    id: "xai-grok-46", name: "xAI", model: "Grok 4.6", region: "west", code: "XI", state: "healthy", condition: "Healthy",
+    pricing: { input: 2.00, output: 6.00, multiplier: 1, currency: "USD / 1M tokens" },
+    quota: { remaining: null, window: "team tier", reset: "Console" },
+    capacity: { guaranteedTpm: 10000000, observedTpm: null, concurrency: null },
+    rateLimits: { rps: 37, tpm: 10000000, concurrency: null },
+    latencyMs: 860, stability: "Healthy", nextWindow: "Team tier limits apply",
+    note: "Grok 4.6 is priced at $2 input and $6 output per million tokens. Tier 0 currently documents 37 RPS and 10M TPM; account-specific limits live in the xAI console.",
+    source: { label: "xAI Grok 4.6 & limits", url: "https://docs.x.ai/developers/grok-4-6", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
   }
 ]);
 
@@ -86,7 +96,8 @@ const recentChanges = Object.freeze([
   { providerId: "qwen-3-7-plus", type: "CAPACITY_EVENT", title: "Observed throughput above baseline", detail: "Local measurements reached 1.76M TPM against a 1M guaranteed baseline.", age: "Demo observation", source: "Alibaba quota API", confidence: "Official + observed" },
   { providerId: "glm-5", type: "CAPACITY_EVENT", title: "Peak-time watch is active", detail: "Zhipu documents dynamic throttling during the 15:00–18:00 local window.", age: "Scheduled window", source: "Zhipu rate limits", confidence: "Official" },
   { providerId: "baidu-ernie-5", type: "QUOTA_EVENT", title: "Header telemetry is ready", detail: "Remaining request and token limits can be collected from API response headers.", age: "Integration target", source: "Baidu API headers", confidence: "Official" },
-  { providerId: "stepfun-step-35", type: "CAPACITY_EVENT", title: "Temporary limit adjustment documented", detail: "The provider may adjust rate limits when overall capacity reaches its limit.", age: "Standing rule", source: "StepFun tier limits", confidence: "Official" }
+  { providerId: "stepfun-step-35", type: "CAPACITY_EVENT", title: "Temporary limit adjustment documented", detail: "The provider may adjust rate limits when overall capacity reaches its limit.", age: "Standing rule", source: "StepFun tier limits", confidence: "Official" },
+  { providerId: "xai-grok-46", type: "CAPACITY_EVENT", title: "Tiered RPS and TPM limits documented", detail: "xAI publishes per-model request-per-second and token-per-minute caps; the account tier determines the live ceiling.", age: "Standing rule", source: "xAI rate limits", confidence: "Official" }
 ]);
 
 const stateClass = { healthy: "green", watch: "yellow", disrupted: "red" };
@@ -107,7 +118,12 @@ function formatTokens(value) {
 }
 
 function formatPrice(value) {
+  if (value == null) return "—";
   return `$${value.toFixed(value >= 10 ? 0 : 2)}`;
+}
+
+function formatQuota(value) {
+  return value == null ? "—" : `${value}%`;
 }
 
 function providerWeather(provider) {
@@ -136,7 +152,7 @@ function renderProviderRow(provider) {
     <span class="provider-name"><span class="provider-avatar">${provider.code}</span><span class="provider-title"><strong>${provider.name}</strong><span>${provider.model}</span></span></span>
     <span><span class="metric-label">Condition</span><span class="condition"><i class="status-dot ${stateClass[provider.state]}"></i>${provider.condition}</span></span>
     <span><span class="metric-label">Guaranteed TPM</span><span class="metric-value">${formatTokens(provider.capacity.guaranteedTpm)}</span></span>
-    <span><span class="metric-label">Quota left</span><span class="metric-value good">${provider.quota.remaining}%</span></span>
+    <span><span class="metric-label">Quota left</span><span class="metric-value ${provider.quota.remaining == null ? "" : "good"}">${formatQuota(provider.quota.remaining)}</span></span>
   </button>`;
 }
 
@@ -146,7 +162,7 @@ function detailMarkup(provider) {
     <div class="detail-rule"></div>
     <div class="detail-stats">
       <div class="detail-stat"><label>Current effective cost</label><strong>${price}<span> / 1M in / out</span></strong></div>
-      <div class="detail-stat"><label>Quota remaining</label><strong>${provider.quota.remaining}%</strong><div class="meter"><i style="width: ${provider.quota.remaining}%"></i></div></div>
+      <div class="detail-stat"><label>Quota remaining</label><strong>${formatQuota(provider.quota.remaining)}</strong>${provider.quota.remaining == null ? "" : `<div class="meter"><i style="width: ${provider.quota.remaining}%"></i></div>`}</div>
       <div class="detail-stat"><label>Guaranteed TPM</label><strong>${formatTokens(provider.capacity.guaranteedTpm)}</strong></div>
       <div class="detail-stat"><label>Observed available</label><strong>${formatTokens(provider.capacity.observedTpm)}</strong></div>
       <div class="detail-stat"><label>Typical latency</label><strong>${provider.latencyMs >= 1000 ? `${(provider.latencyMs / 1000).toFixed(1)} s` : `${provider.latencyMs} ms`}</strong></div>
@@ -154,7 +170,7 @@ function detailMarkup(provider) {
     </div>
     <div class="detail-callout"><strong>Forecast note</strong>${provider.note}</div>
     <div class="source-row"><span>Checked · ${provider.source.retrievedAt}</span><a class="source-link" href="${provider.source.url}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${provider.source.label} ↗</a></div>
-    <div class="detail-actions"><button class="small-action" type="button" data-add-compare="${provider.id}">${state.compareIds.includes(provider.id) ? "In comparison" : "Add to compare"} <span>+</span></button><span class="mono">RPM ${formatTokens(provider.rateLimits.rpm)} · CONC ${provider.rateLimits.concurrency}</span></div>`;
+    <div class="detail-actions"><button class="small-action" type="button" data-add-compare="${provider.id}">${state.compareIds.includes(provider.id) ? "In comparison" : "Add to compare"} <span>+</span></button><span class="mono">${provider.rateLimits.rps == null ? `RPM ${formatTokens(provider.rateLimits.rpm)}` : `RPS ${formatTokens(provider.rateLimits.rps)}`} · CONC ${formatTokens(provider.rateLimits.concurrency)}</span></div>`;
 }
 
 function visibleProviders() {
@@ -238,7 +254,7 @@ function renderCompare() {
     ${compareRow("Guaranteed TPM", selected.map((provider) => `<span class="compare-value">${formatTokens(provider.capacity.guaranteedTpm)}</span>`))}
     ${compareRow("Observed available", selected.map((provider) => `<span class="compare-value ${provider.capacity.observedTpm > provider.capacity.guaranteedTpm ? "good" : ""}">${formatTokens(provider.capacity.observedTpm)}</span>`))}
     ${compareRow("Latency", selected.map((provider) => `<span class="compare-value">${provider.latency_ms >= 1000 ? `${(provider.latency_ms / 1000).toFixed(1)} s` : `${provider.latency_ms} ms`}</span>`))}
-    ${compareRow("Quota remaining", selected.map((provider) => `<span class="compare-value good">${provider.quota.remaining}%</span>`))}`;
+    ${compareRow("Quota remaining", selected.map((provider) => `<span class="compare-value ${provider.quota.remaining == null ? "" : "good"}">${formatQuota(provider.quota.remaining)}</span>`))}`;
 }
 
 function compareRow(label, values) {
@@ -285,7 +301,7 @@ function publicWorkloadPlan(plan) {
 function renderPlanner(result = planWorkload()) {
   const provider = result.provider;
   const shapeLabel = { balanced: "balanced", latency: "latency-sensitive", batch: "batch / queued", cost: "cost-first" }[result.shape];
-  $("#planner-result").innerHTML = `<div class="recommendation-top"><span class="detail-kicker">Recommended window</span><span class="recommendation-badge">${provider.condition}</span></div><h3>${provider.name} <span>${provider.model}</span></h3><p class="recommendation-copy">For a ${result.totalTokens.toLocaleString()} token ${shapeLabel} workload, ${provider.name} is the strongest current fit.</p><div class="recommendation-metrics"><div><span>Estimated cost</span><strong>${formatPrice(result.estimatedCost)}</strong></div><div><span>Latency</span><strong>${provider.latencyMs} ms</strong></div><div><span>Quota left</span><strong>${provider.quota.remaining}%</strong></div></div><div class="recommendation-explain"><strong>Why this one</strong>${provider.note} The score keeps the provider’s guaranteed capacity and current condition visible.</div><div class="alternatives"><span class="field-label">NEXT BEST</span>${result.alternatives.map((item) => `<button type="button" data-provider-id="${item.provider.id}">${item.provider.name}<span>${formatPrice(item.estimatedCost)} · ${item.provider.latencyMs} ms</span></button>`).join("")}</div>`;
+  $("#planner-result").innerHTML = `<div class="recommendation-top"><span class="detail-kicker">Recommended window</span><span class="recommendation-badge">${provider.condition}</span></div><h3>${provider.name} <span>${provider.model}</span></h3><p class="recommendation-copy">For a ${result.totalTokens.toLocaleString()} token ${shapeLabel} workload, ${provider.name} is the strongest current fit.</p><div class="recommendation-metrics"><div><span>Estimated cost</span><strong>${formatPrice(result.estimatedCost)}</strong></div><div><span>Latency</span><strong>${provider.latencyMs} ms</strong></div><div><span>Quota left</span><strong>${formatQuota(provider.quota.remaining)}</strong></div></div><div class="recommendation-explain"><strong>Why this one</strong>${provider.note} The score keeps the provider’s guaranteed capacity and current condition visible.</div><div class="alternatives"><span class="field-label">NEXT BEST</span>${result.alternatives.map((item) => `<button type="button" data-provider-id="${item.provider.id}">${item.provider.name}<span>${formatPrice(item.estimatedCost)} · ${item.provider.latencyMs} ms</span></button>`).join("")}</div>`;
 }
 
 function renderChanges() {
