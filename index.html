@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Token Weather — capacity, price, and quota conditions for AI providers." />
+    <title>Token Weather — API capacity, at a glance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="Token Weather home">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>token weather</span>
+        </a>
+        <div class="topbar-meta">
+          <span class="live-dot"></span>
+          <span>Demo feed</span>
+          <span class="meta-divider"></span>
+          <span class="mono">02 SEP 2026 · 09:42 UTC</span>
+        </div>
+        <button class="icon-button" type="button" aria-label="Open settings">•••</button>
+      </header>
+
+      <main id="top">
+        <section class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">THE AI CAPACITY FORECAST</p>
+            <h1>Know when the<br /><em>weather</em> is good.</h1>
+            <p class="hero-lede">A clear read on price, capacity, quota, and stability across the models your work depends on.</p>
+            <div class="hero-actions">
+              <button class="primary-button" type="button" id="refresh-button"><span class="refresh-symbol">↻</span> Refresh snapshot</button>
+              <button class="text-button" type="button" id="sources-button">How we know <span>↗</span></button>
+            </div>
+          </div>
+          <div class="weather-orbit" aria-label="Current overall capacity is favorable">
+            <div class="orbit orbit-one"></div>
+            <div class="orbit orbit-two"></div>
+            <div class="orbit orbit-three"></div>
+            <div class="orbit-core">
+              <span class="core-kicker">OVERALL CONDITIONS</span>
+              <strong>FAVORABLE</strong>
+              <span class="core-time">8 of 12 providers healthy</span>
+            </div>
+            <span class="orbit-label label-north">capacity</span>
+            <span class="orbit-label label-east">latency</span>
+            <span class="orbit-label label-south">quota</span>
+          </div>
+        </section>
+
+        <section class="signal-strip" aria-label="Market signals">
+          <div class="signal-item"><span class="signal-icon mint">↗</span><div><span class="signal-label">Best value now</span><strong>DeepSeek V4 Pro</strong></div></div>
+          <div class="signal-item"><span class="signal-icon amber">◷</span><div><span class="signal-label">Next off-peak window</span><strong>DeepSeek · in 3h 18m</strong></div></div>
+          <div class="signal-item"><span class="signal-icon lilac">⌁</span><div><span class="signal-label">Most headroom</span><strong>Qwen 3.7 Plus · 76%</strong></div></div>
+          <div class="signal-item signal-note"><span class="tiny-pulse"></span><span>Updated 2 minutes ago</span></div>
+        </section>
+
+        <section class="workspace-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">PROVIDER MAP <span class="slash">/</span> 12 TRACKED</p>
+              <h2>What’s the forecast?</h2>
+            </div>
+            <div class="view-controls" role="group" aria-label="Provider view controls">
+              <button class="view-button active" type="button" data-view="all">All providers</button>
+              <button class="view-button" type="button" data-view="asia">Asia</button>
+              <button class="view-button" type="button" data-view="west">Western</button>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="provider-panel">
+              <div class="panel-toolbar">
+                <label class="search-box"><span aria-hidden="true">⌕</span><input id="provider-search" type="search" placeholder="Search providers or models" /></label>
+                <span class="sort-label">SORT: <button type="button" id="sort-button">CONDITION ↓</button></span>
+              </div>
+              <div class="provider-list" id="provider-list" aria-live="polite"></div>
+              <div class="panel-footer"><span><i class="status-dot green"></i> healthy</span><span><i class="status-dot yellow"></i> watch</span><span><i class="status-dot red"></i> disrupted</span><span class="mono">SOURCE COVERAGE 84%</span></div>
+            </div>
+
+            <aside class="detail-panel" id="detail-panel" aria-live="polite"></aside>
+          </div>
+        </section>
+
+        <section class="principle-band">
+          <div class="principle-mark" aria-hidden="true">✳</div>
+          <div><p class="eyebrow">THE RULE</p><h2>Separate the promise<br />from the possibility.</h2></div>
+          <p class="principle-copy">We show what a provider guarantees in one line, and what the network is giving you right now in another. Official limits and observed behavior are never blended.</p>
+          <button class="circle-button" type="button" id="principle-button" aria-label="Read about Token Weather methodology">↗</button>
+        </section>
+      </main>
+
+      <footer class="footer"><span>Token Weather / a clearer forecast for the token economy</span><span class="mono">BUILD 0.1 · SEE SOURCES BEFORE SHIPPING</span></footer>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

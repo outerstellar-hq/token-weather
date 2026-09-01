@@ -1,0 +1,8 @@
+{
+  "name": "token-weather",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "check": "node --check app.js"
+  }
+}
