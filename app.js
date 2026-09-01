@@ -178,14 +178,17 @@ function renderForecast() {
 }
 
 function applySnapshot(snapshot) {
-  const successfulSources = new Map(snapshot.events.filter((event) => event.event_type === "SOURCE_FETCH" && event.status === "ok").map((event) => [event.provider_id, event]));
+  const events = Array.isArray(snapshot.events) ? snapshot.events : [];
+  const accounts = Array.isArray(snapshot.account_collectors) ? snapshot.account_collectors : [];
+  const successfulSources = new Map(events.filter((event) => event.event_type === "SOURCE_FETCH" && event.status === "ok").map((event) => [event.provider_id, event]));
   providers = Object.freeze(providers.map((provider) => {
     const event = successfulSources.get(provider.id);
     if (!event) return provider;
     return { ...provider, source: { ...provider.source, retrievedAt: new Date(event.retrieved_at).toISOString().replace("T", " ").slice(0, 16) + " UTC", collectorStatus: event.status, sha256: event.sha256 } };
   }));
   $("#feed-label").textContent = snapshot.mode === "source-connected" ? "Source-connected feed" : snapshot.mode === "degraded" ? "Degraded source feed" : "Seeded feed";
-  $("#snapshot-label").textContent = snapshot.generated_at ? `Sources checked · ${new Date(snapshot.generated_at).toISOString().replace("T", " ").slice(0, 16)} UTC` : "Seeded snapshot · source collector ready";
+  const configuredAccounts = accounts.filter((collector) => collector.status === "configured").length;
+  $("#snapshot-label").textContent = snapshot.generated_at ? `Sources checked · ${new Date(snapshot.generated_at).toISOString().replace("T", " ").slice(0, 16)} UTC · account ${configuredAccounts}/${accounts.length}` : "Seeded snapshot · source collector ready";
   renderForecast();
   renderCompare();
   renderChanges();
@@ -195,7 +198,9 @@ async function loadSnapshot() {
   try {
     const response = await fetch("/api/snapshot", { cache: "no-store" });
     if (!response.ok) throw new Error(`snapshot returned HTTP ${response.status}`);
-    applySnapshot(await response.json());
+    const snapshot = await response.json();
+    if (!Array.isArray(snapshot.events)) throw new Error("snapshot events are missing");
+    applySnapshot(snapshot);
   } catch {
     // Direct-file use remains useful; the seeded records are the explicit fallback.
   }

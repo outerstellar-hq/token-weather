@@ -17,7 +17,7 @@ The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
 ## Collector slice
 
-`collector.mjs` is the first bounded source collector. It retrieves the seven verified official documentation pages for DeepSeek, Alibaba/Qwen, Zhipu/GLM, Baidu Qianfan, and StepFun, then emits `SOURCE_FETCH` records containing the URL, timestamp, HTTP status, byte count, SHA-256, and confidence. Responses are capped at 2 MB and requests time out after 10 seconds.
+`collector.mjs` is the bounded source collector. It retrieves ten verified official documentation pages for the eight MVP providers, then emits `SOURCE_FETCH` records containing the URL, timestamp, HTTP status, byte count, SHA-256, and confidence. Responses are capped at 8 MB and requests time out after 10 seconds.
 
 Run the offline collector contract check with:
 
