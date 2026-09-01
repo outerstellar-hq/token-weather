@@ -7,7 +7,7 @@ const providers = Object.freeze([
     rateLimits: { rpm: 4000, tpm: 500000, concurrency: 500 },
     latencyMs: 820, stability: "Healthy", nextWindow: "Peak starts 06:00 UTC",
     note: "Off-peak pricing is active. Input and output rates are 0.5× the published peak rate.",
-    source: { label: "DeepSeek pricing & limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+    source: { label: "DeepSeek pricing & limits", url: "https://api-docs.deepseek.com/quick_start/pricing", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
   },
   {
     id: "qwen-3-7-plus", name: "Alibaba / Qwen", model: "3.7 Plus", region: "asia", code: "QW", state: "healthy", condition: "Spare capacity",
@@ -17,7 +17,7 @@ const providers = Object.freeze([
     rateLimits: { rpm: 6000, tpm: 1000000, concurrency: 1000 },
     latencyMs: 640, stability: "Healthy", nextWindow: "Spare capacity observed now",
     note: "Observed throughput is above the guaranteed baseline. This is a measurement, not a new quota.",
-    source: { label: "Alibaba quota API", type: "official API + local observation", official: true, confidence: "Official + observed", retrievedAt: "Demo snapshot" }
+    source: { label: "Alibaba quota API", url: "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/quota-management", type: "official API + local observation", official: true, confidence: "Official + observed", retrievedAt: "Demo snapshot" }
   },
   {
     id: "glm-5", name: "Zhipu / GLM", model: "GLM-5", region: "asia", code: "GL", state: "watch", condition: "Peak window",
@@ -27,7 +27,7 @@ const providers = Object.freeze([
     rateLimits: { rpm: 1800, tpm: 150000, concurrency: 80 },
     latencyMs: 1200, stability: "Watch", nextWindow: "Off peak starts 18:00 local",
     note: "Peak-time throttling is documented between 15:00 and 18:00 local time.",
-    source: { label: "Zhipu rate limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+    source: { label: "Zhipu rate limits", url: "https://docs.bigmodel.cn/cn/api/rate-limit", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
   },
   {
     id: "baidu-ernie-5", name: "Baidu Qianfan", model: "ERNIE 5.0", region: "asia", code: "BQ", state: "healthy", condition: "Healthy",
@@ -37,7 +37,7 @@ const providers = Object.freeze([
     rateLimits: { rpm: 2400, tpm: 300000, concurrency: 120 },
     latencyMs: 710, stability: "Healthy", nextWindow: "No scheduled change",
     note: "Remaining request and token limits are read from response headers when connected.",
-    source: { label: "Baidu API headers", type: "official API telemetry", official: true, confidence: "Official + headers", retrievedAt: "Demo snapshot" }
+    source: { label: "Baidu API headers", url: "https://intl.cloud.baidu.com/en/doc/qianfan/s/3m7of64lb-intl-en", type: "official API telemetry", official: true, confidence: "Official + headers", retrievedAt: "Demo snapshot" }
   },
   {
     id: "stepfun-step-35", name: "StepFun", model: "Step-3.5", region: "asia", code: "SF", state: "watch", condition: "Rate watch",
@@ -47,7 +47,7 @@ const providers = Object.freeze([
     rateLimits: { rpm: 1800, tpm: 200000, concurrency: 100 },
     latencyMs: 940, stability: "Watch", nextWindow: "Capacity adjustment possible",
     note: "StepFun may temporarily adjust rate limits when overall capacity is reached.",
-    source: { label: "StepFun tier limits", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
+    source: { label: "StepFun tier limits", url: "https://platform.stepfun.com/docs/zh/guides/pricing/details", type: "official documentation", official: true, confidence: "Official", retrievedAt: "Demo snapshot" }
   },
   {
     id: "openai-gpt-5", name: "OpenAI", model: "GPT-5", region: "west", code: "OA", state: "healthy", condition: "Healthy",
@@ -153,7 +153,7 @@ function detailMarkup(provider) {
       <div class="detail-stat"><label>Source confidence</label><strong>${provider.source.confidence}</strong></div>
     </div>
     <div class="detail-callout"><strong>Forecast note</strong>${provider.note}</div>
-    <div class="source-row"><span>Checked · ${provider.source.retrievedAt}</span><button class="source-link" type="button" data-source-id="${provider.id}">${provider.source.label} ↗</button></div>
+    <div class="source-row"><span>Checked · ${provider.source.retrievedAt}</span><a class="source-link" href="${provider.source.url}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${provider.source.label} ↗</a></div>
     <div class="detail-actions"><button class="small-action" type="button" data-add-compare="${provider.id}">${state.compareIds.includes(provider.id) ? "In comparison" : "Add to compare"} <span>+</span></button><span class="mono">RPM ${formatTokens(provider.rateLimits.rpm)} · CONC ${provider.rateLimits.concurrency}</span></div>`;
 }
 
@@ -245,7 +245,7 @@ function renderPlanner(result = planWorkload()) {
 }
 
 function renderChanges() {
-  $("#changes-list").innerHTML = recentChanges.map((change) => { const provider = getProvider(change.providerId); return `<article class="change-row"><div class="change-marker ${stateClass[provider.state]}"></div><div class="change-main"><div class="change-meta"><span>${change.type.replace("_", " ")}</span><span>${change.age}</span></div><h3>${change.title}</h3><p>${change.detail}</p></div><div class="change-source"><strong>${provider.name}</strong><span>${change.confidence}</span><button class="source-link" type="button" data-source-id="${provider.id}">${change.source} ↗</button></div></article>`; }).join("");
+  $("#changes-list").innerHTML = recentChanges.map((change) => { const provider = getProvider(change.providerId); return `<article class="change-row"><div class="change-marker ${stateClass[provider.state]}"></div><div class="change-main"><div class="change-meta"><span>${change.type.replace("_", " ")}</span><span>${change.age}</span></div><h3>${change.title}</h3><p>${change.detail}</p></div><div class="change-source"><strong>${provider.name}</strong><span>${change.confidence}</span><a class="source-link" href="${provider.source.url}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${change.source} ↗</a></div></article>`; }).join("");
 }
 
 function getSource(id) {
@@ -287,7 +287,7 @@ $("#provider-list").addEventListener("click", (event) => { const row = event.tar
 $("#compare-picker-list").addEventListener("click", (event) => { const button = event.target.closest("[data-toggle-compare]"); if (!button) return; const id = button.dataset.toggleCompare; if (state.compareIds.includes(id)) { if (state.compareIds.length === 1) return showToast("Keep one model selected for comparison."); state.compareIds = state.compareIds.filter((item) => item !== id); } else if (state.compareIds.length < 3) { state.compareIds = [...state.compareIds, id]; } else return showToast("Compare up to three models at a time."); renderCompare(); renderForecast(); });
 document.addEventListener("click", (event) => { const source = event.target.closest("[data-source-id]"); if (source) { const item = getSource(source.dataset.sourceId); showToast(`${item.label} · ${item.confidence} · ${item.retrievedAt}`); } const add = event.target.closest("[data-add-compare]"); if (add) { const id = add.dataset.addCompare; if (!state.compareIds.includes(id) && state.compareIds.length >= 3) return showToast("Compare up to three models at a time."); if (!state.compareIds.includes(id)) state.compareIds = [...state.compareIds, id]; renderCompare(); renderForecast(); showToast(`${getProvider(id).name} added to comparison.`); } const providerLink = event.target.closest("#planner-result [data-provider-id]"); if (providerLink) { state.selectedId = providerLink.dataset.providerId; renderForecast(); showToast(`${getProvider(state.selectedId).name} selected in the forecast.`); } });
 $("#planner-form").addEventListener("submit", (event) => { event.preventDefault(); renderPlanner(planWorkload({ tokens: $("#planner-tokens").value, shape: $("#planner-shape").value, region: $("#planner-region").value })); showToast("Workload plan recalculated from the seeded snapshot."); });
-$("#refresh-button").addEventListener("click", () => showToast("Seeded snapshot refreshed · live collectors are next."));
+$("#refresh-button").addEventListener("click", () => showToast("Seeded snapshot refreshed · run npm run collect for source checks."));
 $("#hero-sources-button").addEventListener("click", () => showToast("Every forecast keeps its source type, confidence, and measurement boundary attached."));
 $("#principle-button").addEventListener("click", () => showToast("Guaranteed capacity is the promise. Observed capacity is the possibility."));
 document.querySelectorAll("[data-scroll-target]").forEach((button) => button.addEventListener("click", () => { document.getElementById(button.dataset.scrollTarget).scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelectorAll(".surface-link").forEach((item) => item.classList.toggle("active", item === button)); }));
