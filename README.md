@@ -2,6 +2,8 @@
 
 Token Weather is a responsive forecast surface for AI provider price, capacity, quota, latency, and stability.
 
+The authoritative provider list and expansion order live in [docs/provider-forecasting-scope.md](docs/provider-forecasting-scope.md).
+
 The MVP includes four user-facing slices:
 
 - Forecast: nine first-priority providers with region filtering, search, selected-model detail, guaranteed versus observed capacity, and source confidence.
