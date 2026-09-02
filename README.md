@@ -17,6 +17,8 @@ The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
 `get_provider_weather`, `get_model_weather`, `get_current_price`, `get_current_quota`, `get_capacity`, `get_rate_limits`, `compare_models`, `find_cheapest_window`, `find_fastest_window`, `plan_workload`, `explain_recommendation`, `get_source`, and `get_recent_changes`.
 
+When the browser exposes `document.modelContext.registerTool`, the page also registers six top-level WebMCP site tools: `get_provider_weather`, `get_model_weather`, `compare_models`, `plan_workload`, `get_recent_changes`, and `focus_provider`. The tools reuse the same normalized forecast logic as the human UI; `focus_provider` updates the visible detail panel so the person and agent can inspect the same model together. Browsers without WebMCP keep the full human interface.
+
 ## Collector slice
 
 `collector.mjs` is the bounded source collector. It retrieves twenty verified official documentation pages for the fourteen MVP providers, including time-window quota sources for MiniMax, Groq, Moonshot/Kimi, Cerebras, and SambaNova, then emits `SOURCE_FETCH` records containing the URL, timestamp, HTTP status, byte count, SHA-256, and confidence. Responses are capped at 8 MB and requests time out after 10 seconds.
@@ -45,6 +47,10 @@ npm run server
 ```
 
 The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized collector events to the ignored local file `data/snapshot.json`; the UI overlays only successful source provenance and falls back to seeded data if the server is unavailable. Grok account limits remain console-only until an explicitly supported account integration is added.
+
+## WebMCP challenge checklist
+
+See [docs/submission-checklist.md](docs/submission-checklist.md) for the current challenge requirements, the local readiness status, and the remaining public deployment/submission steps.
 
 ## Check
 

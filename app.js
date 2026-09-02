@@ -405,7 +405,97 @@ function createAgentApi() {
   });
 }
 
-window.tokenWeather = createAgentApi();
+const agentApi = createAgentApi();
+window.tokenWeather = agentApi;
+
+async function registerWebMcpTools() {
+  if (typeof document.modelContext?.registerTool !== "function") return;
+
+  const tools = [
+    {
+      name: "get_provider_weather",
+      description: "Read Token Weather conditions for all providers in a region.",
+      inputSchema: {
+        type: "object",
+        properties: { region: { type: "string", enum: ["all", "asia", "west"], description: "Provider region to inspect." } },
+        additionalProperties: false
+      },
+      annotations: { readOnlyHint: true },
+      execute: async ({ region = "all" } = {}) => ({ providers: agentApi.get_provider_weather({ region }) })
+    },
+    {
+      name: "get_model_weather",
+      description: "Read the current price, quota, capacity, latency, limits, and source for one named model.",
+      inputSchema: {
+        type: "object",
+        properties: { model: { type: "string", description: "Provider/model ID or displayed provider and model name." } },
+        required: ["model"],
+        additionalProperties: false
+      },
+      annotations: { readOnlyHint: true },
+      execute: async ({ model }) => agentApi.get_model_weather(model)
+    },
+    {
+      name: "compare_models",
+      description: "Compare up to three models across condition, price, capacity, latency, and quota.",
+      inputSchema: {
+        type: "object",
+        properties: { ids: { type: "array", items: { type: "string" }, minItems: 1, maxItems: 3, description: "Model IDs to compare." } },
+        required: ["ids"],
+        additionalProperties: false
+      },
+      annotations: { readOnlyHint: true },
+      execute: async ({ ids }) => ({ models: agentApi.compare_models(ids) })
+    },
+    {
+      name: "plan_workload",
+      description: "Recommend a provider for a token workload and return the estimated cost plus alternatives.",
+      inputSchema: {
+        type: "object",
+        properties: {
+          tokens: { type: "number", minimum: 1, description: "Total input and output tokens." },
+          shape: { type: "string", enum: ["balanced", "latency", "batch", "cost"], description: "Workload priority." },
+          region: { type: "string", enum: ["all", "asia", "west"], description: "Allowed provider region." }
+        },
+        additionalProperties: false
+      },
+      annotations: { readOnlyHint: true },
+      execute: async (args = {}) => agentApi.plan_workload(args)
+    },
+    {
+      name: "get_recent_changes",
+      description: "Read the recent provenance-led changes recorded by Token Weather.",
+      inputSchema: { type: "object", properties: {}, additionalProperties: false },
+      annotations: { readOnlyHint: true },
+      execute: async () => ({ changes: agentApi.get_recent_changes() })
+    },
+    {
+      name: "focus_provider",
+      description: "Select a provider in the visible forecast so the person and agent can inspect the same detail panel.",
+      inputSchema: {
+        type: "object",
+        properties: { provider_id: { type: "string", description: "Provider ID to show in the forecast detail panel." } },
+        required: ["provider_id"],
+        additionalProperties: false
+      },
+      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
+      execute: async ({ provider_id: providerId }) => {
+        const provider = getProvider(providerId);
+        state.selectedId = provider.id;
+        renderForecast();
+        return { selected: providerWeather(provider), human_view_updated: true };
+      }
+    }
+  ];
+
+  for (const tool of tools) await document.modelContext.registerTool(tool);
+  document.documentElement.dataset.webmcp = "ready";
+}
+
+registerWebMcpTools().catch((error) => {
+  document.documentElement.dataset.webmcp = "error";
+  console.error("Token Weather WebMCP registration failed", error);
+});
 
 $("#provider-search").addEventListener("input", (event) => { state.search = event.target.value; renderForecast(); });
 document.querySelectorAll(".view-button").forEach((button) => button.addEventListener("click", () => { state.activeView = button.dataset.view; renderForecast(); }));
@@ -416,6 +506,7 @@ document.addEventListener("click", (event) => { const source = event.target.clos
 $("#planner-form").addEventListener("submit", (event) => { event.preventDefault(); renderPlanner(planWorkload({ tokens: $("#planner-tokens").value, shape: $("#planner-shape").value, region: $("#planner-region").value })); showToast("Workload plan recalculated from the seeded snapshot."); });
 $("#refresh-button").addEventListener("click", refreshSnapshot);
 $("#hero-sources-button").addEventListener("click", () => showToast("Every forecast keeps its source type, confidence, and measurement boundary attached."));
+$("#sources-button").addEventListener("click", () => showToast("Every forecast keeps its source type, confidence, and measurement boundary attached."));
 $("#principle-button").addEventListener("click", () => showToast("Guaranteed capacity is the promise. Observed capacity is the possibility."));
 document.querySelectorAll("[data-scroll-target]").forEach((button) => button.addEventListener("click", () => { document.getElementById(button.dataset.scrollTarget).scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelectorAll(".surface-link").forEach((item) => item.classList.toggle("active", item === button)); }));
 
