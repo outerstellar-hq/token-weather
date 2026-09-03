@@ -4,6 +4,8 @@ This is the authoritative list of AI providers and inference surfaces Token Weat
 
 This is a curated product scope, not a claim to cover every AI provider. Each provider is kept separate from its models, regions, publicly documented service tiers, and execution classes so those dimensions can expand without changing the provider identity.
 
+The detailed machine-readable registry is [provider-registry.json](provider-registry.json). It separates model owners from inference hosts and routers, records each tracked model’s official source, and marks dynamic catalogs instead of copying their current contents into static data.
+
 ## Current provider set
 
 These providers are in the current browser forecast, comparison, workload planner, agent API, and official-source collector.

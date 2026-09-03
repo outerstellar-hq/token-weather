@@ -2,7 +2,7 @@
 
 Token Weather is a global, public-source forecast surface for AI provider price, published limits, capacity signals, latency, incidents, and stability.
 
-The authoritative provider and inference-surface list, including time-window candidates, lives in [docs/provider-forecasting-scope.md](docs/provider-forecasting-scope.md).
+The authoritative provider and inference-surface list, including time-window candidates, lives in [docs/provider-forecasting-scope.md](docs/provider-forecasting-scope.md). The detailed source-linked model and third-party registry is [docs/provider-registry.json](docs/provider-registry.json); its contract is checked by `npm run check:registry`.
 
 The MVP includes four user-facing slices:
 
@@ -47,6 +47,16 @@ $env:AGENT_OWNER = "operator"
 $env:AGENT_TASK = "token-weather-public-sources"
 npm run telemetry
 ```
+
+Audit the registry’s official catalog URLs locally, without credentials:
+
+```powershell
+$env:AGENT_OWNER = "operator"
+$env:AGENT_TASK = "token-weather-registry-source-check"
+npm run check:registry:live
+```
+
+The live audit records the URL, retrieval time, HTTP status, response size, final URL, and SHA-256 hash for each catalog source. A failed source is reported as an error and never becomes a model fact.
 
 ## Run locally
 
