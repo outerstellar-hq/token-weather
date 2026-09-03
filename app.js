@@ -38,7 +38,7 @@ let providerSchedules = Object.freeze([]);
 let recentChanges = Object.freeze([]);
 
 const stateClass = { healthy: "green", watch: "yellow", disrupted: "red", unknown: "gray" };
-const state = { selectedId: "deepseek-v4-pro", activeView: "all", hasDataOnly: false, search: "", sortDescending: true, compareIds: ["deepseek-v4-pro", "qwen-3-7-plus", "gemini-2-5-pro"] };
+const state = { selectedId: "deepseek-v4-pro", activeView: "all", hasDataOnly: true, search: "", sortDescending: true, compareIds: ["deepseek-v4-pro", "qwen-3-7-plus", "gemini-2-5-pro"] };
 const $ = (selector) => document.querySelector(selector);
 
 function getProvider(id) {
