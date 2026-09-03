@@ -13,6 +13,8 @@ The MVP includes four user-facing slices:
 
 The product is generic for every visitor. It has no login, profile, API-key input, workspace context, personal quota, account balance, personalized recommendation, or account-specific telemetry. Provider names and source links are a static tracking catalog; every price, published limit, capacity, latency, stability, and change value starts as unavailable and is populated only by a successful public-source collector. A public documentation retrieval proves that a source was checked, but it is never presented as a user’s current quota or account state.
 
+No seeded metric values are permitted. A displayed fact must carry the exact public source URL, retrieval timestamp, HTTP status, official-source flag, confidence, and SHA-256 response hash. If any of that evidence is missing, the UI and agent API return `Not collected` or `unavailable`.
+
 The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
 `get_provider_weather`, `get_model_weather`, `get_current_price`, `get_current_quota`, `get_capacity`, `get_rate_limits`, `compare_models`, `find_cheapest_window`, `find_fastest_window`, `plan_workload`, `explain_recommendation`, `get_source`, and `get_recent_changes`.

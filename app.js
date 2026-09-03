@@ -153,6 +153,20 @@ function publicSignalAge(timestamp) {
   return hours < 24 ? `${hours}h ago` : `${Math.floor(hours / 24)}d ago`;
 }
 
+function collectedSource(catalogSource, event, label) {
+  return {
+    ...catalogSource,
+    label,
+    url: event.source_url || catalogSource.url,
+    type: event.signal_type || catalogSource.type,
+    official: event.official ?? catalogSource.official,
+    confidence: event.confidence,
+    retrievedAt: event.retrieved_at ? new Date(event.retrieved_at).toISOString().replace("T", " ").slice(0, 16) + " UTC" : "Not checked",
+    httpStatus: event.http_status ?? null,
+    sha256: event.sha256 || null
+  };
+}
+
 function applySnapshot(snapshot) {
   const events = Array.isArray(snapshot.events) ? snapshot.events : [];
   const successfulSources = new Map(events.filter((event) => event.event_type === "SOURCE_FETCH" && event.status === "ok").map((event) => [event.provider_id, event]));
@@ -162,9 +176,14 @@ function applySnapshot(snapshot) {
   providers = Object.freeze(providers.map((provider) => {
     const event = successfulSources.get(provider.id);
     const statusEvent = publicStatuses.get(provider.id);
+    const publicEvent = statusEvent || publicSignals.find((item) => item.provider_id === provider.id);
     const condition = statusEvent?.signals?.description || provider.condition;
-    const source = event ? { ...provider.source, retrievedAt: new Date(event.retrieved_at).toISOString().replace("T", " ").slice(0, 16) + " UTC", collectorStatus: event.status, sha256: event.sha256 } : provider.source;
-    return { ...provider, state: statusEvent ? publicStatusState(statusEvent.signals?.indicator) : provider.state, condition, note: statusEvent ? `Official public status: ${condition}. ` : provider.note, source: { ...source, confidence: publicSignals.some((item) => item.provider_id === provider.id) ? "Public signal connected" : source.confidence } };
+    const source = publicEvent
+      ? collectedSource(provider.source, publicEvent, publicEvent.event_type === "PUBLIC_STATUS" ? "Official public status" : "Official public communication")
+      : event
+        ? collectedSource(provider.source, event, provider.source.label)
+        : provider.source;
+    return { ...provider, state: statusEvent ? publicStatusState(statusEvent.signals?.indicator) : provider.state, condition, note: statusEvent ? `Official public status: ${condition}. ` : provider.note, source };
   }));
   $("#feed-label").textContent = publicSignals.length ? "Public signals connected" : snapshot.mode === "degraded" ? "Public source feed degraded" : "Public sources connected · no forecast metrics";
   $("#snapshot-label").textContent = snapshot.generated_at ? `Public sources checked · ${new Date(snapshot.generated_at).toISOString().replace("T", " ").slice(0, 16)} UTC · ${publicSignals.length} signals` : "No public forecast signals collected";

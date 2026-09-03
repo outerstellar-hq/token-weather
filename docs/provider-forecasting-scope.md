@@ -27,6 +27,10 @@ These providers are in the current browser forecast, comparison, workload planne
 
 The product is deliberately generic and non-personalized. It never asks for or stores API keys, account IDs, workspace IDs, balances, personal quotas, private console data, or headers from an individual’s workload. Provider names, model names, and source links are catalog configuration; all metrics and change events are unavailable until a public-source or clearly labeled public measurement collector supplies them. Retrieving official documentation records source provenance only and never creates a current price, quota, capacity, latency, or stability value.
 
+### Hard-fact acceptance rule
+
+Seeded, copied-forward, estimated, or hand-entered metric values are forbidden. A fact may enter a snapshot only when its collector has retrieved the public source and records the exact source URL, retrieval timestamp, HTTP status, official-source flag, confidence, and SHA-256 response hash alongside the event. The browser and agent API must return `Not collected` or `unavailable` when that evidence is absent. Static catalog names and links are not telemetry and must never be rendered as current values.
+
 ## Expansion provider set
 
 These providers are part of the intended forecasting coverage but are not yet in the browser registry or collector.
