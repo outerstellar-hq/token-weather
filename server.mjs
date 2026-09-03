@@ -4,8 +4,8 @@ import { extname, join, normalize, resolve } from "node:path";
 import { accountReadiness, collectDocumentation } from "./collector.mjs";
 import { readSnapshot, writeSnapshot } from "./snapshot-store.mjs";
 
-const HOST = "127.0.0.1";
-const PORT = 4173;
+const HOST = process.env.HOST || "127.0.0.1";
+const PORT = Number(process.env.PORT || 4173);
 const ROOT = resolve(process.cwd());
 const mimeTypes = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" };
 let snapshot = await readSnapshot();
