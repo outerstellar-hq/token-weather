@@ -2,7 +2,7 @@
 
 Token Weather is a global, public-source forecast surface for AI provider price, published limits, capacity signals, latency, incidents, and stability.
 
-The authoritative provider and inference-surface list, including time-window candidates, lives in [docs/provider-forecasting-scope.md](docs/provider-forecasting-scope.md). The detailed source-linked model and third-party registry is [docs/provider-registry.json](docs/provider-registry.json); its contract is checked by `npm run check:registry`.
+The authoritative provider and inference-surface list, including time-window candidates, lives in [docs/provider-forecasting-scope.md](docs/provider-forecasting-scope.md). The detailed source-linked model and third-party registry is [docs/provider-registry.json](docs/provider-registry.json); published quota, reset, throttling, and clock windows are in [docs/provider-time-windows.json](docs/provider-time-windows.json) and [docs/provider-time-windows.md](docs/provider-time-windows.md). Their contracts are checked by `npm run check:registry` and `npm run check:time-windows`.
 
 The MVP includes four user-facing slices:
 

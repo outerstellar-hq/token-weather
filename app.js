@@ -2,6 +2,7 @@ const providerCatalog = Object.freeze([
   { id: "deepseek-v4-pro", name: "DeepSeek", model: "V4 Pro", region: "asia", code: "DS", source: { label: "DeepSeek pricing", url: "https://api-docs.deepseek.com/quick_start/pricing", type: "official documentation", official: true } },
   { id: "qwen-3-7-plus", name: "Alibaba / Qwen", model: "3.7 Plus", region: "asia", code: "QW", source: { label: "Alibaba quota management", url: "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/quota-management", type: "official documentation", official: true } },
   { id: "glm-5", name: "Zhipu / GLM", model: "GLM-5", region: "asia", code: "GL", source: { label: "Zhipu rate limits", url: "https://docs.bigmodel.cn/cn/api/rate-limit", type: "official documentation", official: true } },
+  { id: "zai", name: "Z.ai", model: "GLM-5", region: "asia", code: "ZA", source: { label: "Z.ai usage policy", url: "https://docs.z.ai/devpack/tool/others", type: "official documentation", official: true } },
   { id: "baidu-ernie-5", name: "Baidu Qianfan", model: "ERNIE 5.0", region: "asia", code: "BQ", source: { label: "Baidu Qianfan limits", url: "https://intl.cloud.baidu.com/en/doc/qianfan/s/3m7of64lb-intl-en", type: "official documentation", official: true } },
   { id: "stepfun-step-35", name: "StepFun", model: "Step-3.5", region: "asia", code: "SF", source: { label: "StepFun pricing and limits", url: "https://platform.stepfun.com/docs/zh/guides/pricing/details", type: "official documentation", official: true } },
   { id: "openai-gpt-5", name: "OpenAI", model: "GPT-5", region: "west", code: "OA", source: { label: "OpenAI rate limits", url: "https://platform.openai.com/docs/guides/rate-limits", type: "official documentation", official: true } },
@@ -33,6 +34,7 @@ function emptyTelemetryProvider(catalog) {
 }
 
 let providers = Object.freeze(providerCatalog.map(emptyTelemetryProvider));
+let providerSchedules = Object.freeze([]);
 let recentChanges = Object.freeze([]);
 
 const stateClass = { healthy: "green", watch: "yellow", disrupted: "red", unknown: "gray" };
@@ -77,6 +79,7 @@ function hasPricing(provider) {
 }
 
 function providerWeather(provider) {
+  const schedule = providerSchedules.find((item) => item.provider_id === provider.id) || null;
   return {
     provider: provider.name,
     model: provider.model,
@@ -91,9 +94,30 @@ function providerWeather(provider) {
     latency_ms: provider.latencyMs,
     stability: provider.stability,
     next_window: provider.nextWindow,
+    published_time_windows: schedule,
     source: { ...provider.source },
     observed_value_is_measurement: provider.capacity.observedTpm !== null
   };
+}
+
+function getProviderSchedule(providerId) {
+  return providerSchedules.find((item) => item.provider_id === providerId) || null;
+}
+
+function scheduleSummary(providerId) {
+  const schedule = getProviderSchedule(providerId);
+  if (!schedule) return { headline: "Not collected", lines: ["The public timing registry has not been loaded."] };
+  const lines = [
+    ...(schedule.windows || []).map((window) => `${window.kind.replaceAll("_", " ")}: ${window.days.join(", ")} ${window.start}–${window.end} ${window.timezone} · ${window.effect}`),
+    ...(schedule.reset_rules || []).map((reset) => `${reset.kind.replaceAll("_", " ")} reset: ${reset.duration || reset.at || reset.time || (reset.durations || []).join(" / ") || "published rule"}${reset.timezone ? ` (${reset.timezone})` : ""}`),
+    ...(schedule.published_conditions || [])
+  ];
+  const headline = schedule.public_schedule_status === "no_published_schedule"
+    ? "No public clock schedule"
+    : schedule.windows?.length
+      ? `${schedule.windows.length} published timing rule${schedule.windows.length === 1 ? "" : "s"}`
+      : "Published reset rule";
+  return { headline, lines: lines.length ? lines : ["No timing rule was published in the checked source."] };
 }
 
 function renderProviderRow(provider) {
@@ -108,6 +132,7 @@ function renderProviderRow(provider) {
 
 function detailMarkup(provider) {
   const price = hasPricing(provider) ? `${formatPrice(provider.pricing.input)} / ${formatPrice(provider.pricing.output)}` : "Not collected";
+  const schedule = scheduleSummary(provider.id);
   return `<div class="detail-top"><div><span class="detail-kicker">Selected provider</span><h3>${provider.name}</h3><span class="detail-model">${provider.model} · ${provider.region === "asia" ? "Asia Pacific" : "Western"}</span></div><span class="detail-condition">${statusDot(provider.state)} ${provider.condition}</span></div>
     <div class="detail-rule"></div>
     <div class="detail-stats">
@@ -118,9 +143,23 @@ function detailMarkup(provider) {
       <div class="detail-stat"><label>Typical latency</label><strong>${formatLatency(provider.latencyMs)}</strong></div>
       <div class="detail-stat"><label>Telemetry status</label><strong>${provider.source.confidence}</strong></div>
     </div>
+    <div class="detail-schedule"><span class="detail-kicker">Published timing</span><strong>${schedule.headline}</strong>${schedule.lines.map((line) => `<p>${line}</p>`).join("")}<a class="source-link" href="${getProviderSchedule(provider.id)?.source.url || provider.source.url}" target="_blank" rel="noreferrer">Timing source ↗</a></div>
     <div class="detail-callout"><strong>Forecast note</strong>${provider.note}</div>
     <div class="source-row"><span>Checked · ${provider.source.retrievedAt}</span><a class="source-link" href="${provider.source.url}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${provider.source.label} ↗</a></div>
     <div class="detail-actions"><button class="small-action" type="button" data-add-compare="${provider.id}">${state.compareIds.includes(provider.id) ? "In comparison" : "Add to compare"} <span>+</span></button><span class="mono">${provider.rateLimits.rps == null ? `RPM ${formatTokens(provider.rateLimits.rpm)}` : `RPS ${formatTokens(provider.rateLimits.rps)}`} · CONC ${formatTokens(provider.rateLimits.concurrency)}</span></div>`;
+}
+
+async function loadProviderSchedules() {
+  try {
+    const response = await fetch("/docs/provider-time-windows.json", { cache: "no-store" });
+    if (!response.ok) throw new Error(`time-window registry returned HTTP ${response.status}`);
+    const payload = await response.json();
+    if (!Array.isArray(payload.records)) throw new Error("time-window registry records are missing");
+    providerSchedules = Object.freeze(payload.records);
+    renderForecast();
+  } catch {
+    console.error("Token Weather public time-window registry could not be loaded");
+  }
 }
 
 function visibleProviders() {
@@ -326,6 +365,7 @@ function createAgentApi() {
     get_current_quota: (id) => ({ provider_id: id, ...getProvider(id).quota }),
     get_capacity: (id) => ({ provider_id: id, ...getProvider(id).capacity }),
     get_rate_limits: (id) => ({ provider_id: id, ...getProvider(id).rateLimits }),
+    get_published_time_windows: (id) => getProviderSchedule(id) || { status: "unavailable", reason: "No public timing registry record has been collected." },
     compare_models: (ids) => compareModels(ids),
     find_cheapest_window: () => {
       const provider = findCheapestWindow();
@@ -407,6 +447,18 @@ async function registerWebMcpTools() {
       execute: async () => ({ changes: agentApi.get_recent_changes() })
     },
     {
+      name: "get_published_time_windows",
+      description: "Read provider-published clock windows and reset rules without accessing account data.",
+      inputSchema: {
+        type: "object",
+        properties: { provider_id: { type: "string", description: "Provider ID to inspect." } },
+        required: ["provider_id"],
+        additionalProperties: false
+      },
+      annotations: { readOnlyHint: true },
+      execute: async ({ provider_id: providerId }) => agentApi.get_published_time_windows(providerId)
+    },
+    {
       name: "focus_provider",
       description: "Select a provider in the visible forecast so the person and agent can inspect the same detail panel.",
       inputSchema: {
@@ -452,3 +504,4 @@ renderCompare();
 renderPlanner();
 renderChanges();
 loadSnapshot();
+loadProviderSchedules();

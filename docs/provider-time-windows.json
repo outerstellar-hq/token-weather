@@ -1,0 +1,271 @@
+{
+  "schema": "token-weather.provider-time-windows.v1",
+  "as_of": "2026-09-03",
+  "scope": "Officially published public timing rules only. These are provider policies, not account usage or remaining quota.",
+  "missing_evidence_value": "unavailable",
+  "tracked_surface_ids": ["deepseek-v4-pro", "qwen-3-7-plus", "glm-5", "zai", "baidu-ernie-5", "stepfun-step-35", "openai-gpt-5", "gemini-2-5-pro", "anthropic-claude-opus", "xai-grok-46", "minimax-m27", "groq-gpt-oss-120b", "moonshot-kimi-k26", "cerebras-llama-31-8b", "sambanova-deepseek-v31", "together-ai", "amazon-bedrock", "microsoft-foundry", "google-vertex-model-garden", "digitalocean-ai-platform", "openrouter", "huggingface-inference-providers", "replicate", "fireworks-ai", "cloudflare-workers-ai", "nvidia-nim", "ibm-watsonx"],
+  "records": [
+    {
+      "provider_id": "deepseek-v4-pro",
+      "public_schedule_status": "published_clock_window",
+      "windows": [
+        { "kind": "peak", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "start": "01:00", "end": "04:00", "timezone": "UTC", "effect": "peak pricing; no public quota increase is promised" },
+        { "kind": "peak", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "start": "06:00", "end": "10:00", "timezone": "UTC", "effect": "peak pricing; no public quota increase is promised" },
+        { "kind": "off_peak", "days": ["all"], "start": "00:00", "end": "24:00", "timezone": "UTC", "effect": "off-peak pricing outside the published weekday peak windows" }
+      ],
+      "reset_rules": [],
+      "source": { "title": "Models & Pricing", "url": "https://api-docs.deepseek.com/quick_start/pricing", "publisher": "DeepSeek", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "qwen-3-7-plus",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["Dynamic TPM limits are adjusted monthly from Bailian consumption tiers.", "Some Qwen-Coder documentation warns of hour-level latency during peak periods without publishing a universal clock window.", "A separate personal token-plan page publishes a limited-time 22:00–08:00 UTC+8 night credit discount for selected models; this is an economic promotion, not a quota increase."],
+      "source": { "title": "Dynamic rate limiting", "url": "https://www.alibabacloud.com/help/en/model-studio/quota-management", "publisher": "Alibaba Cloud Model Studio", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "glm-5",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["The public rate-limit documentation is tier-based; no universal clock window was found."],
+      "source": { "title": "Rate limits", "url": "https://docs.bigmodel.cn/cn/api/rate-limit", "publisher": "Zhipu", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "zai",
+      "public_schedule_status": "published_clock_window",
+      "windows": [
+        { "kind": "high_load", "days": ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"], "start": "14:00", "end": "18:00", "timezone": "Asia/Singapore", "effect": "temporary rate limits may occur; Z.ai says the window may shift" }
+      ],
+      "reset_rules": [],
+      "published_conditions": ["Z.ai says off-peak concurrency can be dynamically increased, but it does not publish a guaranteed off-peak clock schedule."],
+      "source": { "title": "Tool Integration", "url": "https://docs.z.ai/devpack/tool/others", "publisher": "Z.ai", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "baidu-ernie-5",
+      "public_schedule_status": "published_clock_window",
+      "windows": [
+        { "kind": "peak", "days": ["all"], "start": "10:30", "end": "12:00", "timezone": "Asia/Shanghai", "effect": "Coding Plan peak period; model calls can consume a higher published deduction coefficient" },
+        { "kind": "peak", "days": ["all"], "start": "14:00", "end": "18:00", "timezone": "Asia/Shanghai", "effect": "Coding Plan peak period; model calls can consume a higher published deduction coefficient" }
+      ],
+      "reset_rules": [
+        { "kind": "rolling", "duration": "5 hours", "scope": "Coding Plan quota" },
+        { "kind": "weekly", "at": "Monday 00:00", "timezone": "UTC+8", "scope": "Coding Plan quota" },
+        { "kind": "monthly", "at": "subscription anniversary day 00:00", "timezone": "UTC+8", "scope": "Coding Plan quota" }
+      ],
+      "published_conditions": ["The official Coding Plan page labels the peak times as non-fixed and flow-dependent.", "The time coefficients apply to the listed Coding Plan models, not universally to every Qianfan API model."],
+      "source": { "title": "Qianfan Coding Plan", "url": "https://cloud.baidu.com/doc/qianfan/s/imlg0beiu", "publisher": "Baidu AI Cloud", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "stepfun-step-35",
+      "public_schedule_status": "published_rolling_window",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "rolling", "duration": "5 hours", "scope": "Step Plan quota" },
+        { "kind": "weekly", "scope": "Step Plan quota", "time": "not specified by source" }
+      ],
+      "published_conditions": ["The API rate-limit page says temporary throttling can be applied when capacity is reached, but publishes no clock schedule."],
+      "source": { "title": "Pricing & rate limits", "url": "https://platform.stepfun.com/docs/zh/guides/pricing/details", "publisher": "StepFun", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "openai-gpt-5",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["Rate limits are scoped to organization/project/model and may be enforced in shorter intervals than the displayed minute window.", "OpenAI publishes no universal provider-wide peak/off-peak clock schedule."],
+      "source": { "title": "Troubleshooting API rate limits and 429 errors", "url": "https://help.openai.com/en/articles/5955604", "publisher": "OpenAI", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "gemini-2-5-pro",
+      "public_schedule_status": "published_calendar_reset",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "daily", "at": "midnight", "timezone": "America/Los_Angeles", "scope": "RPD quota" }
+      ],
+      "published_conditions": ["Gemini rate limits are per project and usage tier. Dynamic Shared Quota can provide more or less capacity according to real-time availability and demand, but Google publishes no universal peak/off-peak clock schedule."],
+      "source": { "title": "Rate limits", "url": "https://ai.google.dev/gemini-api/docs/rate-limits", "publisher": "Google", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "anthropic-claude-opus",
+      "public_schedule_status": "published_rolling_window",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "rolling", "duration": "5 hours", "scope": "Claude Pro/Max and Claude Code usage" }
+      ],
+      "published_conditions": ["Anthropic states that switching thresholds and resets are based on usage rather than time of day; no universal peak/off-peak clock schedule is published."],
+      "source": { "title": "Using Claude Code with your Pro or Max plan", "url": "https://support.anthropic.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan", "publisher": "Anthropic", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "xai-grok-46",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["xAI publishes per-team, per-model RPS/TPM tiers based on cumulative spend, not a time-of-day schedule."],
+      "source": { "title": "Rate Limits", "url": "https://docs.x.ai/developers/rate-limits", "publisher": "xAI", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "minimax-m27",
+      "public_schedule_status": "published_clock_window",
+      "windows": [
+        { "kind": "peak", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "start": "15:00", "end": "17:30", "timezone": "not specified by source", "effect": "dynamic rate limiting; the source says the window is cluster-load dependent" }
+      ],
+      "reset_rules": [
+        { "kind": "rolling", "duration": "5 hours", "scope": "M2.7 text-model quota" },
+        { "kind": "daily", "scope": "non-text model quotas", "time": "not specified by source" }
+      ],
+      "source": { "title": "FAQs", "url": "https://platform.minimax.io/docs/token-plan/faq", "publisher": "MiniMax", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "groq-gpt-oss-120b",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["Groq publishes model and plan limit categories, but no universal clock schedule for more or less capacity."],
+      "source": { "title": "Rate Limits", "url": "https://console.groq.com/docs/rate-limits", "publisher": "Groq", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "moonshot-kimi-k26",
+      "public_schedule_status": "published_rolling_window",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "rolling", "duration": "5 hours", "scope": "Kimi Code subscription quota" },
+        { "kind": "weekly", "scope": "Kimi Code subscription quota", "time": "not specified by source" },
+        { "kind": "monthly", "scope": "Kimi Code subscription quota", "time": "not specified by source" }
+      ],
+      "published_conditions": ["Moonshot API limits are tiered by cumulative recharge and may be temporarily adjusted when cluster load reaches capacity; no clock schedule is published."],
+      "source": { "title": "Recharge and Rate Limiting", "url": "https://platform.kimi.ai/docs/pricing/limits", "publisher": "Moonshot AI", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "cerebras-llama-31-8b",
+      "public_schedule_status": "published_rolling_window",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "token_bucket", "durations": ["minute", "hour", "day"], "scope": "free-tier requests and tokens" }
+      ],
+      "published_conditions": ["Cerebras says capacity automatically refills up to the maximum limit; exact limits vary by organization and project."],
+      "source": { "title": "Rate Limits", "url": "https://inference-docs.cerebras.ai/support/rate-limits", "publisher": "Cerebras", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "sambanova-deepseek-v31",
+      "public_schedule_status": "published_calendar_reset",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "minute", "scope": "RPM" },
+        { "kind": "daily", "scope": "RPD and free-tier TPD", "time": "not specified by source" }
+      ],
+      "source": { "title": "Rate Limits Policy", "url": "https://docs.sambanova.ai/docs/en/models/rate-limits", "publisher": "SambaNova", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "together-ai",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["Together uses dynamic per-model limits that grow with reliable usage; it publishes no time-of-day schedule."],
+      "source": { "title": "Usage limits & analytics", "url": "https://docs.together.ai/docs/billing-usage-limits", "publisher": "Together AI", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "amazon-bedrock",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["AWS advises customers to consider time-of-day patterns to avoid peak usage periods, but does not publish universal peak/off-peak times; quotas are region/model/account scoped."],
+      "source": { "title": "Scaling and throughput best practices", "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/scaling-throughput-best-practices.html", "publisher": "Amazon Web Services", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "microsoft-foundry",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["Microsoft documents capacity as dynamically changing throughout the day and scoped by subscription, region, model, and deployment; it publishes no universal clock schedule."],
+      "source": { "title": "Provisioned throughput for Foundry Models", "url": "https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/provisioned-throughput", "publisher": "Microsoft", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "google-vertex-model-garden",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["Vertex AI Dynamic Shared Quota allocates from a shared pool according to real-time availability and demand; no universal clock schedule is published."],
+      "source": { "title": "Throughput quota", "url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/resources/throughput-quota", "publisher": "Google Cloud", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "digitalocean-ai-platform",
+      "public_schedule_status": "published_rolling_window",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "rolling", "durations": ["minute", "hour"], "scope": "standard API request limits" }
+      ],
+      "published_conditions": ["DigitalOcean says batch jobs run at lower scheduling priority and share off-peak GPU capacity, but publishes no clock-defined off-peak schedule."],
+      "source": { "title": "Inference Limits", "url": "https://docs.digitalocean.com/products/inference/details/limits/", "publisher": "DigitalOcean", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "openrouter",
+      "public_schedule_status": "published_rolling_window",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "rolling", "duration": "5 minutes", "scope": "public routing latency and throughput measurements" },
+        { "kind": "daily", "at": "midnight", "timezone": "UTC", "scope": "enterprise workspace budget only" },
+        { "kind": "weekly", "at": "Monday midnight", "timezone": "UTC", "scope": "enterprise workspace budget only" },
+        { "kind": "monthly", "at": "first day of month midnight", "timezone": "UTC", "scope": "enterprise workspace budget only" }
+      ],
+      "published_conditions": ["OpenRouter publicly exposes rolling performance measurements and routing decisions, not a universal underlying-provider quota."],
+      "source": { "title": "Provider Routing", "url": "https://openrouter.ai/docs/guides/routing/provider-selection", "publisher": "OpenRouter", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "huggingface-inference-providers",
+      "public_schedule_status": "published_rolling_window",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "fixed", "duration": "5 minutes", "scope": "Hub API, resolver, and page request buckets" }
+      ],
+      "published_conditions": ["Anonymous and free limits may change with platform health; the documented exact limit is not a universal provider-capacity signal."],
+      "source": { "title": "Hub Rate limits", "url": "https://huggingface.co/docs/hub/en/rate-limits", "publisher": "Hugging Face", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "replicate",
+      "public_schedule_status": "published_rolling_window",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "rolling", "duration": "rate-limit dependent", "scope": "API request rate" }
+      ],
+      "published_conditions": ["Replicate applies stronger limits as an account approaches running out of credit; no time-of-day schedule is published."],
+      "source": { "title": "Rate limits", "url": "https://replicate.com/docs/topics/predictions/rate-limits", "publisher": "Replicate", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "fireworks-ai",
+      "public_schedule_status": "published_calendar_reset",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "monthly", "at": "beginning of month", "scope": "non-enterprise usage limit" }
+      ],
+      "published_conditions": ["Fireworks serverless rate limits adapt up and down with usage; no time-of-day schedule is published."],
+      "source": { "title": "Serverless Rate Limits", "url": "https://docs.fireworks.ai/serverless/rate-limits", "publisher": "Fireworks AI", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "cloudflare-workers-ai",
+      "public_schedule_status": "published_calendar_reset",
+      "windows": [],
+      "reset_rules": [
+        { "kind": "daily", "at": "00:00", "timezone": "UTC", "scope": "Workers AI neuron allocation and daily limits" }
+      ],
+      "published_conditions": ["Cloudflare publishes task/model rate limits and higher limits for some paid-credit paths, but no time-of-day capacity schedule."],
+      "source": { "title": "Pricing", "url": "https://developers.cloudflare.com/workers-ai/platform/pricing/", "publisher": "Cloudflare", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "nvidia-nim",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["The public NIM support matrix describes supported deployments and models, not a shared hosted quota or time-of-day schedule."],
+      "source": { "title": "NVIDIA NIM support matrix", "url": "https://docs.nvidia.com/nim/large-language-models/latest/reference/support-matrix.html", "publisher": "NVIDIA", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "ibm-watsonx",
+      "public_schedule_status": "no_published_schedule",
+      "windows": [],
+      "reset_rules": [],
+      "published_conditions": ["watsonx.ai and model gateway deployments can have configured request limits, but IBM publishes no universal provider-wide peak/off-peak schedule."],
+      "source": { "title": "Foundation models", "url": "https://www.ibm.com/docs/en/watsonx/saas?topic=sfm-foundation-models", "publisher": "IBM", "retrieved_at": "2026-09-03", "official": true }
+    }
+  ]
+}

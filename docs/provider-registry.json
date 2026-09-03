@@ -184,6 +184,16 @@
       ]
     },
     {
+      "provider_id": "zai",
+      "name": "Z.ai",
+      "role": "inference_provider",
+      "registry_status": "active_tracking",
+      "official_catalog_url": "https://docs.z.ai/devpack/usage-policy",
+      "models": [
+        { "model_id": "glm-5", "owner_provider_id": "zhipu-glm", "display_name": "GLM-5", "tracking_status": "target", "source_url": "https://docs.z.ai/devpack/tool/others" }
+      ]
+    },
+    {
       "provider_id": "together-ai",
       "name": "Together AI",
       "role": "inference_provider",

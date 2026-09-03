@@ -1,0 +1,4 @@
+.detail-schedule { margin-top: 24px; padding: 13px; border: 1px solid var(--line-bright); background: color-mix(in oklab, var(--sage) 5%, var(--panel-raised)); }
+.detail-schedule strong { display: block; margin: 7px 0; color: var(--ink); font: 500 12px var(--mono); }
+.detail-schedule p { margin: 5px 0; color: var(--ink-soft); font-size: 10px; line-height: 1.4; }
+.detail-schedule .source-link { display: inline-block; margin-top: 6px; font-size: 10px; }

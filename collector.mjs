@@ -10,6 +10,7 @@ export const sourceDefinitions = Object.freeze([
   { providerId: "qwen-3-7-plus", sourceId: "alibaba-quota-management", sourceType: "capacity", url: "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/quota-management" },
   { providerId: "qwen-3-7-plus", sourceId: "alibaba-list-quotas", sourceType: "rate_limit", url: "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/list-quotas" },
   { providerId: "glm-5", sourceId: "zhipu-rate-limit", sourceType: "rate_limit", url: "https://docs.bigmodel.cn/cn/api/rate-limit" },
+  { providerId: "zai", sourceId: "zai-usage-policy", sourceType: "time_window", url: "https://docs.z.ai/devpack/tool/others" },
   { providerId: "baidu-ernie-5", sourceId: "baidu-rate-limit-headers", sourceType: "quota", url: "https://intl.cloud.baidu.com/en/doc/qianfan/s/3m7of64lb-intl-en" },
   { providerId: "stepfun-step-35", sourceId: "stepfun-pricing-limits", sourceType: "rate_limit", url: "https://platform.stepfun.com/docs/zh/guides/pricing/details" },
   { providerId: "openai-gpt-5", sourceId: "openai-rate-limits", sourceType: "rate_limit", url: "https://platform.openai.com/docs/guides/rate-limits" },

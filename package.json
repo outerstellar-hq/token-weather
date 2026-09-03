@@ -3,9 +3,10 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "check": "node --check app.js && node --check collector.mjs && node --check public-adapters.mjs && node --check registry-check.mjs && node --check deploy/activate-caddy.mjs",
+    "check": "node --check app.js && node --check collector.mjs && node --check public-adapters.mjs && node --check registry-check.mjs && node --check time-window-check.mjs && node --check deploy/activate-caddy.mjs",
     "check:registry": "node registry-check.mjs",
     "check:registry:live": "node registry-check.mjs --live",
+    "check:time-windows": "node time-window-check.mjs",
     "check:collector": "node collector.mjs --check",
     "collect": "node collector.mjs --json",
     "telemetry": "node collector.mjs --telemetry",

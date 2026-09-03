@@ -4,7 +4,7 @@ This is the authoritative list of AI providers and inference surfaces Token Weat
 
 This is a curated product scope, not a claim to cover every AI provider. Each provider is kept separate from its models, regions, publicly documented service tiers, and execution classes so those dimensions can expand without changing the provider identity.
 
-The detailed machine-readable registry is [provider-registry.json](provider-registry.json). It separates model owners from inference hosts and routers, records each tracked model’s official source, and marks dynamic catalogs instead of copying their current contents into static data.
+The detailed machine-readable registry is [provider-registry.json](provider-registry.json). It separates model owners from inference hosts and routers, records each tracked model’s official source, and marks dynamic catalogs instead of copying their current contents into static data. Public timing rules are maintained separately in [provider-time-windows.json](provider-time-windows.json) and summarized in [provider-time-windows.md](provider-time-windows.md).
 
 ## Current provider set
 
@@ -26,6 +26,7 @@ These providers are in the current browser forecast, comparison, workload planne
 | 12 | Moonshot / Kimi | Kimi K2.6 | Public tiered concurrency, RPM, TPM, TPD, pricing, and model changes | Official documentation and announcements | Catalog + docs only |
 | 13 | Cerebras | Llama 3.1 8B | Public minute/hour/day limits, replenishment rules, pricing, and incidents | Official documentation and announcements | Status adapter implemented |
 | 14 | SambaNova | DeepSeek V3.1 | Public per-minute/daily rules, pricing, capacity notices, and incidents | Official documentation and announcements | Status adapter implemented |
+| 15 | Z.ai | GLM-5 | Public high-load timing, dynamic concurrency policy, pricing, and incidents | Official documentation and announcements | Catalog + docs only |
 
 The product is deliberately generic and non-personalized. It never asks for or stores API keys, account IDs, workspace IDs, balances, personal quotas, private console data, or headers from an individual’s workload. Provider names, model names, and source links are catalog configuration; all metrics and change events are unavailable until a public-source or clearly labeled public measurement collector supplies them. Retrieving official documentation records source provenance only and never creates a current price, quota, capacity, latency, or stability value.
 
