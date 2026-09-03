@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh Token Weather public-source snapshot every 30 minutes
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=30min
+Unit=token-weather-refresh.service
+
+[Install]
+WantedBy=timers.target

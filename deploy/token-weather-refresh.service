@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh Token Weather public-source snapshot
+After=token-weather.service
+Wants=token-weather.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/deployments/token-weather
+Environment=TOKEN_WEATHER_ORIGIN=http://172.20.0.1:4173
+TimeoutStartSec=180
+ExecStart=/usr/bin/node deploy/refresh-snapshot.mjs --agent.owner=codex --agent.task=token-weather-public-refresh

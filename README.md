@@ -68,6 +68,8 @@ npm run server
 
 The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized public-source events to the ignored local file `data/snapshot.json`; no endpoint accepts or returns personal account data.
 
+Production refreshes run automatically on San Francisco through the repository-owned [systemd user timer](deploy/token-weather-refresh.timer). It performs a public-source refresh every 30 minutes after boot; installation, verification, and removal are documented in [docs/server-scheduling.md](docs/server-scheduling.md). X posts are not collected until an official API source is configured; the collector never scrapes social pages or invents missing records.
+
 ## WebMCP challenge checklist
 
 See [docs/submission-checklist.md](docs/submission-checklist.md) for the current challenge requirements, the local readiness status, and the remaining public deployment/submission steps.
