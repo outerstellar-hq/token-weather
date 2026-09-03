@@ -11,8 +11,9 @@ Checked against the [official OpenAI challenge page](https://openai.com/webmcp-c
 | Source and setup instructions | Ready locally | `README.md`, `package.json`, collector, and local server are included. |
 | Open-source license | Ready locally | Root `LICENSE` is MIT and must be visible on the public repository page. |
 | Challenge-period work | Ready locally | Git history begins September 1, 2026; the challenge submission period began August 25, 2026. |
-| Public code repository | Blocked on owner approval | GitHub repository currently remains private. The rules require a public repository with the source, assets, instructions, and license. |
-| Working live URL | Not yet available | Deploy the app to a public URL judges can open in ChatGPT’s built-in browser or Chrome with WebMCP enabled. |
+| Public code repository | Complete | [outerstellar-hq/token-weather](https://github.com/outerstellar-hq/token-weather) is public and includes the MIT license. |
+| Working live URL | Ready | [tokenweather.outerstellar.net](https://tokenweather.outerstellar.net/) is served over HTTPS by Caddy and proxies to the marked Node service. |
+| Hosted source snapshot | Ready | The live `/api/snapshot` reports 20 source events with zero errors after a successful refresh on September 3, 2026. |
 | Demonstration video | Not yet created | Upload a public YouTube video shorter than three minutes with audio, a clear working demo, and an explanation of WebMCP. |
 | Devpost submission | Owner action | Join the challenge, then submit the live URL, public repository URL, description, video, and any requested testing details. |
 
@@ -31,7 +32,5 @@ Recommended demo sequence:
 ## Final owner actions
 
 1. Register at [webmcp.devpost.com](https://webmcp.devpost.com/) with a Devpost account before the submission deadline: September 3, 2026 at 1:00 p.m. PDT (11:00 p.m. Bucharest time).
-2. Approve making `outerstellar-hq/token-weather` public, then publish the committed source and license.
-3. Approve a public deployment target and deploy the app; test the live URL in ChatGPT’s built-in browser with site tools enabled.
-4. Record and upload the under-three-minute YouTube demo.
-5. Paste the public repository, live URL, video URL, description, and testing instructions into the Devpost submission form.
+2. Record and upload the under-three-minute YouTube demo.
+3. Paste the public repository, live URL, video URL, description, and testing instructions into the Devpost submission form.
