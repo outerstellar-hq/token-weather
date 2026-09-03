@@ -7,11 +7,10 @@ This is the source-backed timing registry for Token Weather. It records only pro
 | Provider | Published window | Time zone | Published effect |
 | --- | --- | --- | --- |
 | DeepSeek | Weekdays 01:00–04:00 and 06:00–10:00 | UTC | Peak pricing; all other hours are off-peak pricing. [Source](https://api-docs.deepseek.com/quick_start/pricing) |
+| QwenCloud / Alibaba Model Studio | Daily 22:00–08:00 | Beijing Time (Asia/Shanghai) | Qwen3.7-Plus Token Plan credits are consumed at 0.4×, an effective 2.5× usage multiplier. This is a credit discount, not a universal quota increase. [Source](https://modelstudio.alibabacloud.com/intl/blog/model-studio-token-plan-individual/) |
 | Z.ai | Typically 14:00–18:00 | Singapore | High inference load; temporary rate limits may occur. Z.ai says the window may shift. [Source](https://docs.z.ai/devpack/tool/others) |
 | Baidu Qianfan Coding Plan | Daily 10:30–12:00 and 14:00–18:00 | China Standard Time | Published peak periods; some Coding Plan model calls consume a higher quota-deduction coefficient. The source calls these times non-fixed and traffic-dependent. [Source](https://cloud.baidu.com/doc/qianfan/s/imlg0beiu) |
 | MiniMax Token Plan | Typically weekdays 15:00–17:30 | Not specified by source | Dynamic peak-hour throttling; the window depends on cluster load. [Source](https://platform.minimax.io/docs/token-plan/faq) |
-
-Alibaba also publishes a 22:00–08:00 UTC+8 night discount for selected models on a personal token-plan page. That is a credit-price promotion, not evidence of more public quota. [Source](https://docs.modelstudio.console.alibabacloud.com/en/model-studio/token-plan-personal-overview)
 
 ## Published reset windows without clock-based peak schedules
 

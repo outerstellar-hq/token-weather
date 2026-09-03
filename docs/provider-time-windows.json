@@ -18,11 +18,13 @@
     },
     {
       "provider_id": "qwen-3-7-plus",
-      "public_schedule_status": "no_published_schedule",
-      "windows": [],
+      "public_schedule_status": "published_clock_window",
+      "windows": [
+        { "kind": "off_peak", "days": ["all"], "start": "22:00", "end": "08:00", "timezone": "Asia/Shanghai", "effect": "Qwen3.7-Plus Token Plan credit consumption is 0.4x, an effective 2.5x usage multiplier; this is a credit discount, not a universal service-quota increase" }
+      ],
       "reset_rules": [],
-      "published_conditions": ["Dynamic TPM limits are adjusted monthly from Bailian consumption tiers.", "Some Qwen-Coder documentation warns of hour-level latency during peak periods without publishing a universal clock window.", "A separate personal token-plan page publishes a limited-time 22:00–08:00 UTC+8 night credit discount for selected models; this is an economic promotion, not a quota increase."],
-      "source": { "title": "Dynamic rate limiting", "url": "https://www.alibabacloud.com/help/en/model-studio/quota-management", "publisher": "Alibaba Cloud Model Studio", "retrieved_at": "2026-09-03", "official": true }
+      "published_conditions": ["Dynamic TPM limits are adjusted monthly from Bailian consumption tiers.", "QwenCloud / Model Studio publishes a 22:00–08:00 Beijing-time credit discount for Qwen3.7-Plus Token Plan usage.", "The off-peak rule changes credit consumption economics; it does not expose a universal remaining quota or guarantee higher shared capacity."],
+      "source": { "title": "Model Studio Token Plan for Individual", "url": "https://modelstudio.alibabacloud.com/intl/blog/model-studio-token-plan-individual/", "publisher": "Alibaba Cloud Model Studio", "retrieved_at": "2026-09-03", "official": true }
     },
     {
       "provider_id": "glm-5",
