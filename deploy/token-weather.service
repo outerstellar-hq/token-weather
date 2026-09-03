@@ -1,0 +1,16 @@
+[Unit]
+Description=Token Weather dashboard
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/deployments/token-weather
+Environment=HOST=0.0.0.0
+Environment=PORT=4173
+ExecStart=/usr/bin/node server.mjs --agent.owner=codex --agent.task=token-weather-service
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

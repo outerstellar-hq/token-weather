@@ -1,0 +1,4 @@
+tokenweather.outerstellar.net {
+	encode zstd gzip
+	reverse_proxy 172.20.0.1:4173
+}

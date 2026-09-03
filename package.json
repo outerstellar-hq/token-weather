@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "check": "node --check app.js && node --check collector.mjs",
+    "check": "node --check app.js && node --check collector.mjs && node --check deploy/activate-caddy.mjs",
     "check:collector": "node collector.mjs --check",
     "collect": "node collector.mjs --json",
     "test": "node --test collector.test.mjs",
