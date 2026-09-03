@@ -1,3 +1,5 @@
+import { defaultActiveProviderId } from "./selection.mjs";
+
 const providerCatalog = Object.freeze([
   { id: "deepseek-v4-pro", name: "DeepSeek", model: "V4 Pro", region: "asia", code: "DS", source: { label: "DeepSeek pricing", url: "https://api-docs.deepseek.com/quick_start/pricing", type: "official documentation", official: true } },
   { id: "qwen-3-7-plus", name: "Alibaba / Qwen", model: "3.7 Plus", region: "asia", code: "QW", source: { label: "Alibaba quota management", url: "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/quota-management", type: "official documentation", official: true } },
@@ -38,7 +40,7 @@ let providerSchedules = Object.freeze([]);
 let recentChanges = Object.freeze([]);
 
 const stateClass = { healthy: "green", watch: "yellow", disrupted: "red", unknown: "gray" };
-const state = { selectedId: "deepseek-v4-pro", activeView: "all", hasDataOnly: true, search: "", sortDescending: true, compareIds: ["deepseek-v4-pro", "qwen-3-7-plus", "gemini-2-5-pro"] };
+const state = { selectedId: null, activeView: "all", hasDataOnly: true, search: "", sortDescending: true, compareIds: ["deepseek-v4-pro", "qwen-3-7-plus", "gemini-2-5-pro"] };
 const $ = (selector) => document.querySelector(selector);
 
 function getProvider(id) {
@@ -167,6 +169,10 @@ function detailMarkup(provider) {
     <div class="detail-actions"><button class="small-action" type="button" data-add-compare="${provider.id}">${state.compareIds.includes(provider.id) ? "In comparison" : "Add to compare"} <span>+</span></button><span class="mono">${provider.rateLimits.rps == null ? `RPM ${formatTokens(provider.rateLimits.rpm)}` : `RPS ${formatTokens(provider.rateLimits.rps)}`} · CONC ${formatTokens(provider.rateLimits.concurrency)}</span></div>`;
 }
 
+function emptyDetailMarkup() {
+  return `<div class="detail-empty"><span class="detail-kicker">Selected provider</span><h3>No active public quota</h3><p>The default view selects a provider only after a public quota or rate-limit signal has been collected. Documentation and status records remain available without being presented as active quota.</p></div>`;
+}
+
 async function loadProviderSchedules() {
   try {
     const response = await fetch("/docs/provider-time-windows.json", { cache: "no-store" });
@@ -195,10 +201,10 @@ function visibleProviders() {
 
 function renderForecast() {
   const visible = visibleProviders();
-  if (state.hasDataOnly && visible.length && !visible.some((provider) => provider.id === state.selectedId)) state.selectedId = visible[0].id;
+  if (state.selectedId == null || (state.hasDataOnly && visible.length && !visible.some((provider) => provider.id === state.selectedId))) state.selectedId = defaultActiveProviderId(visible);
   const emptyMessage = state.hasDataOnly ? "No providers with collected data match this view." : `No providers match “${state.search}”. Try a model or provider name.`;
   $("#provider-list").innerHTML = visible.length ? visible.map(renderProviderRow).join("") : `<div class="empty-state">${emptyMessage}</div>`;
-  $("#detail-panel").innerHTML = detailMarkup(getProvider(state.selectedId));
+  $("#detail-panel").innerHTML = state.selectedId ? detailMarkup(getProvider(state.selectedId)) : emptyDetailMarkup();
   $("#provider-search").value = state.search;
   document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === state.activeView));
   const dataFilterButton = $("#data-filter-button");
