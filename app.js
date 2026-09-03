@@ -79,7 +79,10 @@ function hasPricing(provider) {
 }
 
 function hasUsableData(provider) {
-  return provider.state !== "unknown"
+  return provider.publicEvidence?.documents > 0
+    || provider.publicEvidence?.status
+    || provider.publicEvidence?.statements > 0
+    || provider.state !== "unknown"
     || hasPricing(provider)
     || provider.quota.remaining != null
     || provider.capacity.guaranteedTpm != null
@@ -105,7 +108,8 @@ function providerWeather(provider) {
     next_window: provider.nextWindow,
     published_time_windows: schedule,
     source: { ...provider.source },
-    observed_value_is_measurement: provider.capacity.observedTpm !== null
+    observed_value_is_measurement: provider.capacity.observedTpm !== null,
+    public_evidence: provider.publicEvidence || { documents: 0, status: null, statements: 0, latestStatement: null }
   };
 }
 
@@ -131,27 +135,32 @@ function scheduleSummary(providerId) {
 
 function renderProviderRow(provider) {
   const selected = provider.id === state.selectedId ? " selected" : "";
+  const evidence = provider.publicEvidence || { documents: 0, statements: 0 };
   return `<button class="provider-row${selected}" type="button" data-provider-id="${provider.id}" aria-pressed="${provider.id === state.selectedId}">
     <span class="provider-name"><span class="provider-avatar">${provider.code}</span><span class="provider-title"><strong>${provider.name}</strong><span>${provider.model}</span></span></span>
     <span><span class="metric-label">Condition</span><span class="condition">${statusDot(provider.state)}${provider.condition}</span></span>
-    <span><span class="metric-label">Guaranteed TPM</span><span class="metric-value">${formatTokens(provider.capacity.guaranteedTpm)}</span></span>
-    <span><span class="metric-label">Quota left</span><span class="metric-value ${provider.quota.remaining == null ? "" : "good"}">${formatQuota(provider.quota.remaining)}</span></span>
+    <span><span class="metric-label">Public evidence</span><span class="metric-value">${evidence.status ? "Status connected" : evidence.documents ? `${evidence.documents} docs checked` : "Not collected"}</span></span>
+    <span><span class="metric-label">Statements</span><span class="metric-value">${evidence.statements || "None collected"}</span></span>
   </button>`;
 }
 
 function detailMarkup(provider) {
   const price = hasPricing(provider) ? `${formatPrice(provider.pricing.input)} / ${formatPrice(provider.pricing.output)}` : "Not collected";
   const schedule = scheduleSummary(provider.id);
+  const evidence = provider.publicEvidence || { documents: 0, status: null, statements: 0, latestStatement: null };
+  const publicStatus = evidence.status ? provider.condition : "No public status feed";
+  const latestStatement = evidence.latestStatement?.title ? `<p>Latest statement: ${evidence.latestStatement.title}</p>` : "";
   return `<div class="detail-top"><div><span class="detail-kicker">Selected provider</span><h3>${provider.name}</h3><span class="detail-model">${provider.model} · ${provider.region === "asia" ? "Asia Pacific" : "Western"}</span></div><span class="detail-condition">${statusDot(provider.state)} ${provider.condition}</span></div>
     <div class="detail-rule"></div>
     <div class="detail-stats">
+      <div class="detail-stat"><label>Public status</label><strong>${publicStatus}</strong></div>
+      <div class="detail-stat"><label>Official documents</label><strong>${evidence.documents} checked</strong></div>
+      <div class="detail-stat"><label>Public statements</label><strong>${evidence.statements || "None collected"}</strong></div>
       <div class="detail-stat"><label>Current effective cost</label><strong>${price}<span> / 1M in / out</span></strong></div>
-      <div class="detail-stat"><label>Quota remaining</label><strong>${formatQuota(provider.quota.remaining)}</strong>${provider.quota.remaining == null ? "" : `<div class="meter"><i style="width: ${provider.quota.remaining}%"></i></div>`}</div>
-      <div class="detail-stat"><label>Guaranteed TPM</label><strong>${formatTokens(provider.capacity.guaranteedTpm)}</strong></div>
-      <div class="detail-stat"><label>Observed available</label><strong>${formatTokens(provider.capacity.observedTpm)}</strong></div>
-      <div class="detail-stat"><label>Typical latency</label><strong>${formatLatency(provider.latencyMs)}</strong></div>
-      <div class="detail-stat"><label>Telemetry status</label><strong>${provider.source.confidence}</strong></div>
+      <div class="detail-stat"><label>Public measurement</label><strong>${Number.isFinite(provider.latencyMs) ? formatLatency(provider.latencyMs) : "Not collected"}</strong></div>
+      <div class="detail-stat"><label>Evidence status</label><strong>${provider.source.confidence}</strong></div>
     </div>
+    <div class="detail-evidence"><span class="detail-kicker">Public evidence</span><strong>${publicStatus} · ${evidence.documents} document${evidence.documents === 1 ? "" : "s"} checked · ${evidence.statements || "No"} statement${evidence.statements === 1 ? "" : "s"}</strong>${latestStatement}<p>Public records only. This is not a person’s remaining quota.</p></div>
     <div class="detail-schedule"><span class="detail-kicker">Published timing</span><strong>${schedule.headline}</strong>${schedule.lines.map((line) => `<p>${line}</p>`).join("")}<a class="source-link" href="${getProviderSchedule(provider.id)?.source.url || provider.source.url}" target="_blank" rel="noreferrer">Timing source ↗</a></div>
     <div class="detail-callout"><strong>Forecast note</strong>${provider.note}</div>
     <div class="source-row"><span>Checked · ${provider.source.retrievedAt}</span><a class="source-link" href="${provider.source.url}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${provider.source.label} ↗</a></div>
@@ -227,18 +236,31 @@ function applySnapshot(snapshot) {
   const successfulSources = new Map(events.filter((event) => event.event_type === "SOURCE_FETCH" && event.status === "ok").map((event) => [event.provider_id, event]));
   const publicSignals = events.filter((event) => event.event_type !== "SOURCE_FETCH" && event.status === "ok");
   const publicStatuses = new Map(events.filter((event) => event.event_type === "PUBLIC_STATUS" && event.status === "ok").map((event) => [event.provider_id, event]));
-  recentChanges = Object.freeze(events.filter((event) => event.event_type === "PUBLIC_ANNOUNCEMENTS" && event.status === "ok").flatMap((event) => (event.entries || []).map((entry) => ({ providerId: event.provider_id, type: "PUBLIC_ANNOUNCEMENT", age: publicSignalAge(entry.published_at || event.retrieved_at), title: entry.title || "Public provider update", detail: "Published on the provider’s official public communication feed.", source: "Official announcement", sourceUrl: entry.link || event.source_url, confidence: event.confidence }))));
+  const evidenceByProvider = new Map(providerCatalog.map((provider) => [provider.id, { documents: 0, status: null, statements: 0, latestStatement: null }]));
+  for (const event of events) {
+    if (event.status !== "ok") continue;
+    const evidence = evidenceByProvider.get(event.provider_id);
+    if (!evidence) continue;
+    if (event.event_type === "SOURCE_FETCH") evidence.documents += 1;
+    if (event.event_type === "PUBLIC_STATUS") evidence.status = event;
+    if (event.event_type === "PUBLIC_ANNOUNCEMENTS") {
+      evidence.statements += (event.entries || []).length;
+      evidence.latestStatement = (event.entries || [])[0] || null;
+    }
+  }
+  recentChanges = Object.freeze(events.filter((event) => event.event_type === "PUBLIC_ANNOUNCEMENTS" && event.status === "ok").flatMap((event) => (event.entries || []).map((entry) => ({ providerId: event.provider_id, type: "Official statement", age: publicSignalAge(entry.published_at || event.retrieved_at), title: entry.title || "Public provider statement", detail: "Published on the provider’s official blog or announcement feed.", source: "Official blog/feed", sourceUrl: entry.link || event.source_url, confidence: event.confidence }))));
   providers = Object.freeze(providers.map((provider) => {
     const event = successfulSources.get(provider.id);
     const statusEvent = publicStatuses.get(provider.id);
     const publicEvent = statusEvent || publicSignals.find((item) => item.provider_id === provider.id);
-    const condition = statusEvent?.signals?.description || provider.condition;
+    const publicEvidence = evidenceByProvider.get(provider.id);
+    const condition = (statusEvent?.signals?.description || publicEvidence.statements) ? (statusEvent?.signals?.description || "Public statement available") : event ? "Official source checked" : provider.condition;
     const source = publicEvent
       ? collectedSource(provider.source, publicEvent, publicEvent.event_type === "PUBLIC_STATUS" ? "Official public status" : "Official public communication")
       : event
         ? collectedSource(provider.source, event, provider.source.label)
         : provider.source;
-    return { ...provider, state: statusEvent ? publicStatusState(statusEvent.signals?.indicator) : provider.state, condition, note: statusEvent ? `Official public status: ${condition}. ` : provider.note, source };
+    return { ...provider, publicEvidence, state: statusEvent ? publicStatusState(statusEvent.signals?.indicator) : provider.state, condition, note: statusEvent ? `Official public status: ${condition}. ` : publicEvidence.statements ? "Official public statement collected. " : provider.note, source };
   }));
   $("#feed-label").textContent = publicSignals.length ? "Public signals connected" : snapshot.mode === "degraded" ? "Public source feed degraded" : "Public sources connected · no forecast metrics";
   $("#snapshot-label").textContent = snapshot.generated_at ? `Public sources checked · ${new Date(snapshot.generated_at).toISOString().replace("T", " ").slice(0, 16)} UTC · ${publicSignals.length} signals` : "No public forecast signals collected";
@@ -358,7 +380,7 @@ function renderPlanner(result = planWorkload()) {
 }
 
 function renderChanges() {
-  $("#changes-list").innerHTML = recentChanges.length ? recentChanges.map((change) => { const provider = getProvider(change.providerId); return `<article class="change-row"><div class="change-marker ${stateClass[provider.state]}"></div><div class="change-main"><div class="change-meta"><span>${change.type.replace("_", " ")}</span><span>${change.age}</span></div><h3>${change.title}</h3><p>${change.detail}</p></div><div class="change-source"><strong>${provider.name}</strong><span>${change.confidence}</span><a class="source-link" href="${change.sourceUrl}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${change.source} ↗</a></div></article>`; }).join("") : `<div class="empty-state"><strong>No public changes collected.</strong><span>Changes appear only after an official provider source reports them.</span></div>`;
+  $("#changes-list").innerHTML = recentChanges.length ? recentChanges.map((change) => { const provider = getProvider(change.providerId); return `<article class="change-row"><div class="change-marker ${stateClass[provider.state]}"></div><div class="change-main"><div class="change-meta"><span>${change.type}</span><span>${change.age}</span></div><h3>${change.title}</h3><p>${change.detail}</p></div><div class="change-source"><strong>${provider.name}</strong><span>${change.confidence}</span><a class="source-link" href="${change.sourceUrl}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${change.source} ↗</a></div></article>`; }).join("") : `<div class="empty-state"><strong>No public statements collected.</strong><span>Statements appear only after an official provider blog or public feed reports them.</span></div>`;
 }
 
 function getSource(id) {
@@ -457,7 +479,7 @@ async function registerWebMcpTools() {
     },
     {
       name: "get_recent_changes",
-      description: "Read the recent provenance-led changes recorded by Token Weather.",
+      description: "Read public statements collected from official provider blogs and public feeds.",
       inputSchema: { type: "object", properties: {}, additionalProperties: false },
       annotations: { readOnlyHint: true },
       execute: async () => ({ changes: agentApi.get_recent_changes() })
