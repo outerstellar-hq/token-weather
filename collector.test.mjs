@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { collectDocumentation, collectSource, sourceDefinitions } from "./collector.mjs";
 import { collectPublicSignals, collectPublicSource, publicAdapters } from "./public-adapters.mjs";
+import { isPublicSnapshot } from "./snapshot-store.mjs";
 
 test("collectSource records official documentation provenance", async () => {
   const source = sourceDefinitions[0];
@@ -48,4 +49,11 @@ test("documentation report can include public signals without account state", as
   const report = await collectDocumentation({ includePublicSignals: true, fetchImpl: async () => new Response("<html><title>Official page</title></html>", { status: 200, headers: { "content-type": "text/html" } }) });
   assert.equal(report.events.length, sourceDefinitions.length + publicAdapters.length);
   assert.equal("account_collectors" in report, false);
+});
+
+test("snapshot validation rejects legacy private state", () => {
+  const publicSnapshot = { schema: "token-weather.snapshot.v1", events: [{ event_type: "PUBLIC_STATUS" }] };
+  assert.equal(isPublicSnapshot(publicSnapshot), true);
+  assert.equal(isPublicSnapshot({ ...publicSnapshot, account_collectors: {} }), false);
+  assert.equal(isPublicSnapshot({ ...publicSnapshot, events: [{ event_type: "ACCOUNT_QUOTA", account_id: "private" }] }), false);
 });
