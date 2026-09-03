@@ -10,22 +10,22 @@ These providers are in the current browser forecast, comparison, workload planne
 
 | Priority | Provider | Current model surface | Forecasting value | Account-specific signal | Status |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | DeepSeek | V4 Pro | Peak/off-peak price, concurrency, rate limits, observed throughput | Usage export/manual handoff | Implemented |
-| 2 | Alibaba Qwen / Bailian | Qwen 3.7 Plus | Guaranteed versus spare capacity, dynamic TPM, workspace/model quotas | Read-only model-limits API | Implemented |
-| 3 | Zhipu / GLM | GLM-5 | Peak/off-peak throttling, tier concurrency, local-time windows | Console/tier handoff | Implemented |
-| 4 | Baidu Qianfan | ERNIE 5.0 | Response-header rate-limit and remaining-quota telemetry | Request-scoped headers | Implemented |
-| 5 | StepFun | Step-3.5 | Tiered concurrency/RPM/TPM and temporary capacity adjustments | Account endpoint when explicitly configured | Implemented |
-| 6 | OpenAI | GPT-5 | Tier limits, pricing, service status, incidents, and maintenance | Dashboard/account limits | Implemented |
-| 7 | Google Gemini | Gemini 2.5 Pro | RPM, TPM, RPD, project quota, spend tiers, and workload classes | AI Studio/project limits | Implemented |
-| 8 | Anthropic | Claude Opus | Account tiers, rate limits, service stability, and capacity changes | Account tier/API limits | Implemented |
-| 9 | xAI / Grok | Grok 4.6 | Spend tiers, RPS/TPM, model pricing, and capacity by tier | Console-specific limits | Implemented |
-| 10 | MiniMax | M2.7 | Five-hour rolling request quota and daily modality quotas | Token Plan account surface | Implemented |
-| 11 | Groq | GPT-OSS 120B | Per-minute and daily request/token limits, reset headers, and Flex capacity | Request-scoped headers | Implemented |
-| 12 | Moonshot / Kimi | Kimi K2.6 | Tiered concurrency, RPM, TPM, and TPD | Request-scoped headers | Implemented |
-| 13 | Cerebras | Llama 3.1 8B | Minute, hourly, and daily request/token limits with replenishment headers | Request-scoped headers | Implemented |
-| 14 | SambaNova | DeepSeek V3.1 | Per-minute and daily request/token limits with reset headers | Request-scoped headers | Implemented |
+| 1 | DeepSeek | V4 Pro | Peak/off-peak price, concurrency, rate limits, observed throughput | Usage export/manual handoff | Catalog + docs only |
+| 2 | Alibaba Qwen / Bailian | Qwen 3.7 Plus | Guaranteed versus spare capacity, dynamic TPM, workspace/model quotas | Read-only model-limits API | Catalog + docs only |
+| 3 | Zhipu / GLM | GLM-5 | Peak/off-peak throttling, tier concurrency, local-time windows | Console/tier handoff | Catalog + docs only |
+| 4 | Baidu Qianfan | ERNIE 5.0 | Response-header rate-limit and remaining-quota telemetry | Request-scoped headers | Catalog + docs only |
+| 5 | StepFun | Step-3.5 | Tiered concurrency/RPM/TPM and temporary capacity adjustments | Account endpoint when explicitly configured | Catalog + docs only |
+| 6 | OpenAI | GPT-5 | Tier limits, pricing, service status, incidents, and maintenance | Dashboard/account limits | Catalog + docs only |
+| 7 | Google Gemini | Gemini 2.5 Pro | RPM, TPM, RPD, project quota, spend tiers, and workload classes | AI Studio/project limits | Catalog + docs only |
+| 8 | Anthropic | Claude Opus | Account tiers, rate limits, service stability, and capacity changes | Account tier/API limits | Catalog + docs only |
+| 9 | xAI / Grok | Grok 4.6 | Spend tiers, RPS/TPM, model pricing, and capacity by tier | Console-specific limits | Catalog + docs only |
+| 10 | MiniMax | M2.7 | Five-hour rolling request quota and daily modality quotas | Token Plan account surface | Catalog + docs only |
+| 11 | Groq | GPT-OSS 120B | Per-minute and daily request/token limits, reset headers, and Flex capacity | Request-scoped headers | Catalog + docs only |
+| 12 | Moonshot / Kimi | Kimi K2.6 | Tiered concurrency, RPM, TPM, and TPD | Request-scoped headers | Catalog + docs only |
+| 13 | Cerebras | Llama 3.1 8B | Minute, hourly, and daily request/token limits with replenishment headers | Request-scoped headers | Catalog + docs only |
+| 14 | SambaNova | DeepSeek V3.1 | Per-minute and daily request/token limits with reset headers | Request-scoped headers | Catalog + docs only |
 
-The current implementation uses seeded model metrics as a usable fallback and overlays fresh official-source provenance when the local collector is refreshed. A seeded value is not treated as account telemetry or as a live observation unless its record says so.
+The current implementation is live-data-only. Provider names, model names, and source links are catalog configuration; all metrics and change events are unavailable until a real account, request-header, status, or measurement collector supplies them. Retrieving official documentation records source provenance only and never creates a current price, quota, capacity, latency, or stability value.
 
 ## Expansion provider set
 
@@ -40,7 +40,7 @@ These providers are part of the intended forecasting coverage but are not yet in
 
 ## Additional time-window candidates
 
-The following providers were found in a focused search for quotas that change across multiple time windows. They are now wired into the current forecast surface because their official documentation exposes more than a single static RPM limit.
+The following providers were found in a focused search for quotas that change across multiple time windows. Their documentation is cataloged, but no current value is shown until a real telemetry source is connected.
 
 | Provider | Documented time windows or changing capacity | First collection strategy |
 | --- | --- | --- |

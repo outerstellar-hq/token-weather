@@ -11,7 +11,7 @@ const mimeTypes = { ".html": "text/html; charset=utf-8", ".css": "text/css; char
 let snapshot = await readSnapshot();
 
 function fallbackSnapshot() {
-  return { schema: "token-weather.snapshot.v1", mode: "seeded", generated_at: null, events: [], account_collectors: accountReadiness(), errors: [] };
+  return { schema: "token-weather.snapshot.v1", mode: "unavailable", generated_at: null, events: [], account_collectors: accountReadiness(), errors: [], reason: "No live snapshot has been collected." };
 }
 
 function sendJson(response, status, value) {

@@ -19,15 +19,15 @@ Checked against the [official OpenAI challenge page](https://openai.com/webmcp-c
 
 ## Submission narrative
 
-Token Weather is an agent-native capacity forecast for the token economy. A person can browse price, quota, capacity, latency, stability, and source confidence while an agent reads the same normalized forecast, compares models, plans a workload, and focuses the exact provider the person should inspect. The key WebMCP improvement is that the agent no longer has to infer dashboard semantics from pixels or click paths; it can request a bounded forecast operation and return the result with its source and measurement boundary attached.
+Token Weather is an agent-native capacity forecast for the token economy. A person and an agent can inspect the same provider catalog, source provenance, and live telemetry availability. No price, quota, capacity, latency, stability, or change value is shown until a real collector supplies it.
 
 Recommended demo sequence:
 
-1. Show the forecast and select a provider manually.
-2. Ask the agent to compare DeepSeek, Groq, and Kimi for a one-million-token workload.
-3. Ask it to plan the workload for cost first in the Western region.
-4. Ask it to focus the recommended provider and show the detail panel changing for the person.
-5. Open the source link and show that the recommendation retains provenance and distinguishes seeded values from account telemetry.
+1. Show the provider catalog and select a provider manually.
+2. Ask the agent to compare providers and show that unavailable telemetry stays unavailable.
+3. Refresh the documentation sources and inspect their timestamps and hashes.
+4. Ask it to focus a provider and show the detail panel changing for the person.
+5. Explain that account and request telemetry must be explicitly connected before any forecast value appears.
 
 ## Final owner actions
 

@@ -6,12 +6,12 @@ The authoritative provider and inference-surface list, including time-window can
 
 The MVP includes four user-facing slices:
 
-- Forecast: fourteen first-priority providers with region filtering, search, selected-model detail, guaranteed versus observed capacity, and source confidence.
-- Compare: select up to three models and compare condition, price, guaranteed TPM, observed availability, latency, and quota.
-- Plan work: rank a workload by token volume, workload shape, and region, with an estimated cost and alternatives.
-- Changes: a provenance-led recent-change stream covering price, capacity, and quota events.
+- Catalog: fourteen first-priority providers with region filtering, search, selected-model detail, and source provenance.
+- Compare: select up to three models and see only metrics supplied by real telemetry.
+- Plan work: rank a workload only when live pricing and capacity data is available.
+- Changes: show only provider change events actually collected from live sources.
 
-The browser surface starts with a seeded feed so the interface remains useful without credentials. The provider records use one normalized shape and preserve the boundary between official guarantees and observed measurements. Public-source collection is connected to the local snapshot server; account-specific telemetry remains explicitly gated by each provider's supported access path.
+The browser surface is live-data-only. Provider names and source links are a static tracking catalog; every price, quota, capacity, latency, stability, and change value starts as unavailable and is populated only by a successful provider telemetry collector. Public documentation retrieval proves that a source was checked, but it is never presented as current account telemetry.
 
 The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
@@ -40,13 +40,13 @@ The live command performs read-only documentation requests and exits non-zero if
 
 ## Run locally
 
-Open `index.html` directly for the seeded fallback, or run the local snapshot server at the canonical origin `http://127.0.0.1:4173`:
+Run the local snapshot server at the canonical origin `http://127.0.0.1:4173`:
 
 ```powershell
 npm run server
 ```
 
-The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized collector events to the ignored local file `data/snapshot.json`; the UI overlays only successful source provenance and falls back to seeded data if the server is unavailable. Grok account limits remain console-only until an explicitly supported account integration is added.
+The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized collector events to the ignored local file `data/snapshot.json`; the UI shows unavailable telemetry when a provider account or request-scoped collector is not configured. Grok account limits remain console-only until an explicitly supported account integration is added.
 
 ## WebMCP challenge checklist
 

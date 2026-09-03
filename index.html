@@ -19,7 +19,7 @@
         </a>
         <div class="topbar-meta">
           <span class="live-dot"></span>
-          <span id="feed-label">Seeded feed</span>
+          <span id="feed-label">Live telemetry unavailable</span>
           <span class="meta-divider"></span>
           <span class="mono">MVP SNAPSHOT · UTC</span>
         </div>
@@ -43,14 +43,14 @@
               <button class="text-button" type="button" id="hero-sources-button">How we know <span>↗</span></button>
             </div>
           </div>
-          <div class="weather-orbit" aria-label="Current overall capacity is favorable">
+          <div class="weather-orbit" aria-label="Current overall capacity is not available">
             <div class="orbit orbit-one"></div>
             <div class="orbit orbit-two"></div>
             <div class="orbit orbit-three"></div>
             <div class="orbit-core">
               <span class="core-kicker">OVERALL CONDITIONS</span>
-              <strong>FAVORABLE</strong>
-              <span class="core-time">12 of 14 seeded providers healthy</span>
+              <strong id="overall-condition">NO LIVE DATA</strong>
+              <span class="core-time" id="overall-detail">No live telemetry collected</span>
             </div>
             <span class="orbit-label label-north">capacity</span>
             <span class="orbit-label label-east">latency</span>
@@ -59,10 +59,10 @@
         </section>
 
         <section class="signal-strip" aria-label="Market signals">
-          <div class="signal-item"><span class="signal-icon mint">↗</span><div><span class="signal-label">Best value now</span><strong>DeepSeek V4 Pro</strong></div></div>
-          <div class="signal-item"><span class="signal-icon amber">◷</span><div><span class="signal-label">Next off-peak window</span><strong>DeepSeek · in 3h 18m</strong></div></div>
-          <div class="signal-item"><span class="signal-icon lilac">⌁</span><div><span class="signal-label">Most headroom</span><strong>Qwen 3.7 Plus · 76%</strong></div></div>
-          <div class="signal-item signal-note"><span class="tiny-pulse"></span><span id="snapshot-label">Seeded snapshot · source collector ready</span></div>
+          <div class="signal-item"><span class="signal-icon mint">↗</span><div><span class="signal-label">Documentation</span><strong id="signal-value-source">Not checked</strong></div></div>
+          <div class="signal-item"><span class="signal-icon amber">◷</span><div><span class="signal-label">Live events</span><strong id="signal-value-window">None collected</strong></div></div>
+          <div class="signal-item"><span class="signal-icon lilac">⌁</span><div><span class="signal-label">Account collectors</span><strong id="signal-value-headroom">None configured</strong></div></div>
+          <div class="signal-item signal-note"><span class="tiny-pulse"></span><span id="snapshot-label">No live telemetry collected</span></div>
         </section>
 
         <section class="workspace-section">
@@ -85,7 +85,7 @@
                 <span class="sort-label">SORT: <button type="button" id="sort-button">CONDITION ↓</button></span>
               </div>
               <div class="provider-list" id="provider-list" aria-live="polite"></div>
-              <div class="panel-footer"><span><i class="status-dot green"></i> healthy</span><span><i class="status-dot yellow"></i> watch</span><span><i class="status-dot red"></i> disrupted</span><span class="mono">SOURCE COVERAGE 100%</span></div>
+              <div class="panel-footer"><span><i class="status-dot gray"></i> no live data</span><span class="mono" id="coverage-label">0/14 DOCS SOURCES</span></div>
             </div>
 
             <aside class="detail-panel" id="detail-panel" aria-live="polite"></aside>
@@ -115,11 +115,11 @@
               <p class="eyebrow">WORKLOAD PLANNER <span class="slash">/</span> A RECOMMENDATION, WITH RECEIPTS</p>
               <h2>Find a good window for the work.</h2>
             </div>
-            <span class="section-note">Demo calculation · no requests sent</span>
+            <span class="section-note">Live pricing required · no requests sent</span>
           </div>
           <div class="planner-layout">
             <form id="planner-form" class="planner-form">
-              <label><span class="field-label">TOTAL TOKENS</span><input id="planner-tokens" type="number" min="1" step="100000" value="1000000" /></label>
+              <label><span class="field-label">TOTAL TOKENS</span><input id="planner-tokens" type="number" min="1" step="100000" required /></label>
               <label><span class="field-label">WORKLOAD SHAPE</span><select id="planner-shape"><option value="balanced">Balanced</option><option value="latency">Latency sensitive</option><option value="batch">Batch / queued</option><option value="cost">Cost first</option></select></label>
               <label><span class="field-label">REGION</span><select id="planner-region"><option value="all">Any region</option><option value="asia">Asia Pacific</option><option value="west">Western</option></select></label>
               <button class="primary-button" type="submit">Plan this workload <span>→</span></button>
