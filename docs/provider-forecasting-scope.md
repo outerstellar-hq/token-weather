@@ -1,31 +1,31 @@
 # Token Weather provider forecasting scope
 
-This is the authoritative list of AI providers and inference surfaces Token Weather is intended to forecast. “Forecast” means tracking the conditions that affect model selection: effective price, guaranteed limits, account quota, available capacity, latency, stability, incidents, maintenance, model changes, and promotions.
+This is the authoritative list of AI providers and inference surfaces Token Weather is intended to forecast globally. “Forecast” means tracking public conditions that affect model selection: published price, documented limits, public capacity signals, public latency measurements, stability, incidents, maintenance, model changes, and promotions.
 
-This is a curated product scope, not a claim to cover every AI provider. Each provider is kept separate from its models, regions, account tiers, and execution classes so those dimensions can expand without changing the provider identity.
+This is a curated product scope, not a claim to cover every AI provider. Each provider is kept separate from its models, regions, publicly documented service tiers, and execution classes so those dimensions can expand without changing the provider identity.
 
 ## Current provider set
 
 These providers are in the current browser forecast, comparison, workload planner, agent API, and official-source collector.
 
-| Priority | Provider | Current model surface | Forecasting value | Account-specific signal | Status |
+| Priority | Provider | Current model surface | Forecasting value | Public signal | Status |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | DeepSeek | V4 Pro | Peak/off-peak price, concurrency, rate limits, observed throughput | Usage export/manual handoff | Catalog + docs only |
-| 2 | Alibaba Qwen / Bailian | Qwen 3.7 Plus | Guaranteed versus spare capacity, dynamic TPM, workspace/model quotas | Read-only model-limits API | Catalog + docs only |
-| 3 | Zhipu / GLM | GLM-5 | Peak/off-peak throttling, tier concurrency, local-time windows | Console/tier handoff | Catalog + docs only |
-| 4 | Baidu Qianfan | ERNIE 5.0 | Response-header rate-limit and remaining-quota telemetry | Request-scoped headers | Catalog + docs only |
-| 5 | StepFun | Step-3.5 | Tiered concurrency/RPM/TPM and temporary capacity adjustments | Account endpoint when explicitly configured | Catalog + docs only |
-| 6 | OpenAI | GPT-5 | Tier limits, pricing, service status, incidents, and maintenance | Dashboard/account limits | Catalog + docs only |
-| 7 | Google Gemini | Gemini 2.5 Pro | RPM, TPM, RPD, project quota, spend tiers, and workload classes | AI Studio/project limits | Catalog + docs only |
-| 8 | Anthropic | Claude Opus | Account tiers, rate limits, service stability, and capacity changes | Account tier/API limits | Catalog + docs only |
-| 9 | xAI / Grok | Grok 4.6 | Spend tiers, RPS/TPM, model pricing, and capacity by tier | Console-specific limits | Catalog + docs only |
-| 10 | MiniMax | M2.7 | Five-hour rolling request quota and daily modality quotas | Token Plan account surface | Catalog + docs only |
-| 11 | Groq | GPT-OSS 120B | Per-minute and daily request/token limits, reset headers, and Flex capacity | Request-scoped headers | Catalog + docs only |
-| 12 | Moonshot / Kimi | Kimi K2.6 | Tiered concurrency, RPM, TPM, and TPD | Request-scoped headers | Catalog + docs only |
-| 13 | Cerebras | Llama 3.1 8B | Minute, hourly, and daily request/token limits with replenishment headers | Request-scoped headers | Catalog + docs only |
-| 14 | SambaNova | DeepSeek V3.1 | Per-minute and daily request/token limits with reset headers | Request-scoped headers | Catalog + docs only |
+| 1 | DeepSeek | V4 Pro | Public peak/off-peak price, published concurrency, rate limits, incidents, and observed public reachability | Official website and status/announcement pages | Catalog + docs only |
+| 2 | Alibaba Qwen / Bailian | Qwen 3.7 Plus | Public guaranteed limits, published capacity tiers, pricing, incidents, and model changes | Official documentation and announcements | Catalog + docs only |
+| 3 | Zhipu / GLM | GLM-5 | Public throttling rules, tier examples, local-time windows, pricing, and incidents | Official documentation and status/announcement pages | Catalog + docs only |
+| 4 | Baidu Qianfan | ERNIE 5.0 | Public rate-limit rules, published quota windows, pricing, and incidents | Official documentation and announcements | Catalog + docs only |
+| 5 | StepFun | Step-3.5 | Public tiered concurrency/RPM/TPM, temporary capacity notices, pricing, and incidents | Official documentation and announcements | Catalog + docs only |
+| 6 | OpenAI | GPT-5 | Public tier-limit rules, pricing, service status, incidents, maintenance, and model changes | Official documentation, status, and announcements | Status/feed adapters implemented |
+| 7 | Google Gemini | Gemini 2.5 Pro | Public RPM, TPM, RPD, spend tiers, workload classes, pricing, and incidents | Official documentation, status, and announcements | Feed adapter implemented |
+| 8 | Anthropic | Claude Opus | Public rate-limit tiers, service stability, capacity changes, pricing, and model changes | Official documentation, status, and announcements | Status adapter implemented |
+| 9 | xAI / Grok | Grok 4.6 | Public spend tiers, RPS/TPM, model pricing, capacity notices, and incidents | Official documentation and announcements | Catalog + docs only |
+| 10 | MiniMax | M2.7 | Public five-hour rolling rules, daily modality quotas, pricing, and announcements | Official documentation and announcements | Status adapter implemented |
+| 11 | Groq | GPT-OSS 120B | Public per-minute/daily limits, reset rules, Flex capacity, pricing, and incidents | Official documentation, status, and announcements | Website adapter implemented |
+| 12 | Moonshot / Kimi | Kimi K2.6 | Public tiered concurrency, RPM, TPM, TPD, pricing, and model changes | Official documentation and announcements | Catalog + docs only |
+| 13 | Cerebras | Llama 3.1 8B | Public minute/hour/day limits, replenishment rules, pricing, and incidents | Official documentation and announcements | Status adapter implemented |
+| 14 | SambaNova | DeepSeek V3.1 | Public per-minute/daily rules, pricing, capacity notices, and incidents | Official documentation and announcements | Status adapter implemented |
 
-The current implementation is live-data-only. Provider names, model names, and source links are catalog configuration; all metrics and change events are unavailable until a real account, request-header, status, or measurement collector supplies them. Retrieving official documentation records source provenance only and never creates a current price, quota, capacity, latency, or stability value.
+The product is deliberately generic and non-personalized. It never asks for or stores API keys, account IDs, workspace IDs, balances, personal quotas, private console data, or headers from an individual’s workload. Provider names, model names, and source links are catalog configuration; all metrics and change events are unavailable until a public-source or clearly labeled public measurement collector supplies them. Retrieving official documentation records source provenance only and never creates a current price, quota, capacity, latency, or stability value.
 
 ## Expansion provider set
 
@@ -33,21 +33,21 @@ These providers are part of the intended forecasting coverage but are not yet in
 
 | Expansion order | Provider | Expected forecasting value | First collection strategy |
 | ---: | --- | --- | --- |
-| 15 | ByteDance Doubao / Ark | Model catalog, pricing, announcements, retirements, and regional availability | Ark documentation and announcements, then authenticated account telemetry |
+| 15 | ByteDance Doubao / Ark | Model catalog, pricing, announcements, retirements, and regional availability | Ark public documentation, status, and announcements |
 | 16 | Tencent Hunyuan | Token pricing, model availability, and TokenHub migration changes | Official pricing, model, and platform documentation |
-| 17 | Mistral | Requests per second, tokens per minute/month, spend tiers, and admin limits | Official pricing/limits pages plus admin-supplied limits |
-| 18 | Cohere | Endpoint limits, trial versus production keys, incidents, and maintenance | Official limits documentation and status history |
+| 17 | Mistral | Requests per second, tokens per minute/month, spend tiers, and incidents | Official public pricing, limits, status, and announcements |
+| 18 | Cohere | Published endpoint limits, public plan differences, incidents, and maintenance | Official public limits, status, and announcements |
 
 ## Additional time-window candidates
 
-The following providers were found in a focused search for quotas that change across multiple time windows. Their documentation is cataloged, but no current value is shown until a real telemetry source is connected.
+The following providers were found in a focused search for public quota rules that change across multiple time windows. Their documentation is cataloged, but no current value is shown until a real public source is collected.
 
 | Provider | Documented time windows or changing capacity | First collection strategy |
 | --- | --- | --- |
-| [Cerebras Inference](https://inference-docs.cerebras.ai/support/rate-limits) | Free-tier limits can include TPM/TPH/TPD and RPM/RPH/RPD; response headers expose remaining values and reset times. Paid usage removes hourly and daily restrictions. | Capture official rate-limit headers from an explicitly configured request and store free versus paid tier rules separately. |
-| [Groq](https://console.groq.com/docs/rate-limits) | Model limits can include RPM/RPD/TPM/TPD with reset headers; [Flex processing](https://console.groq.com/docs/flex-processing) offers higher limits while capacity is available and can return `capacity_exceeded`. | Collect account headers, service-tier state, and Flex capacity events separately from normal limits. |
-| [Moonshot AI / Kimi](https://www.kimi.com/code/docs/en/kimi-code/error-reference.html) | Kimi Code documents 5-hour rolling, weekly, and monthly quota windows; the [direct API](https://platform.kimi.ai/docs/introduction) has account-level rate-limit tiers. | Treat Kimi subscription and Moonshot API as separate surfaces under the same model owner. |
-| [SambaNova](https://docs.sambanova.ai/docs/en/models/rate-limits) | Free and developer tiers expose both per-minute and daily request/token limits, including daily remaining/reset headers. | Collect tier tables plus request response headers; keep preview-model limits separate from production limits. |
+| [Cerebras Inference](https://inference-docs.cerebras.ai/support/rate-limits) | Public free-tier rules can include TPM/TPH/TPD and RPM/RPH/RPD; paid usage can remove hourly and daily restrictions. | Collect the published free/paid rules and public status separately; never convert them into a person’s remaining quota. |
+| [Groq](https://console.groq.com/docs/rate-limits) | Public model rules can include RPM/RPD/TPM/TPD; [Flex processing](https://console.groq.com/docs/flex-processing) offers opportunistic capacity and can report `capacity_exceeded`. | Collect public limit tables, public status, and public Flex announcements as separate signals. |
+| [Moonshot AI / Kimi](https://www.kimi.com/code/docs/en/kimi-code/error-reference.html) | Kimi Code publicly documents 5-hour rolling, weekly, and monthly quota windows; the [direct API](https://platform.kimi.ai/docs/introduction) has published rate-limit tiers. | Treat Kimi subscription and Moonshot API as separate public execution surfaces under the same model owner. |
+| [SambaNova](https://docs.sambanova.ai/docs/en/models/rate-limits) | Public free and developer tiers expose per-minute and daily request/token rules. | Collect published tier tables and public status; do not collect individual response headers. |
 
 ## Platform surfaces with time-based economics
 
@@ -66,7 +66,7 @@ The remaining expansion order after the current fourteen is ByteDance Doubao/Ark
 Every provider adapter should contribute only the signals it can support, while preserving the source and confidence boundary:
 
 - `PRICE_EVENT` — input/output price, cache price, batch price, promotion, or peak/off-peak multiplier.
-- `QUOTA_EVENT` — account, workspace, project, plan, key, or rolling-window usage and reset state.
+- `QUOTA_EVENT` — publicly documented plan, service-tier, or rolling-window limit and reset rule.
 - `CAPACITY_EVENT` — guaranteed TPM/RPM/RPS/concurrency versus separately observed throughput.
 - `INCIDENT_EVENT` — degraded service, outage, or provider status change.
 - `MAINTENANCE_EVENT` — scheduled maintenance or planned availability change.
@@ -79,7 +79,7 @@ The normalized record should retain:
 provider
 model
 region
-account_tier
+service_tier
 metric
 value
 unit
@@ -93,15 +93,16 @@ confidence
 observed_value
 ```
 
-Official guarantees and measurements must remain distinct. For example, a provider can expose a guaranteed `1.0M TPM` while a local probe observes `1.8M TPM`; the forecast must show both instead of replacing the guarantee with the observation.
+Official guarantees and public measurements must remain distinct. A published limit is not a person’s remaining quota. A measurement from Token Weather’s own public vantage point is not a universal guarantee; the forecast must label both instead of replacing one with the other.
 
 ## Source priority
 
-Collection should prefer these sources in order:
+Collection should prefer these public sources in order:
 
-1. Machine-readable account or API data.
+1. Official machine-readable public feeds and status APIs.
 2. Official pricing and rate-limit documentation.
-3. Official status and announcement pages.
-4. Clearly labeled observed behavior such as 429 rate, latency, or throughput.
+3. Official provider websites, release notes, blogs, and public announcements.
+4. Official public social posts, only when a stable public source can be retrieved and attributed.
+5. Clearly labeled measurements from Token Weather’s own public vantage points, such as reachability, latency, or throughput.
 
-No provider should be marked as having live account quota until its supported credential, console handoff, or request-scoped telemetry has been explicitly connected and its provenance is recorded.
+No public source should be presented as a universal account quota. Generic provider limits, public incidents, and public announcements must retain their source URL, retrieval time, scope, and confidence. If a website or social source cannot be retrieved or attributed, the signal remains unavailable.

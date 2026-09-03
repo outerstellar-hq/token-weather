@@ -13,13 +13,13 @@ Checked against the [official OpenAI challenge page](https://openai.com/webmcp-c
 | Challenge-period work | Ready locally | Git history begins September 1, 2026; the challenge submission period began August 25, 2026. |
 | Public code repository | Complete | [outerstellar-hq/token-weather](https://github.com/outerstellar-hq/token-weather) is public and includes the MIT license. |
 | Working live URL | Ready | [tokenweather.outerstellar.net](https://tokenweather.outerstellar.net/) is served over HTTPS by Caddy and proxies to the marked Node service. |
-| Hosted source snapshot | Ready | The live `/api/snapshot` reports 20 source events with zero errors after a successful refresh on September 3, 2026. |
+| Hosted source snapshot | Ready | The live `/api/snapshot` reports the public documentation, status, and announcement collection; it contains no account or visitor-specific data. |
 | Demonstration video | Not yet created | Upload a public YouTube video shorter than three minutes with audio, a clear working demo, and an explanation of WebMCP. |
 | Devpost submission | Owner action | Join the challenge, then submit the live URL, public repository URL, description, video, and any requested testing details. |
 
 ## Submission narrative
 
-Token Weather is an agent-native capacity forecast for the token economy. A person and an agent can inspect the same provider catalog, source provenance, and live telemetry availability. No price, quota, capacity, latency, stability, or change value is shown until a real collector supplies it.
+Token Weather is an agent-native global forecast for the token economy. Every person and agent sees the same provider catalog, public source provenance, public status, and official announcement signals. No personalized or account-specific data is collected.
 
 Recommended demo sequence:
 
@@ -27,7 +27,7 @@ Recommended demo sequence:
 2. Ask the agent to compare providers and show that unavailable telemetry stays unavailable.
 3. Refresh the documentation sources and inspect their timestamps and hashes.
 4. Ask it to focus a provider and show the detail panel changing for the person.
-5. Explain that account and request telemetry must be explicitly connected before any forecast value appears.
+5. Explain that every signal is public, attributed, timestamped, and kept separate from universal guarantees or personal account state.
 
 ## Final owner actions
 

@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { accountReadiness, collectQwenAccount, collectSource, sourceDefinitions } from "./collector.mjs";
+import { collectDocumentation, collectSource, sourceDefinitions } from "./collector.mjs";
+import { collectPublicSignals, collectPublicSource, publicAdapters } from "./public-adapters.mjs";
 
-test("collectSource records official retrieval provenance", async () => {
+test("collectSource records official documentation provenance", async () => {
   const source = sourceDefinitions[0];
   const result = await collectSource(source, async () => new Response("official source", { status: 200 }));
   assert.equal(result.status, "ok");
@@ -20,30 +21,31 @@ test("collectSource fails closed when a source is too large", async () => {
   assert.equal(result.confidence, "source retrieval failed");
 });
 
-test("account readiness distinguishes credentials from manual sources", () => {
-  const unconfigured = accountReadiness({});
-  assert.equal(unconfigured.find((item) => item.providerId === "qwen-3-7-plus").status, "not_configured");
-  assert.equal(unconfigured.find((item) => item.providerId === "glm-5").status, "not_configured");
-  assert.equal(unconfigured.find((item) => item.providerId === "xai-grok-46").status, "not_configured");
-  assert.equal(unconfigured.find((item) => item.providerId === "minimax-m27").status, "not_configured");
-  assert.equal(unconfigured.find((item) => item.providerId === "cerebras-llama-31-8b").status, "not_configured");
-  assert.equal(unconfigured.find((item) => item.providerId === "groq-gpt-oss-120b").status, "not_configured");
-
-  const configured = accountReadiness({ DASHSCOPE_API_KEY: "test-key", DASHSCOPE_WORKSPACE_ID: "test-workspace", STEPFUN_API_KEY: "test-key" });
-  assert.equal(configured.find((item) => item.providerId === "qwen-3-7-plus").status, "configured");
-  assert.equal(configured.find((item) => item.providerId === "stepfun-step-35").status, "configured");
+test("public status adapter extracts only public status signals", async () => {
+  const adapter = publicAdapters.find((item) => item.adapterId === "openai-status");
+  const result = await collectPublicSource(adapter, async () => new Response(JSON.stringify({ page: { updated_at: "2026-09-03T00:00:00Z" }, status: { indicator: "none", description: "All Systems Operational" }, components: [{ name: "API", status: "operational" }], incidents: [], scheduled_maintenances: [] }), { status: 200, headers: { "content-type": "application/json" } }));
+  assert.equal(result.event_type, "PUBLIC_STATUS");
+  assert.equal(result.signals.indicator, "none");
+  assert.equal(result.signals.components[0].status, "operational");
+  assert.equal(result.signals.unresolved_incidents, 0);
 });
 
-test("Qwen account collector normalizes read-only quota response", async () => {
-  const result = await collectQwenAccount({
-    env: { DASHSCOPE_API_KEY: "test-key", DASHSCOPE_WORKSPACE_ID: "workspace", DASHSCOPE_REGION: "cn-beijing" },
-    fetchImpl: async (url, options) => {
-      assert.match(url, /workspace\.cn-beijing\.maas\.aliyuncs\.com\/api\/v1\/models\/limits/);
-      assert.equal(options.headers.authorization, "Bearer test-key");
-      return new Response(JSON.stringify({ output: { quotas: [{ model: "qwen3-max", workspace_id: "workspace", model_limit: { usage_limit: 500000 } }] } }), { status: 200 });
-    }
-  });
-  assert.equal(result.status, "ok");
-  assert.equal(result.records[0].model, "qwen3-max");
-  assert.equal(result.records[0].model_limit.usage_limit, 500000);
+test("public announcement adapter extracts attributed feed entries", async () => {
+  const adapter = publicAdapters.find((item) => item.adapterId === "openai-news-feed");
+  const result = await collectPublicSource(adapter, async () => new Response("<rss><channel><item><title><![CDATA[Public update]]></title><pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate><link>https://openai.com/news/example</link></item></channel></rss>", { status: 200, headers: { "content-type": "application/rss+xml" } }));
+  assert.equal(result.event_type, "PUBLIC_ANNOUNCEMENTS");
+  assert.equal(result.entries[0].title, "Public update");
+  assert.equal(result.entries[0].link, "https://openai.com/news/example");
+});
+
+test("public collection has no credential inputs", async () => {
+  const report = await collectPublicSignals({ fetchImpl: async () => new Response(JSON.stringify({ status: { indicator: "none", description: "All Systems Operational" }, components: [], incidents: [], scheduled_maintenances: [] }), { status: 200, headers: { "content-type": "application/json" } }) });
+  assert.equal(report.events.length, publicAdapters.length);
+  assert.equal(report.events.every((event) => !("account_id" in event) && !("api_key" in event)), true);
+});
+
+test("documentation report can include public signals without account state", async () => {
+  const report = await collectDocumentation({ includePublicSignals: true, fetchImpl: async () => new Response("<html><title>Official page</title></html>", { status: 200, headers: { "content-type": "text/html" } }) });
+  assert.equal(report.events.length, sourceDefinitions.length + publicAdapters.length);
+  assert.equal("account_collectors" in report, false);
 });

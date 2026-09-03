@@ -1,6 +1,6 @@
 # Token Weather
 
-Token Weather is a responsive forecast surface for AI provider price, capacity, quota, latency, and stability.
+Token Weather is a global, public-source forecast surface for AI provider price, published limits, capacity signals, latency, incidents, and stability.
 
 The authoritative provider and inference-surface list, including time-window candidates, lives in [docs/provider-forecasting-scope.md](docs/provider-forecasting-scope.md).
 
@@ -11,7 +11,7 @@ The MVP includes four user-facing slices:
 - Plan work: rank a workload only when live pricing and capacity data is available.
 - Changes: show only provider change events actually collected from live sources.
 
-The browser surface is live-data-only. Provider names and source links are a static tracking catalog; every price, quota, capacity, latency, stability, and change value starts as unavailable and is populated only by a successful provider telemetry collector. Public documentation retrieval proves that a source was checked, but it is never presented as current account telemetry.
+The product is generic for every visitor. It has no login, profile, API-key input, workspace context, personal quota, account balance, personalized recommendation, or account-specific telemetry. Provider names and source links are a static tracking catalog; every price, published limit, capacity, latency, stability, and change value starts as unavailable and is populated only by a successful public-source collector. A public documentation retrieval proves that a source was checked, but it is never presented as a user’s current quota or account state.
 
 The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
@@ -21,7 +21,7 @@ When the browser exposes `document.modelContext.registerTool`, the page also reg
 
 ## Collector slice
 
-`collector.mjs` is the bounded source collector. It retrieves twenty verified official documentation pages for the fourteen MVP providers, including time-window quota sources for MiniMax, Groq, Moonshot/Kimi, Cerebras, and SambaNova, then emits `SOURCE_FETCH` records containing the URL, timestamp, HTTP status, byte count, SHA-256, and confidence. Responses are capped at 8 MB and requests time out after 10 seconds.
+`collector.mjs` retrieves twenty verified official provider pages for the fourteen MVP providers and emits `SOURCE_FETCH` provenance records. The public adapter layer is responsible for official pricing and limit pages, public status APIs, provider announcements, and public company communications. It must never read a visitor’s credentials or workload headers. Responses are capped at 8 MB and requests time out after 10 seconds.
 
 Run the offline collector contract check with:
 
@@ -36,7 +36,15 @@ Run the live documentation collection explicitly with:
 npm run collect
 ```
 
-The live command performs read-only documentation requests and exits non-zero if any source cannot be retrieved. Account collectors remain disabled unless their documented credential requirements are explicitly configured; no provider inference or paid inference probe is performed automatically.
+The live command performs read-only public-source requests and exits non-zero if any source cannot be retrieved. It does not create inference requests, access private consoles, or collect account-specific values.
+
+Run the global public-source collection manually with:
+
+```powershell
+$env:AGENT_OWNER = "operator"
+$env:AGENT_TASK = "token-weather-public-sources"
+npm run telemetry
+```
 
 ## Run locally
 
@@ -46,7 +54,7 @@ Run the local snapshot server at the canonical origin `http://127.0.0.1:4173`:
 npm run server
 ```
 
-The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized collector events to the ignored local file `data/snapshot.json`; the UI shows unavailable telemetry when a provider account or request-scoped collector is not configured. Grok account limits remain console-only until an explicitly supported account integration is added.
+The server serves the dashboard, exposes `GET /api/snapshot`, exposes `GET /api/health`, and handles an explicit `POST /api/refresh`. Successful refreshes persist the latest normalized public-source events to the ignored local file `data/snapshot.json`; no endpoint accepts or returns personal account data.
 
 ## WebMCP challenge checklist
 

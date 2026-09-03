@@ -3,9 +3,10 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "check": "node --check app.js && node --check collector.mjs && node --check deploy/activate-caddy.mjs",
+    "check": "node --check app.js && node --check collector.mjs && node --check public-adapters.mjs && node --check deploy/activate-caddy.mjs",
     "check:collector": "node collector.mjs --check",
     "collect": "node collector.mjs --json",
+    "telemetry": "node collector.mjs --telemetry",
     "test": "node --test collector.test.mjs",
     "server": "node server.mjs"
   }

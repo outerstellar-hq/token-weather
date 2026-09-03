@@ -27,13 +27,13 @@ function emptyTelemetryProvider(catalog) {
     latencyMs: null,
     stability: "Not collected",
     nextWindow: null,
-    note: "No live account, request, or measurement telemetry has been collected for this provider.",
+    note: "No live public-source or measurement telemetry has been collected for this provider.",
     source: { ...catalog.source, confidence: "Telemetry not collected", retrievedAt: "Not checked" }
   };
 }
 
 let providers = Object.freeze(providerCatalog.map(emptyTelemetryProvider));
-const recentChanges = Object.freeze([]);
+let recentChanges = Object.freeze([]);
 
 const stateClass = { healthy: "green", watch: "yellow", disrupted: "red", unknown: "gray" };
 const state = { selectedId: "deepseek-v4-pro", activeView: "all", search: "", sortDescending: true, compareIds: ["deepseek-v4-pro", "qwen-3-7-plus", "gemini-2-5-pro"] };
@@ -143,24 +143,36 @@ function renderForecast() {
   document.querySelectorAll(".view-button").forEach((button) => button.classList.toggle("active", button.dataset.view === state.activeView));
 }
 
+function publicStatusState(indicator) {
+  return { none: "healthy", minor: "watch", major: "disrupted", critical: "disrupted" }[indicator] || "unknown";
+}
+
+function publicSignalAge(timestamp) {
+  const elapsed = Math.max(0, Date.now() - new Date(timestamp).getTime());
+  const hours = Math.floor(elapsed / 3_600_000);
+  return hours < 24 ? `${hours}h ago` : `${Math.floor(hours / 24)}d ago`;
+}
+
 function applySnapshot(snapshot) {
   const events = Array.isArray(snapshot.events) ? snapshot.events : [];
-  const accounts = Array.isArray(snapshot.account_collectors) ? snapshot.account_collectors : [];
   const successfulSources = new Map(events.filter((event) => event.event_type === "SOURCE_FETCH" && event.status === "ok").map((event) => [event.provider_id, event]));
-  const liveTelemetry = events.filter((event) => event.event_type !== "SOURCE_FETCH" && event.status === "ok");
+  const publicSignals = events.filter((event) => event.event_type !== "SOURCE_FETCH" && event.status === "ok");
+  const publicStatuses = new Map(events.filter((event) => event.event_type === "PUBLIC_STATUS" && event.status === "ok").map((event) => [event.provider_id, event]));
+  recentChanges = Object.freeze(events.filter((event) => event.event_type === "PUBLIC_ANNOUNCEMENTS" && event.status === "ok").flatMap((event) => (event.entries || []).map((entry) => ({ providerId: event.provider_id, type: "PUBLIC_ANNOUNCEMENT", age: publicSignalAge(entry.published_at || event.retrieved_at), title: entry.title || "Public provider update", detail: "Published on the provider’s official public communication feed.", source: "Official announcement", sourceUrl: entry.link || event.source_url, confidence: event.confidence }))));
   providers = Object.freeze(providers.map((provider) => {
     const event = successfulSources.get(provider.id);
-    if (!event) return provider;
-    return { ...provider, source: { ...provider.source, retrievedAt: new Date(event.retrieved_at).toISOString().replace("T", " ").slice(0, 16) + " UTC", collectorStatus: event.status, sha256: event.sha256, confidence: liveTelemetry.some((item) => item.provider_id === provider.id) ? "Live telemetry connected" : "Documentation retrieved; telemetry not collected" } };
+    const statusEvent = publicStatuses.get(provider.id);
+    const condition = statusEvent?.signals?.description || provider.condition;
+    const source = event ? { ...provider.source, retrievedAt: new Date(event.retrieved_at).toISOString().replace("T", " ").slice(0, 16) + " UTC", collectorStatus: event.status, sha256: event.sha256 } : provider.source;
+    return { ...provider, state: statusEvent ? publicStatusState(statusEvent.signals?.indicator) : provider.state, condition, note: statusEvent ? `Official public status: ${condition}. ` : provider.note, source: { ...source, confidence: publicSignals.some((item) => item.provider_id === provider.id) ? "Public signal connected" : source.confidence } };
   }));
-  $("#feed-label").textContent = liveTelemetry.length ? "Live telemetry connected" : snapshot.mode === "degraded" ? "Documentation feed degraded" : "Documentation connected · no live telemetry";
-  const configuredAccounts = accounts.filter((collector) => collector.status === "configured").length;
-  $("#snapshot-label").textContent = snapshot.generated_at ? `Documentation checked · ${new Date(snapshot.generated_at).toISOString().replace("T", " ").slice(0, 16)} UTC · live telemetry ${liveTelemetry.length} events · account ${configuredAccounts}/${accounts.length}` : "No live telemetry collected";
-  $("#overall-condition").textContent = liveTelemetry.length ? "TELEMETRY AVAILABLE" : "NO LIVE DATA";
-  $("#overall-detail").textContent = `${liveTelemetry.length} live telemetry events · ${successfulSources.size} documentation sources checked`;
+  $("#feed-label").textContent = publicSignals.length ? "Public signals connected" : snapshot.mode === "degraded" ? "Public source feed degraded" : "Public sources connected · no forecast metrics";
+  $("#snapshot-label").textContent = snapshot.generated_at ? `Public sources checked · ${new Date(snapshot.generated_at).toISOString().replace("T", " ").slice(0, 16)} UTC · ${publicSignals.length} signals` : "No public forecast signals collected";
+  $("#overall-condition").textContent = publicSignals.length ? "PUBLIC SIGNALS AVAILABLE" : "NO PUBLIC METRICS";
+  $("#overall-detail").textContent = `${publicSignals.length} public signals · ${successfulSources.size} documentation sources checked`;
   $("#signal-value-source").textContent = `${successfulSources.size} documentation sources checked`;
-  $("#signal-value-window").textContent = liveTelemetry.length ? `${liveTelemetry.length} live events` : "Waiting for configured accounts / probes";
-  $("#signal-value-headroom").textContent = configuredAccounts ? `${configuredAccounts} account collectors configured` : "No account collectors configured";
+  $("#signal-value-window").textContent = publicSignals.length ? `${publicSignals.length} public signals` : "No public forecast windows collected";
+  $("#signal-value-headroom").textContent = "Global public view · no personalization";
   $("#coverage-label").textContent = `${successfulSources.size}/${providerCatalog.length} DOCS SOURCES`;
   renderForecast();
   renderCompare();
@@ -176,8 +188,8 @@ async function loadSnapshot() {
     applySnapshot(snapshot);
   } catch {
     console.error("Token Weather live snapshot could not be loaded");
-    $("#feed-label").textContent = "Live telemetry unavailable";
-    $("#snapshot-label").textContent = "No live telemetry collected";
+    $("#feed-label").textContent = "Public sources unavailable";
+    $("#snapshot-label").textContent = "No public forecast signals collected";
   }
 }
 
@@ -272,7 +284,7 @@ function renderPlanner(result = planWorkload()) {
 }
 
 function renderChanges() {
-  $("#changes-list").innerHTML = recentChanges.length ? recentChanges.map((change) => { const provider = getProvider(change.providerId); return `<article class="change-row"><div class="change-marker ${stateClass[provider.state]}"></div><div class="change-main"><div class="change-meta"><span>${change.type.replace("_", " ")}</span><span>${change.age}</span></div><h3>${change.title}</h3><p>${change.detail}</p></div><div class="change-source"><strong>${provider.name}</strong><span>${change.confidence}</span><a class="source-link" href="${provider.source.url}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${change.source} ↗</a></div></article>`; }).join("") : `<div class="empty-state"><strong>No live changes collected.</strong><span>Changes appear only after a real provider telemetry source reports them.</span></div>`;
+  $("#changes-list").innerHTML = recentChanges.length ? recentChanges.map((change) => { const provider = getProvider(change.providerId); return `<article class="change-row"><div class="change-marker ${stateClass[provider.state]}"></div><div class="change-main"><div class="change-meta"><span>${change.type.replace("_", " ")}</span><span>${change.age}</span></div><h3>${change.title}</h3><p>${change.detail}</p></div><div class="change-source"><strong>${provider.name}</strong><span>${change.confidence}</span><a class="source-link" href="${change.sourceUrl}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${change.source} ↗</a></div></article>`; }).join("") : `<div class="empty-state"><strong>No public changes collected.</strong><span>Changes appear only after an official provider source reports them.</span></div>`;
 }
 
 function getSource(id) {

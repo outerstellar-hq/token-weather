@@ -1,7 +1,8 @@
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
-import { accountReadiness, collectDocumentation } from "./collector.mjs";
+import { collectDocumentation } from "./collector.mjs";
+import { publicAdapters } from "./public-adapters.mjs";
 import { readSnapshot, writeSnapshot } from "./snapshot-store.mjs";
 
 const HOST = process.env.HOST || "127.0.0.1";
@@ -11,7 +12,7 @@ const mimeTypes = { ".html": "text/html; charset=utf-8", ".css": "text/css; char
 let snapshot = await readSnapshot();
 
 function fallbackSnapshot() {
-  return { schema: "token-weather.snapshot.v1", mode: "unavailable", generated_at: null, events: [], account_collectors: accountReadiness(), errors: [], reason: "No live snapshot has been collected." };
+  return { schema: "token-weather.snapshot.v1", mode: "unavailable", generated_at: null, events: [], public_adapters: publicAdapters.map((adapter) => ({ adapter_id: adapter.adapterId, provider_id: adapter.providerId, kind: adapter.kind, source_url: adapter.url })), errors: [], reason: "No public snapshot has been collected." };
 }
 
 function sendJson(response, status, value) {
@@ -38,8 +39,8 @@ const server = createServer(async (request, response) => {
     if (request.method === "GET" && request.url === "/api/health") return sendJson(response, 200, { status: "ok", origin: `http://${HOST}:${PORT}` });
     if (request.method === "GET" && request.url === "/api/snapshot") return sendJson(response, 200, snapshot || fallbackSnapshot());
     if (request.method === "POST" && request.url === "/api/refresh") {
-      const report = await collectDocumentation({ includeAccounts: true });
-      snapshot = { schema: "token-weather.snapshot.v1", mode: report.events.some((event) => event.status === "error") ? "degraded" : "source-connected", generated_at: report.collected_at, events: report.events, account_collectors: report.account_collectors, errors: report.events.filter((event) => event.status === "error") };
+      const report = await collectDocumentation({ includePublicSignals: true });
+      snapshot = { schema: "token-weather.snapshot.v1", mode: report.events.some((event) => event.status === "error") ? "degraded" : "source-connected", generated_at: report.collected_at, events: report.events, public_adapters: report.public_adapters, errors: report.events.filter((event) => event.status === "error") };
       await writeSnapshot(snapshot);
       return sendJson(response, snapshot.errors.length ? 502 : 200, snapshot);
     }
