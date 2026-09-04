@@ -69,3 +69,7 @@ h1 { max-width: 700px; margin-bottom: 9px; font-size: clamp(32px, 4vw, 52px); li
 .webmcp-code { background: var(--ink); color: oklch(0.88 0.035 90); }
 .webmcp-output { margin-top: 15px; color: var(--muted); }
 @media (max-width: 700px) { .webmcp-layout { grid-template-columns: 1fr; }.webmcp-code { order: -1; } }
+
+.hero-copy h1 { max-width: 860px; }
+.hero-lede { max-width: 630px; }
+@media (max-width: 600px) { .hero-copy h1 { max-width: 350px; }.hero-lede { max-width: calc(100vw - 48px); } }
