@@ -203,7 +203,9 @@ function renderTimetable() {
 function updateTimetableClock() {
   const now = new Date();
   const clock = $("#timetable-clock");
-  if (clock) clock.textContent = `${timetableState.format === "12h" ? now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true }) : now.toISOString().slice(11, 16)} ${timetableState.timezone === "local" ? "local" : "UTC"}`;
+  const timeZone = timetableState.timezone === "local" ? undefined : "UTC";
+  const currentTime = now.toLocaleTimeString([], { timeZone, hour: "2-digit", minute: "2-digit", hour12: timetableState.format === "12h" });
+  if (clock) clock.textContent = `${currentTime} ${timetableState.timezone === "local" ? "local" : "UTC"}`;
   document.querySelectorAll("[data-timetable-axis-hour]").forEach((label) => { label.textContent = formatTimetableHour(Number(label.dataset.timetableAxisHour)); });
   const chart = $("#timetable-chart");
   const line = $("#timetable-now-line");
@@ -211,7 +213,8 @@ function updateTimetableClock() {
   if (!chart || !line || !track) return;
   const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes() + now.getUTCSeconds() / 60;
   line.style.left = `${track.getBoundingClientRect().left - chart.getBoundingClientRect().left + (utcMinutes / 1440) * track.offsetWidth}px`;
-  $("#timetable-now-label").textContent = `${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")} UTC`;
+  const nowLabel = now.toLocaleTimeString([], { timeZone, hour: "2-digit", minute: "2-digit", hour12: timetableState.format === "12h" });
+  $("#timetable-now-label").textContent = `${nowLabel} ${timetableState.timezone === "local" ? "local" : "UTC"}`;
 }
 
 function setTimetableDisplay(key, value) {
