@@ -110,7 +110,7 @@
       "provider_id": "minimax-m27",
       "public_schedule_status": "published_clock_window",
       "windows": [
-        { "kind": "peak", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "start": "15:00", "end": "17:30", "timezone": "not specified by source", "effect": "Platform traffic rules: dynamic rate limiting based on cluster load; approximate concurrency is Plus 3–4 agents, Max 4–5, and Ultra 6–7. This is an approximate plan rule, not a guaranteed capacity promise" }
+        { "kind": "peak", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "start": "15:00", "end": "17:30", "timezone": "not specified by source", "display_timezone": "UTC", "effect": "Platform traffic rules: dynamic rate limiting based on cluster load; approximate concurrency is Plus 3–4 agents, Max 4–5, and Ultra 6–7. The source does not specify a timezone, so the chart uses UTC only as an approximate display. This is not a guaranteed capacity promise" }
       ],
       "reset_rules": [
         { "kind": "rolling", "duration": "5 hours", "scope": "M2.7 text-model quota" },

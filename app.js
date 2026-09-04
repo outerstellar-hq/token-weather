@@ -154,7 +154,7 @@ function timezoneOffsetMinutes(timezone, date = new Date()) {
 function sourceWindowMinutes(window) {
   const start = parseClockMinutes(window.start);
   const end = parseClockMinutes(window.end);
-  const offset = timezoneOffsetMinutes(window.timezone);
+  const offset = timezoneOffsetMinutes(window.display_timezone || window.timezone);
   if (start == null || end == null || offset == null) return null;
   return { start: (start - offset + 1440) % 1440, end: (end - offset + 1440) % 1440 };
 }
