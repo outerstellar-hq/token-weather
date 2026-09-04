@@ -6,6 +6,10 @@ export function hasActivePublicQuota(provider) {
   return Object.entries(provider?.rateLimits || {}).some(([field, value]) => PUBLIC_QUOTA_FIELDS.has(field) && Number.isFinite(value));
 }
 
+export function hasActiveForecastSignal(provider) {
+  return hasActivePublicQuota(provider) || provider?.state === "watch" || provider?.state === "disrupted";
+}
+
 export function defaultActiveProviderId(providers) {
   return providers.find(hasActivePublicQuota)?.id || null;
 }

@@ -1,4 +1,4 @@
-import { defaultActiveProviderId } from "./selection.mjs";
+import { defaultActiveProviderId, hasActiveForecastSignal } from "./selection.mjs";
 
 const providerCatalog = Object.freeze([
   { id: "deepseek-v4-pro", name: "DeepSeek", model: "V4 Pro", region: "asia", code: "DS", source: { label: "DeepSeek pricing", url: "https://api-docs.deepseek.com/quick_start/pricing", type: "official documentation", official: true } },
@@ -40,7 +40,7 @@ let providerSchedules = Object.freeze([]);
 let recentChanges = Object.freeze([]);
 
 const stateClass = { healthy: "green", watch: "yellow", disrupted: "red", unknown: "gray" };
-const state = { selectedId: null, activeView: "all", hasDataOnly: true, search: "", sortDescending: true, compareIds: ["deepseek-v4-pro", "qwen-3-7-plus", "gemini-2-5-pro"] };
+const state = { selectedId: null, activeView: "all", search: "", sortDescending: true, compareIds: ["deepseek-v4-pro", "qwen-3-7-plus", "gemini-2-5-pro"] };
 const $ = (selector) => document.querySelector(selector);
 
 function getProvider(id) {
@@ -78,18 +78,6 @@ function formatLatency(value) {
 
 function hasPricing(provider) {
   return Number.isFinite(provider.pricing.input) && Number.isFinite(provider.pricing.output);
-}
-
-function hasUsableData(provider) {
-  return provider.publicEvidence?.documents > 0
-    || provider.publicEvidence?.status
-    || provider.publicEvidence?.statements > 0
-    || provider.state !== "unknown"
-    || hasPricing(provider)
-    || provider.quota.remaining != null
-    || provider.capacity.guaranteedTpm != null
-    || provider.capacity.observedTpm != null
-    || Number.isFinite(provider.latencyMs);
 }
 
 function providerWeather(provider) {
@@ -190,8 +178,7 @@ function visibleProviders() {
   const search = state.search.toLowerCase();
   return providers.filter((provider) => {
     const matchesSearch = `${provider.name} ${provider.model}`.toLowerCase().includes(search);
-    const matchesData = !state.hasDataOnly || hasUsableData(provider);
-    return matchesSearch && matchesData && (state.activeView === "all" || provider.region === state.activeView);
+    return matchesSearch && hasActiveForecastSignal(provider) && (state.activeView === "all" || provider.region === state.activeView);
   }).sort((a, b) => {
     if (a.state === b.state) return a.name.localeCompare(b.name);
     const result = a.state === "healthy" ? -1 : 1;
@@ -201,16 +188,12 @@ function visibleProviders() {
 
 function renderForecast() {
   const visible = visibleProviders();
-  if (state.selectedId == null || (state.hasDataOnly && visible.length && !visible.some((provider) => provider.id === state.selectedId))) state.selectedId = defaultActiveProviderId(visible);
-  const emptyMessage = state.hasDataOnly ? "No providers with collected data match this view." : `No providers match “${state.search}”. Try a model or provider name.`;
+  if (state.selectedId == null || (visible.length && !visible.some((provider) => provider.id === state.selectedId))) state.selectedId = defaultActiveProviderId(visible) || visible[0]?.id || null;
+  const emptyMessage = `No active forecast signals match${state.search ? ` “${state.search}”` : " this view"}.`;
   $("#provider-list").innerHTML = visible.length ? visible.map(renderProviderRow).join("") : `<div class="empty-state">${emptyMessage}</div>`;
   $("#detail-panel").innerHTML = state.selectedId ? detailMarkup(getProvider(state.selectedId)) : emptyDetailMarkup();
   $("#provider-search").value = state.search;
   document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === state.activeView));
-  const dataFilterButton = $("#data-filter-button");
-  dataFilterButton.classList.toggle("active", state.hasDataOnly);
-  dataFilterButton.setAttribute("aria-pressed", String(state.hasDataOnly));
-  dataFilterButton.textContent = state.hasDataOnly ? "With data only · on" : "With data only";
 }
 
 function publicStatusState(indicator) {
@@ -517,7 +500,6 @@ registerWebMcpTools().catch((error) => {
 
 $("#provider-search").addEventListener("input", (event) => { state.search = event.target.value; renderForecast(); });
 document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => { state.activeView = button.dataset.view; renderForecast(); }));
-$("#data-filter-button").addEventListener("click", () => { state.hasDataOnly = !state.hasDataOnly; renderForecast(); });
 $("#sort-button").addEventListener("click", () => { state.sortDescending = !state.sortDescending; $("#sort-button").textContent = `CONDITION ${state.sortDescending ? "↓" : "↑"}`; renderForecast(); });
 $("#provider-list").addEventListener("click", (event) => { const row = event.target.closest("[data-provider-id]"); if (row) { state.selectedId = row.dataset.providerId; renderForecast(); } });
 $("#compare-picker-list").addEventListener("click", (event) => { const button = event.target.closest("[data-toggle-compare]"); if (!button) return; const id = button.dataset.toggleCompare; if (state.compareIds.includes(id)) { if (state.compareIds.length === 1) return showToast("Keep one model selected for comparison."); state.compareIds = state.compareIds.filter((item) => item !== id); } else if (state.compareIds.length < 3) { state.compareIds = [...state.compareIds, id]; } else return showToast("Compare up to three models at a time."); renderCompare(); renderForecast(); });
