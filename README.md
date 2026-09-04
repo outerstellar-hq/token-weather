@@ -19,7 +19,7 @@ The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
 `get_provider_weather`, `get_model_weather`, `get_current_price`, `get_current_quota`, `get_capacity`, `get_rate_limits`, `compare_models`, `find_cheapest_window`, `find_fastest_window`, `plan_workload`, `explain_recommendation`, `get_source`, and `get_recent_changes`.
 
-When the browser exposes `document.modelContext.registerTool`, the page registers seven top-level WebMCP site tools using the required `{ name, description, inputSchema, execute }` shape: `get_provider_weather`, `get_model_weather`, `compare_models`, `plan_workload`, `get_recent_changes`, `get_published_time_windows`, and `focus_provider`. The tools reuse the same normalized forecast logic as the human UI; `focus_provider` updates the visible detail panel so the person and agent can inspect the same model together. Browsers without WebMCP keep the full human interface.
+When the browser exposes `document.modelContext.registerTool`, the page registers six read-only WebMCP site tools using the required `{ name, description, inputSchema, execute }` shape: `get_provider_weather`, `get_model_weather`, `compare_models`, `plan_workload`, `get_recent_changes`, and `get_published_time_windows`. The tools reuse the same normalized public-source logic as the timetable and agent API. Browsers without WebMCP keep the timetable interface.
 
 In a WebMCP-aware browser, an agent can discover and call a tool from the page with the standard imperative API:
 

@@ -6,8 +6,8 @@ Checked against the [official OpenAI challenge page](https://openai.com/webmcp-c
 
 | Requirement | Status | Evidence or remaining action |
 | --- | --- | --- |
-| WebMCP-powered app | Ready locally | `app.js` registers seven top-level tools through `document.modelContext.registerTool({ name, description, inputSchema, execute })`. |
-| Human-agent workflow | Ready locally | `focus_provider` updates the visible detail panel; read and planning tools reuse the dashboard’s normalized logic. |
+| WebMCP-powered app | Ready locally | `app.js` registers six read-only tools through `document.modelContext.registerTool({ name, description, inputSchema, execute })`. |
+| Human-agent workflow | Ready locally | Read and planning tools reuse the timetable’s normalized public-source logic. |
 | Source and setup instructions | Ready locally | `README.md`, `package.json`, collector, and local server are included. |
 | Open-source license | Ready locally | Root `LICENSE` is MIT and must be visible on the public repository page. |
 | Challenge-period work | Ready locally | Git history begins September 1, 2026; the challenge submission period began August 25, 2026. |

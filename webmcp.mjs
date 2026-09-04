@@ -5,10 +5,9 @@ export const webMcpToolNames = Object.freeze([
   "plan_workload",
   "get_recent_changes",
   "get_published_time_windows",
-  "focus_provider"
 ]);
 
-export function createWebMcpTools({ agentApi, getProvider, providerWeather, onFocusProvider }) {
+export function createWebMcpTools({ agentApi }) {
   return [
     {
       name: "get_provider_weather",
@@ -79,22 +78,6 @@ export function createWebMcpTools({ agentApi, getProvider, providerWeather, onFo
       annotations: { readOnlyHint: true },
       execute: async ({ provider_id: providerId }) => agentApi.get_published_time_windows(providerId)
     },
-    {
-      name: "focus_provider",
-      description: "Select a provider in the visible forecast so the person and agent can inspect the same detail panel.",
-      inputSchema: {
-        type: "object",
-        properties: { provider_id: { type: "string", description: "Provider ID to show in the forecast detail panel." } },
-        required: ["provider_id"],
-        additionalProperties: false
-      },
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
-      execute: async ({ provider_id: providerId }) => {
-        const provider = getProvider(providerId);
-        onFocusProvider(provider);
-        return { selected: providerWeather(provider), human_view_updated: true };
-      }
-    }
   ];
 }
 

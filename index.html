@@ -26,8 +26,7 @@
           <span class="mono">MVP SNAPSHOT · UTC</span>
         </div>
         <nav class="surface-nav" aria-label="Token Weather surfaces">
-          <button class="surface-link active" type="button" data-scroll-target="workspace-section">Forecast</button>
-          <button class="surface-link" type="button" data-scroll-target="timetable-section">Timetable</button>
+          <button class="surface-link active" type="button" data-scroll-target="timetable-section">Timetable</button>
           <button class="surface-link" type="button" data-scroll-target="webmcp-section">WebMCP</button>
         </nav>
         <button class="icon-button" type="button" aria-label="Open settings">•••</button>
@@ -97,31 +96,6 @@ const result = await document.modelContext.executeTool(
   tool,
   JSON.stringify({ provider_id: "minimax-m27" })
 );</code></pre>
-          </div>
-        </section>
-
-        <section class="workspace-section">
-          <div class="section-heading">
-            <div>
-              <p class="eyebrow">PROVIDER MAP <span class="slash">/</span> 15 TRACKED</p>
-            </div>
-            <div class="view-controls" role="group" aria-label="Provider view controls">
-              <button class="view-button active" type="button" data-view="all">Forecast signals</button>
-              <button class="view-button" type="button" data-view="asia">Asia</button>
-              <button class="view-button" type="button" data-view="west">Western</button>
-            </div>
-          </div>
-
-          <div class="dashboard-grid">
-            <div class="provider-panel">
-              <div class="panel-toolbar">
-                <label class="search-box"><span aria-hidden="true">⌕</span><input id="provider-search" type="search" placeholder="Search providers or models" /></label>
-                <span class="sort-label">SORT: <button type="button" id="sort-button">CONDITION ↓</button></span>
-              </div>
-              <div class="provider-list" id="provider-list" aria-live="polite"></div>
-            </div>
-
-            <aside class="detail-panel" id="detail-panel" aria-live="polite"></aside>
           </div>
         </section>
 

@@ -1,4 +1,3 @@
-import { defaultActiveProviderId, hasActiveForecastSignal } from "./selection.mjs";
 import { createWebMcpTools, registerWebMcpTools as registerWebMcpToolSet } from "./webmcp.mjs";
 
 const providerCatalog = Object.freeze([
@@ -41,20 +40,12 @@ let providers = Object.freeze(providerCatalog.map(emptyTelemetryProvider));
 let providerSchedules = Object.freeze([]);
 let recentChanges = Object.freeze([]);
 
-const stateClass = { healthy: "green", watch: "yellow", disrupted: "red", unknown: "gray" };
-const state = { selectedId: null, activeView: "all", search: "", sortDescending: true };
 const $ = (selector) => document.querySelector(selector);
 
 function getProvider(id) {
   const provider = providers.find((item) => item.id === id);
   if (!provider) throw new Error(`Unknown provider: ${id}`);
   return provider;
-}
-
-function statusDot(providerState) {
-  const className = stateClass[providerState] || stateClass.unknown;
-  const neutralStyle = providerState === "unknown" ? ' style="background: var(--muted);"' : "";
-  return `<i class="status-dot ${className}"${neutralStyle}></i>`;
 }
 
 function formatTokens(value) {
@@ -242,51 +233,6 @@ function setTimetableDisplay(key, value) {
   updateTimetableClock();
 }
 
-function renderProviderRow(provider) {
-  const selected = provider.id === state.selectedId ? " selected" : "";
-  const evidence = provider.publicEvidence || { documents: 0, statements: 0 };
-  const schedule = getProviderSchedule(provider.id);
-  const forecastCondition = provider.state === "unknown" && schedule?.public_schedule_status?.startsWith("published_")
-    ? scheduleSummary(provider.id).headline
-    : provider.condition;
-  return `<button class="provider-row${selected}" type="button" data-provider-id="${provider.id}" aria-pressed="${provider.id === state.selectedId}">
-    <span class="provider-name"><span class="provider-avatar">${provider.code}</span><span class="provider-title"><strong>${provider.name}</strong><span>${provider.model}</span></span></span>
-    <span><span class="metric-label">Forecast</span><span class="condition">${statusDot(provider.state)}${forecastCondition}</span></span>
-    <span><span class="metric-label">Public evidence</span><span class="metric-value">${evidence.status ? "Status connected" : evidence.documents ? `${evidence.documents} docs checked` : "Not collected"}</span></span>
-    <span><span class="metric-label">Statements</span><span class="metric-value">${evidence.statements || "None collected"}</span></span>
-  </button>`;
-}
-
-function detailMarkup(provider) {
-  const price = hasPricing(provider) ? `${formatPrice(provider.pricing.input)} / ${formatPrice(provider.pricing.output)}` : "Not collected";
-  const schedule = scheduleSummary(provider.id);
-  const scheduleSource = getProviderSchedule(provider.id)?.source || provider.source;
-  const scheduleSourceUrl = escapeMarkup(scheduleSource.url);
-  const scheduleSourceTitle = escapeMarkup(scheduleSource.title || scheduleSource.label || "Direct public source");
-  const evidence = provider.publicEvidence || { documents: 0, status: null, statements: 0, latestStatement: null };
-  const publicStatus = evidence.status ? provider.condition : "No public status feed";
-  const latestStatement = evidence.latestStatement?.title ? `<p>Latest statement: ${evidence.latestStatement.title}</p>` : "";
-  return `<div class="detail-top"><div><span class="detail-kicker">Selected provider</span><h3>${provider.name}</h3><span class="detail-model">${provider.model} · ${provider.region === "asia" ? "Asia Pacific" : "Western"}</span></div><span class="detail-condition">${statusDot(provider.state)} ${provider.condition}</span></div>
-    <div class="detail-rule"></div>
-    <div class="detail-stats">
-      <div class="detail-stat"><label>Public status</label><strong>${publicStatus}</strong></div>
-      <div class="detail-stat"><label>Official documents</label><strong>${evidence.documents} checked</strong></div>
-      <div class="detail-stat"><label>Public statements</label><strong>${evidence.statements || "None collected"}</strong></div>
-      <div class="detail-stat"><label>Current effective cost</label><strong>${price}<span> / 1M in / out</span></strong></div>
-      <div class="detail-stat"><label>Public measurement</label><strong>${Number.isFinite(provider.latencyMs) ? formatLatency(provider.latencyMs) : "Not collected"}</strong></div>
-      <div class="detail-stat"><label>Evidence status</label><strong>${provider.source.confidence}</strong></div>
-    </div>
-    <div class="detail-evidence"><span class="detail-kicker">Public evidence</span><strong>${publicStatus} · ${evidence.documents} document${evidence.documents === 1 ? "" : "s"} checked · ${evidence.statements || "No"} statement${evidence.statements === 1 ? "" : "s"}</strong>${latestStatement}<p>Public records only. This is not a person’s remaining quota.</p></div>
-    <div class="detail-schedule"><span class="detail-kicker">Published timing</span><strong>${schedule.headline}</strong>${schedule.lines.map((line) => `<p>${line} <a class="source-link detail-line-source" href="${scheduleSourceUrl}" title="${scheduleSourceTitle}" aria-label="Direct source: ${scheduleSourceTitle}" target="_blank" rel="noreferrer">Direct source ↗</a></p>`).join("")}<a class="source-link" href="${scheduleSourceUrl}" target="_blank" rel="noreferrer">Timing source ↗</a></div>
-    <div class="detail-callout"><strong>Forecast note</strong>${provider.note}</div>
-    <div class="source-row"><span>Checked · ${provider.source.retrievedAt}</span><a class="source-link" href="${provider.source.url}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${provider.source.label} ↗</a></div>
-    <div class="detail-limits mono">${provider.rateLimits.rps == null ? `RPM ${formatTokens(provider.rateLimits.rpm)}` : `RPS ${formatTokens(provider.rateLimits.rps)}`} · CONC ${formatTokens(provider.rateLimits.concurrency)}</div>`;
-}
-
-function emptyDetailMarkup() {
-  return `<div class="detail-empty"><span class="detail-kicker">Selected provider</span><h3>No active public quota</h3><p>The default view selects a provider only after a public quota or rate-limit signal has been collected. Documentation and status records remain available without being presented as active quota.</p></div>`;
-}
-
 async function loadProviderSchedules() {
   try {
     const response = await fetch("/docs/provider-time-windows.json", { cache: "no-store" });
@@ -294,33 +240,10 @@ async function loadProviderSchedules() {
     const payload = await response.json();
     if (!Array.isArray(payload.records)) throw new Error("time-window registry records are missing");
     providerSchedules = Object.freeze(payload.records);
-    renderForecast();
     renderTimetable();
   } catch {
     console.error("Token Weather public time-window registry could not be loaded");
   }
-}
-
-function visibleProviders() {
-  const search = state.search.toLowerCase();
-  return providers.filter((provider) => {
-    const matchesSearch = `${provider.name} ${provider.model}`.toLowerCase().includes(search);
-    return matchesSearch && hasActiveForecastSignal(provider, getProviderSchedule(provider.id)) && (state.activeView === "all" || provider.region === state.activeView);
-  }).sort((a, b) => {
-    if (a.state === b.state) return a.name.localeCompare(b.name);
-    const result = a.state === "healthy" ? -1 : 1;
-    return state.sortDescending ? result : -result;
-  });
-}
-
-function renderForecast() {
-  const visible = visibleProviders();
-  if (state.selectedId == null || (visible.length && !visible.some((provider) => provider.id === state.selectedId))) state.selectedId = defaultActiveProviderId(visible) || visible[0]?.id || null;
-  const emptyMessage = `No active forecast signals match${state.search ? ` “${state.search}”` : " this view"}.`;
-  $("#provider-list").innerHTML = visible.length ? visible.map(renderProviderRow).join("") : `<div class="empty-state">${emptyMessage}</div>`;
-  $("#detail-panel").innerHTML = state.selectedId ? detailMarkup(getProvider(state.selectedId)) : emptyDetailMarkup();
-  $("#provider-search").value = state.search;
-  document.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === state.activeView));
 }
 
 function publicStatusState(indicator) {
@@ -381,7 +304,6 @@ function applySnapshot(snapshot) {
   $("#feed-label").textContent = publicSignals.length ? "Public signals connected" : snapshot.mode === "degraded" ? "Public source feed degraded" : "Public sources connected · no forecast metrics";
   $("#overall-condition").textContent = publicSignals.length ? "PUBLIC SIGNALS AVAILABLE" : "NO PUBLIC METRICS";
   $("#overall-detail").textContent = `${publicSignals.length} public signals · ${successfulSources.size} documentation sources checked`;
-  renderForecast();
 }
 
 async function loadSnapshot() {
@@ -528,15 +450,7 @@ window.tokenWeather = agentApi;
 async function registerWebMcpTools() {
   const registered = await registerWebMcpToolSet({
     modelContext: document.modelContext,
-    tools: createWebMcpTools({
-      agentApi,
-      getProvider,
-      providerWeather,
-      onFocusProvider: (provider) => {
-        state.selectedId = provider.id;
-        renderForecast();
-      }
-    })
+    tools: createWebMcpTools({ agentApi })
   });
   if (registered) document.documentElement.dataset.webmcp = "ready";
 }
@@ -546,10 +460,6 @@ registerWebMcpTools().catch((error) => {
   console.error("Token Weather WebMCP registration failed", error);
 });
 
-$("#provider-search").addEventListener("input", (event) => { state.search = event.target.value; renderForecast(); });
-document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", () => { state.activeView = button.dataset.view; renderForecast(); }));
-$("#sort-button").addEventListener("click", () => { state.sortDescending = !state.sortDescending; $("#sort-button").textContent = `CONDITION ${state.sortDescending ? "↓" : "↑"}`; renderForecast(); });
-$("#provider-list").addEventListener("click", (event) => { const row = event.target.closest("[data-provider-id]"); if (row) { state.selectedId = row.dataset.providerId; renderForecast(); } });
 document.addEventListener("click", (event) => { const source = event.target.closest("[data-source-id]"); if (source) { const item = getSource(source.dataset.sourceId); showToast(`${item.label} · ${item.confidence} · ${item.retrievedAt}`); } });
 document.querySelectorAll("[data-scroll-target]").forEach((button) => button.addEventListener("click", () => { document.getElementById(button.dataset.scrollTarget).scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelectorAll(".surface-link").forEach((item) => item.classList.toggle("active", item === button)); }));
 document.querySelectorAll("[data-timetable-timezone]").forEach((button) => button.addEventListener("click", () => setTimetableDisplay("timezone", button.dataset.timetableTimezone)));
@@ -557,7 +467,6 @@ document.querySelectorAll("[data-timetable-format]").forEach((button) => button.
 $("#webmcp-check").addEventListener("click", checkWebMcpTools);
 $("#webmcp-run").addEventListener("click", runWebMcpExample);
 
-renderForecast();
 renderTimetable();
 window.setInterval(updateTimetableClock, 1000);
 loadSnapshot();
