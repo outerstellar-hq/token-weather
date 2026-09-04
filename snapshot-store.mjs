@@ -9,6 +9,10 @@ export function isPublicSnapshot(snapshot) {
   return snapshot.events.every((event) => {
     if (!event || typeof event !== "object") return false;
     if (typeof event.event_type === "string" && event.event_type.startsWith("ACCOUNT_")) return false;
+    if ("is_estimate" in event) {
+      if (event.is_estimate !== true) return false;
+      if (!["source_url", "retrieved_at", "scope", "confidence", "method"].every((key) => typeof event[key] === "string" && event[key].length > 0)) return false;
+    }
     return !Object.keys(event).some((key) => /account|api_key|workspace_id|personal/i.test(key));
   });
 }

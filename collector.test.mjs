@@ -57,3 +57,19 @@ test("snapshot validation rejects legacy private state", () => {
   assert.equal(isPublicSnapshot({ ...publicSnapshot, account_collectors: {} }), false);
   assert.equal(isPublicSnapshot({ ...publicSnapshot, events: [{ event_type: "ACCOUNT_QUOTA", account_id: "private" }] }), false);
 });
+
+test("snapshot validation accepts only fully labeled public estimates", () => {
+  const estimate = {
+    event_type: "PUBLIC_ESTIMATE",
+    provider_id: "openai-gpt-5",
+    source_url: "https://platform.xiaomimimo.com/token-plan",
+    retrieved_at: "2026-09-04T00:00:00Z",
+    scope: "global public estimate",
+    confidence: "medium",
+    method: "derived from the published public range",
+    is_estimate: true
+  };
+  assert.equal(isPublicSnapshot({ schema: "token-weather.snapshot.v1", events: [estimate] }), true);
+  assert.equal(isPublicSnapshot({ schema: "token-weather.snapshot.v1", events: [{ ...estimate, is_estimate: false }] }), false);
+  assert.equal(isPublicSnapshot({ schema: "token-weather.snapshot.v1", events: [{ ...estimate, method: undefined }] }), false);
+});

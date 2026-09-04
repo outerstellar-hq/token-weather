@@ -14,6 +14,8 @@ function assert(condition, message) {
 const registry = JSON.parse(await readFile(registryPath, "utf8"));
 assert(registry.schema === "token-weather.provider-registry.v1", "schema is missing or incorrect");
 assert(registry.hard_fact_policy?.missing_evidence_value === "unavailable", "missing-evidence rule is missing");
+assert(registry.estimate_policy?.estimated_public_signals === "allowed_if_labeled", "estimate policy is missing");
+assert((registry.estimate_policy?.required_for_estimate || []).includes("is_estimate"), "estimates must be explicitly labeled");
 
 const groups = ["model_owners", "inference_providers"];
 const providers = groups.flatMap((group) => registry[group] || []);

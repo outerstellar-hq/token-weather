@@ -4,9 +4,15 @@
   "purpose": "A source-linked registry of model owners, hosted inference providers, and routing platforms considered by Token Weather.",
   "coverage_rule": "This is the complete current forecasting scope, not a claim that it contains every AI model in existence. Dynamic catalogs remain dynamic and are never copied into telemetry.",
   "hard_fact_policy": {
-    "forbidden": ["seeded_metrics", "estimated_metrics", "account_data", "request_headers", "private_console_data"],
+    "forbidden": ["seeded_metrics", "unlabeled_estimates", "account_data", "request_headers", "private_console_data"],
     "required_for_live_fact": ["source_url", "retrieved_at", "http_status", "official", "confidence", "sha256"],
     "missing_evidence_value": "unavailable"
+  },
+  "estimate_policy": {
+    "exact_public_facts": "preferred",
+    "estimated_public_signals": "allowed_if_labeled",
+    "required_for_estimate": ["source_url", "retrieved_at", "scope", "confidence", "method", "is_estimate"],
+    "must_not_be_presented_as": ["personal_quota", "account_balance", "universal_guarantee"]
   },
   "model_owners": [
     {
