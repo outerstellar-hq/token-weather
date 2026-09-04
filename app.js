@@ -381,7 +381,6 @@ function applySnapshot(snapshot) {
   $("#feed-label").textContent = publicSignals.length ? "Public signals connected" : snapshot.mode === "degraded" ? "Public source feed degraded" : "Public sources connected · no forecast metrics";
   $("#overall-condition").textContent = publicSignals.length ? "PUBLIC SIGNALS AVAILABLE" : "NO PUBLIC METRICS";
   $("#overall-detail").textContent = `${publicSignals.length} public signals · ${successfulSources.size} documentation sources checked`;
-  $("#coverage-label").textContent = `${successfulSources.size}/${providerCatalog.length} DOCS SOURCES`;
   renderForecast();
   renderCompare();
 }
