@@ -123,6 +123,39 @@ function scheduleSummary(providerId) {
   return { headline, lines: lines.length ? lines : ["No timing rule was published in the checked source."] };
 }
 
+function escapeMarkup(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
+}
+
+function timetableEntries() {
+  return providerSchedules.flatMap((schedule) => {
+    const provider = providers.find((item) => item.id === schedule.provider_id);
+    if (!provider || schedule.public_schedule_status === "no_published_schedule") return [];
+    const windows = (schedule.windows || []).map((window) => ({
+      provider,
+      label: window.kind.replaceAll("_", " "),
+      time: `${window.days.join(", ")} · ${window.start}–${window.end}`,
+      timezone: window.timezone,
+      effect: window.effect
+    }));
+    const resets = (schedule.reset_rules || []).map((reset) => ({
+      provider,
+      label: `${reset.kind.replaceAll("_", " ")} reset`,
+      time: reset.duration || reset.at || reset.time || (reset.durations || []).join(" / ") || "published rule",
+      timezone: reset.timezone || "",
+      effect: reset.scope || "Published reset rule"
+    }));
+    return [...windows, ...resets];
+  });
+}
+
+function renderTimetable() {
+  const entries = timetableEntries();
+  $("#timetable-list").innerHTML = entries.length
+    ? `<div class="timetable-table-wrap"><table class="timetable-table"><thead><tr><th>Provider</th><th>Rule</th><th>Time</th><th>Effect</th><th>Source</th></tr></thead><tbody>${entries.map((entry) => `<tr><td data-label="Provider"><strong>${escapeMarkup(entry.provider.name)}</strong><span>${escapeMarkup(entry.provider.model)}</span></td><td data-label="Rule">${escapeMarkup(entry.label)}</td><td data-label="Time"><strong>${escapeMarkup(entry.time)}</strong>${entry.timezone ? `<span>${escapeMarkup(entry.timezone)}</span>` : ""}</td><td data-label="Effect">${escapeMarkup(entry.effect)}</td><td data-label="Source"><a class="source-link" href="${escapeMarkup(getProviderSchedule(entry.provider.id)?.source.url)}" target="_blank" rel="noreferrer">Official source ↗</a></td></tr>`).join("")}</tbody></table></div>`
+    : `<div class="empty-state">No published timetable rules have been collected.</div>`;
+}
+
 function renderProviderRow(provider) {
   const selected = provider.id === state.selectedId ? " selected" : "";
   const evidence = provider.publicEvidence || { documents: 0, statements: 0 };
@@ -173,6 +206,7 @@ async function loadProviderSchedules() {
     if (!Array.isArray(payload.records)) throw new Error("time-window registry records are missing");
     providerSchedules = Object.freeze(payload.records);
     renderForecast();
+    renderTimetable();
   } catch {
     console.error("Token Weather public time-window registry could not be loaded");
   }
@@ -510,10 +544,10 @@ $("#compare-picker-list").addEventListener("click", (event) => { const button = 
   document.addEventListener("click", (event) => { const source = event.target.closest("[data-source-id]"); if (source) { const item = getSource(source.dataset.sourceId); showToast(`${item.label} · ${item.confidence} · ${item.retrievedAt}`); } const add = event.target.closest("[data-add-compare]"); if (add) { const id = add.dataset.addCompare; if (!state.compareIds.includes(id) && state.compareIds.length >= 3) return showToast("Compare up to three models at a time."); if (!state.compareIds.includes(id)) state.compareIds = [...state.compareIds, id]; renderCompare(); renderForecast(); showToast(`${getProvider(id).name} added to comparison.`); } });
 $("#refresh-button").addEventListener("click", refreshSnapshot);
 $("#hero-sources-button").addEventListener("click", () => showToast("Every forecast keeps its source type, confidence, and measurement boundary attached."));
-$("#principle-button").addEventListener("click", () => showToast("Guaranteed capacity is the promise. Observed capacity is the possibility."));
 document.querySelectorAll("[data-scroll-target]").forEach((button) => button.addEventListener("click", () => { document.getElementById(button.dataset.scrollTarget).scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelectorAll(".surface-link").forEach((item) => item.classList.toggle("active", item === button)); }));
 
 renderForecast();
 renderCompare();
+renderTimetable();
 loadSnapshot();
 loadProviderSchedules();

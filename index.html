@@ -26,6 +26,7 @@
         </div>
         <nav class="surface-nav" aria-label="Token Weather surfaces">
           <button class="surface-link active" type="button" data-scroll-target="workspace-section">Forecast</button>
+          <button class="surface-link" type="button" data-scroll-target="timetable-section">Timetable</button>
           <button class="surface-link" type="button" data-scroll-target="compare-section">Compare</button>
         </nav>
         <button class="icon-button" type="button" aria-label="Open settings">•••</button>
@@ -91,6 +92,17 @@
           </div>
         </section>
 
+        <section class="tool-section timetable-section" id="timetable-section">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">PUBLIC TIMETABLE <span class="slash">/</span> PUBLISHED RULES ONLY</p>
+              <h2>When do conditions change?</h2>
+            </div>
+            <span class="section-note">Provider-published clocks and resets</span>
+          </div>
+          <div id="timetable-list" class="timetable-list" aria-live="polite"></div>
+        </section>
+
         <section class="tool-section" id="compare-section">
           <div class="section-heading compact-heading">
             <div>
@@ -108,12 +120,6 @@
           </div>
         </section>
 
-        <section class="principle-band">
-          <div class="principle-mark" aria-hidden="true">✳</div>
-          <div><p class="eyebrow">THE RULE</p><h2>Separate the promise<br />from the possibility.</h2></div>
-          <p class="principle-copy">We show what a provider guarantees in one line, and what the network is giving you right now in another. Official limits and observed behavior are never blended.</p>
-          <button class="circle-button" type="button" id="principle-button" aria-label="Read about Token Weather methodology">↗</button>
-        </section>
       </main>
 
       <footer class="footer"><span>Token Weather / a clearer forecast for the token economy</span><span class="mono">MVP 0.2 · SEE SOURCES BEFORE SHIPPING</span></footer>

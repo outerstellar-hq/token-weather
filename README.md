@@ -7,8 +7,8 @@ The authoritative provider and inference-surface list, including time-window can
 The MVP includes three user-facing slices:
 
 - Catalog: fifteen first-priority providers with region filtering, search, selected-model detail, and source provenance.
+- Timetable: provider-published clock windows and reset rules, with the exact source attached to every row.
 - Compare: select up to three models and see only metrics supplied by real telemetry.
-- Public statements: show only provider blog/feed statements actually collected from live sources.
 
 The product is generic for every visitor. It has no login, profile, API-key input, workspace context, personal quota, account balance, personalized recommendation, or account-specific telemetry. Provider names and source links are a static tracking catalog; every price, published limit, capacity, latency, stability, and change value starts as unavailable and is populated only by a successful public-source collector. A public documentation retrieval proves that a source was checked, but it is never presented as a user’s current quota or account state.
 
