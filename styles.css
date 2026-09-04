@@ -60,6 +60,8 @@ h1 { max-width: 700px; margin-bottom: 9px; font-size: clamp(32px, 4vw, 52px); li
 .webmcp-copy, .webmcp-code, .webmcp-output { border: 1px solid var(--line); background: var(--panel); }
 .webmcp-copy { min-width: 0; padding: 18px; }
 .webmcp-copy > p { max-width: 520px; margin-bottom: 15px; color: var(--ink-soft); font-size: 12px; line-height: 1.5; }
+.webmcp-example { display: grid; gap: 5px; margin-bottom: 15px; padding: 11px 12px; border-left: 2px solid var(--amber); background: color-mix(in oklab, var(--amber) 8%, var(--panel)); color: var(--ink-soft); font-size: 11px; line-height: 1.4; }
+.webmcp-example-label { color: var(--amber); font: 600 9px var(--mono); letter-spacing: .08em; text-transform: uppercase; }.webmcp-example strong { color: var(--ink); font-weight: 600; }.webmcp-example code { color: var(--sage-soft); font: 10px var(--mono); }
 .webmcp-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 .webmcp-tool-list { margin-top: 15px; color: var(--muted); font: 10px var(--mono); line-height: 1.6; }
 .webmcp-tool { display: inline-block; margin: 0 6px 6px 0; padding: 4px 6px; border: 1px solid var(--line-bright); color: var(--sage-soft); }
