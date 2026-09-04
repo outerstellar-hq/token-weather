@@ -370,12 +370,8 @@ function applySnapshot(snapshot) {
     return { ...provider, publicEvidence, state: statusEvent ? publicStatusState(statusEvent.signals?.indicator) : provider.state, condition, note: statusEvent ? `Official public status: ${condition}. ` : publicEvidence.statements ? "Official public statement collected. " : provider.note, source };
   }));
   $("#feed-label").textContent = publicSignals.length ? "Public signals connected" : snapshot.mode === "degraded" ? "Public source feed degraded" : "Public sources connected · no forecast metrics";
-  $("#snapshot-label").textContent = snapshot.generated_at ? `Public sources checked · ${new Date(snapshot.generated_at).toISOString().replace("T", " ").slice(0, 16)} UTC · ${publicSignals.length} signals` : "No public forecast signals collected";
   $("#overall-condition").textContent = publicSignals.length ? "PUBLIC SIGNALS AVAILABLE" : "NO PUBLIC METRICS";
   $("#overall-detail").textContent = `${publicSignals.length} public signals · ${successfulSources.size} documentation sources checked`;
-  $("#signal-value-source").textContent = `${successfulSources.size} documentation sources checked`;
-  $("#signal-value-window").textContent = publicSignals.length ? `${publicSignals.length} public signals` : "No public forecast windows collected";
-  $("#signal-value-headroom").textContent = "Global public view · no personalization";
   $("#coverage-label").textContent = `${successfulSources.size}/${providerCatalog.length} DOCS SOURCES`;
   renderForecast();
   renderCompare();
@@ -391,7 +387,6 @@ async function loadSnapshot() {
   } catch {
     console.error("Token Weather live snapshot could not be loaded");
     $("#feed-label").textContent = "Public sources unavailable";
-    $("#snapshot-label").textContent = "No public forecast signals collected";
   }
 }
 
