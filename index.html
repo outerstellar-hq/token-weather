@@ -28,6 +28,7 @@
         <nav class="surface-nav" aria-label="Token Weather surfaces">
           <button class="surface-link active" type="button" data-scroll-target="workspace-section">Forecast</button>
           <button class="surface-link" type="button" data-scroll-target="timetable-section">Timetable</button>
+          <button class="surface-link" type="button" data-scroll-target="webmcp-section">WebMCP</button>
           <button class="surface-link" type="button" data-scroll-target="compare-section">Compare</button>
         </nav>
         <button class="icon-button" type="button" aria-label="Open settings">•••</button>
@@ -73,6 +74,33 @@
             </div>
           </div>
           <div id="timetable-list" class="timetable-list" aria-live="polite"></div>
+        </section>
+
+        <section class="tool-section webmcp-section" id="webmcp-section">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">WEBMCP <span class="slash">/</span> AGENT CALL</p>
+              <h2>Call the forecast from an agent.</h2>
+            </div>
+            <span class="section-note" id="webmcp-status">WebMCP-aware browser not detected</span>
+          </div>
+          <div class="webmcp-layout">
+            <div class="webmcp-copy">
+              <p>In a WebMCP-aware browser, an agent discovers these read-only tools from this page and executes one with JSON arguments.</p>
+              <div class="webmcp-actions">
+                <button class="small-action" type="button" id="webmcp-check">Check available tools</button>
+                <button class="small-action" type="button" id="webmcp-run">Run sample call</button>
+              </div>
+              <div class="webmcp-tool-list" id="webmcp-tools" aria-live="polite">Press “Check available tools” to inspect the page contract.</div>
+              <pre class="webmcp-output" id="webmcp-output" aria-live="polite">Sample result will appear here.</pre>
+            </div>
+            <pre class="webmcp-code"><code>const tools = await document.modelContext.getTools();
+const tool = tools.find(({ name }) =&gt; name === "get_published_time_windows");
+const result = await document.modelContext.executeTool(
+  tool,
+  JSON.stringify({ provider_id: "minimax-m27" })
+);</code></pre>
+          </div>
         </section>
 
         <section class="workspace-section">

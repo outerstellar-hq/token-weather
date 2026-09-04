@@ -22,6 +22,19 @@ The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 
 When the browser exposes `document.modelContext.registerTool`, the page registers seven top-level WebMCP site tools using the required `{ name, description, inputSchema, execute }` shape: `get_provider_weather`, `get_model_weather`, `compare_models`, `plan_workload`, `get_recent_changes`, `get_published_time_windows`, and `focus_provider`. The tools reuse the same normalized forecast logic as the human UI; `focus_provider` updates the visible detail panel so the person and agent can inspect the same model together. Browsers without WebMCP keep the full human interface.
 
+In a WebMCP-aware browser, an agent can discover and call a tool from the page with the standard imperative API:
+
+```js
+const tools = await document.modelContext.getTools();
+const tool = tools.find(({ name }) => name === "get_published_time_windows");
+const result = await document.modelContext.executeTool(
+  tool,
+  JSON.stringify({ provider_id: "minimax-m27" })
+);
+```
+
+The live page includes the same example plus buttons to inspect the seven registered tools and run the read-only sample call. See the [Chrome WebMCP imperative API](https://developer.chrome.com/docs/ai/webmcp/imperative-api) for the browser contract.
+
 ## Collector slice
 
 `collector.mjs` retrieves official provider pages for the tracked MVP providers and emits `SOURCE_FETCH` provenance records. The public adapter layer is responsible for official pricing and limit pages, public status APIs, provider announcements, and public company communications. It must never read a visitor’s credentials or workload headers. Responses are capped at 8 MB and requests time out after 10 seconds.

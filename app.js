@@ -491,6 +491,45 @@ function showToast(message) {
   showToast.timeout = window.setTimeout(() => toast.classList.remove("show"), 3200);
 }
 
+function setWebMcpPanel(message, tools = null) {
+  const status = $("#webmcp-status");
+  const list = $("#webmcp-tools");
+  if (status) status.textContent = message;
+  if (list && tools) list.innerHTML = tools.length ? tools.map((tool) => `<span class="webmcp-tool">${escapeMarkup(tool.name)}</span>`).join("") : "No tools are available to this page.";
+}
+
+async function getWebMcpTools() {
+  if (typeof document.modelContext?.getTools !== "function") {
+    setWebMcpPanel("WebMCP-aware browser not detected");
+    throw new Error("This browser does not expose document.modelContext.getTools().");
+  }
+  const tools = await document.modelContext.getTools();
+  setWebMcpPanel(`${tools.length} WebMCP tool${tools.length === 1 ? "" : "s"} available`, tools);
+  return tools;
+}
+
+async function checkWebMcpTools() {
+  try {
+    await getWebMcpTools();
+  } catch (error) {
+    $("#webmcp-tools").textContent = error.message;
+  }
+}
+
+async function runWebMcpExample() {
+  try {
+    const tools = await getWebMcpTools();
+    if (typeof document.modelContext?.executeTool !== "function") throw new Error("This browser does not expose document.modelContext.executeTool().");
+    const tool = tools.find(({ name }) => name === "get_published_time_windows");
+    if (!tool) throw new Error("The sample tool is not available to this page.");
+    const result = await document.modelContext.executeTool(tool, JSON.stringify({ provider_id: "minimax-m27" }));
+    $("#webmcp-output").textContent = JSON.stringify(result, null, 2);
+    showToast("WebMCP sample call completed.");
+  } catch (error) {
+    $("#webmcp-output").textContent = error.message;
+  }
+}
+
 function createAgentApi() {
   return Object.freeze({
     get_provider_weather: ({ region = "all" } = {}) => providers.filter((provider) => region === "all" || provider.region === region).map(providerWeather),
@@ -550,6 +589,8 @@ $("#refresh-button").addEventListener("click", refreshSnapshot);
 document.querySelectorAll("[data-scroll-target]").forEach((button) => button.addEventListener("click", () => { document.getElementById(button.dataset.scrollTarget).scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelectorAll(".surface-link").forEach((item) => item.classList.toggle("active", item === button)); }));
 document.querySelectorAll("[data-timetable-timezone]").forEach((button) => button.addEventListener("click", () => setTimetableDisplay("timezone", button.dataset.timetableTimezone)));
 document.querySelectorAll("[data-timetable-format]").forEach((button) => button.addEventListener("click", () => setTimetableDisplay("format", button.dataset.timetableFormat)));
+$("#webmcp-check").addEventListener("click", checkWebMcpTools);
+$("#webmcp-run").addEventListener("click", runWebMcpExample);
 
 renderForecast();
 renderCompare();
