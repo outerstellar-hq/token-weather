@@ -16,6 +16,7 @@ This is the source-backed timing registry for Token Weather. It records only pro
 ## Published reset windows without clock-based peak schedules
 
 - Claude: rolling five-hour usage window; Anthropic says switching is based on usage rather than time of day. [Source](https://support.anthropic.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
+- MiniMax Token Plan: included quota uses five-hour rolling and weekly windows; unused included quota does not carry over. [Source](https://platform.minimax.io/subscribe/token-plan?tab=individual__monthly)
 - StepFun: five-hour and weekly Step Plan windows; no universal clock schedule. [Source](https://platform.stepfun.com/docs/zh/step-plan/overview)
 - Gemini: daily RPD reset at midnight Pacific; shared capacity varies with demand, without a universal peak schedule. [Source](https://ai.google.dev/gemini-api/docs/rate-limits)
 - Kimi Code: rolling five-hour, weekly, and monthly quota windows. [Source](https://www.kimi.com/code/docs/en/kimi-code/error-reference.html)

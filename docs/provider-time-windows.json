@@ -110,15 +110,17 @@
       "provider_id": "minimax-m27",
       "public_schedule_status": "published_clock_window",
       "windows": [
-        { "kind": "peak", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "start": "15:00", "end": "17:30", "timezone": "not specified by source", "effect": "dynamic rate limiting; the source says the window is cluster-load dependent" }
+        { "kind": "peak", "days": ["monday", "tuesday", "wednesday", "thursday", "friday"], "start": "15:00", "end": "17:30", "timezone": "not specified by source", "effect": "Platform traffic rules: dynamic rate limiting based on cluster load; approximate concurrency is Plus 3–4 agents, Max 4–5, and Ultra 6–7. This is an approximate plan rule, not a guaranteed capacity promise" }
       ],
       "reset_rules": [
         { "kind": "rolling", "duration": "5 hours", "scope": "M2.7 text-model quota" },
+        { "kind": "weekly", "scope": "Included Token Plan quota", "time": "not specified by source" },
         { "kind": "daily", "scope": "non-text model quotas", "time": "not specified by source" }
       ],
       "published_conditions": [
         "MiniMax describes peak-hour rate limiting as dynamic and cluster-load dependent, typically weekdays 15:00–17:30; the time is approximate and not a guaranteed schedule.",
         "The current Token Plan page gives approximate peak concurrency bands of 3–4 agents for Plus, 4–5 for Max, and 6–7 for Ultra.",
+        "MiniMax says the traffic controls use account-usage dimensions to limit ultra-high-concurrency automated batch tasks or multi-user sharing patterns and preserve fair distribution of public computing resources.",
         "The current Token Plan page says included quota is controlled by 5-hour rolling and weekly windows; unused included quota does not carry over to the next billing cycle.",
         "The current page describes the plan as individual interactive use and recommends pay-as-you-go for production; these are plan conditions, not a public global capacity measurement."
       ],
