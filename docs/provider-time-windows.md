@@ -11,6 +11,7 @@ This is the source-backed timing registry for Token Weather. It records only pro
 | Z.ai | Typically 14:00–18:00 | Singapore | High inference load; temporary rate limits may occur. Z.ai says the window may shift. [Source](https://docs.z.ai/devpack/tool/others) |
 | Baidu Qianfan Coding Plan | Daily 10:30–12:00 and 14:00–18:00 | China Standard Time | Published peak periods; some Coding Plan model calls consume a higher quota-deduction coefficient. The source calls these times non-fixed and traffic-dependent. [Source](https://cloud.baidu.com/doc/qianfan/s/imlg0beiu) |
 | MiniMax Token Plan | Typically weekdays 15:00–17:30 | Not specified by source | Dynamic peak-hour throttling; the window depends on cluster load. [Source](https://platform.minimax.io/docs/token-plan/faq) |
+| Xiaomi MiMo Token Plan | Daily 00:00–08:00 | UTC+8 | Public page lists 0.8× usage for the displayed Max, Pro, and Standard plans; this is plan credit economics, not a universal quota. [Source](https://platform.xiaomimimo.com/token-plan) |
 
 ## Published reset windows without clock-based peak schedules
 

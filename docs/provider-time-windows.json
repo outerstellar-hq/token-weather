@@ -3,7 +3,7 @@
   "as_of": "2026-09-03",
   "scope": "Officially published public timing rules only. These are provider policies, not account usage or remaining quota.",
   "missing_evidence_value": "unavailable",
-  "tracked_surface_ids": ["deepseek-v4-pro", "qwen-3-7-plus", "glm-5", "zai", "baidu-ernie-5", "stepfun-step-35", "openai-gpt-5", "gemini-2-5-pro", "anthropic-claude-opus", "xai-grok-46", "minimax-m27", "groq-gpt-oss-120b", "moonshot-kimi-k26", "cerebras-llama-31-8b", "sambanova-deepseek-v31", "together-ai", "amazon-bedrock", "microsoft-foundry", "google-vertex-model-garden", "digitalocean-ai-platform", "openrouter", "huggingface-inference-providers", "replicate", "fireworks-ai", "cloudflare-workers-ai", "nvidia-nim", "ibm-watsonx"],
+  "tracked_surface_ids": ["deepseek-v4-pro", "qwen-3-7-plus", "glm-5", "zai", "baidu-ernie-5", "stepfun-step-35", "openai-gpt-5", "gemini-2-5-pro", "anthropic-claude-opus", "xai-grok-46", "minimax-m27", "groq-gpt-oss-120b", "moonshot-kimi-k26", "cerebras-llama-31-8b", "sambanova-deepseek-v31", "xiaomi-mimo-v25", "together-ai", "amazon-bedrock", "microsoft-foundry", "google-vertex-model-garden", "digitalocean-ai-platform", "openrouter", "huggingface-inference-providers", "replicate", "fireworks-ai", "cloudflare-workers-ai", "nvidia-nim", "ibm-watsonx"],
   "records": [
     {
       "provider_id": "deepseek-v4-pro",
@@ -157,6 +157,20 @@
         { "kind": "daily", "scope": "RPD and free-tier TPD", "time": "not specified by source" }
       ],
       "source": { "title": "Rate Limits Policy", "url": "https://docs.sambanova.ai/docs/en/models/rate-limits", "publisher": "SambaNova", "retrieved_at": "2026-09-03", "official": true }
+    },
+    {
+      "provider_id": "xiaomi-mimo-v25",
+      "public_schedule_status": "published_clock_window",
+      "windows": [
+        { "kind": "off_peak", "days": ["all"], "start": "00:00", "end": "08:00", "timezone": "UTC+8", "effect": "The Token Plan page lists 0.8x usage during the night window for the displayed Max, Pro, and Standard plans; this is plan credit economics, not a universal service-quota increase" }
+      ],
+      "reset_rules": [],
+      "published_conditions": [
+        "The public Token Plan page lists Max, Pro, Standard, and Lite plans with different published credit amounts.",
+        "The public page lists no weekly cap and no 5-hour cap for the displayed Max, Pro, and Standard plans; this is a plan-specific published rule, not a visitor's remaining quota.",
+        "The MiMo-V2 series is marked deprecated on the public page; the current Token Plan surface points to the V2.5 series."
+      ],
+      "source": { "title": "Xiaomi MiMo Token Plan", "url": "https://platform.xiaomimimo.com/token-plan", "publisher": "Xiaomi MiMo", "retrieved_at": "2026-09-04", "official": true }
     },
     {
       "provider_id": "together-ai",

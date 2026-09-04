@@ -24,7 +24,7 @@ When the browser exposes `document.modelContext.registerTool`, the page register
 
 ## Collector slice
 
-`collector.mjs` retrieves twenty verified official provider pages for the fourteen MVP providers and emits `SOURCE_FETCH` provenance records. The public adapter layer is responsible for official pricing and limit pages, public status APIs, provider announcements, and public company communications. It must never read a visitor’s credentials or workload headers. Responses are capped at 8 MB and requests time out after 10 seconds.
+`collector.mjs` retrieves official provider pages for the tracked MVP providers and emits `SOURCE_FETCH` provenance records. The public adapter layer is responsible for official pricing and limit pages, public status APIs, provider announcements, and public company communications. It must never read a visitor’s credentials or workload headers. Responses are capped at 8 MB and requests time out after 10 seconds.
 
 Run the offline collector contract check with:
 

@@ -166,6 +166,20 @@
       "models": [
         { "model_id": "deepseek-v3-1", "display_name": "DeepSeek V3.1", "family": "DeepSeek", "modalities": ["text"], "tracking_status": "target", "source_url": "https://docs.sambanova.ai/docs/en/models/rate-limits" }
       ]
+    },
+    {
+      "provider_id": "xiaomi-mimo",
+      "name": "Xiaomi MiMo",
+      "role": "model_owner",
+      "registry_status": "active_tracking",
+      "official_catalog_url": "https://platform.xiaomimimo.com/token-plan",
+      "models": [
+        { "model_id": "mimo-v2-5", "display_name": "MiMo-V2.5", "family": "MiMo", "modalities": ["text", "image", "audio", "video"], "tracking_status": "target", "source_url": "https://platform.xiaomimimo.com/token-plan" },
+        { "model_id": "mimo-v2-5-pro", "display_name": "MiMo-V2.5-Pro", "family": "MiMo", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://mimo.mi.com/docs/price/tokenplan/subscription" },
+        { "model_id": "mimo-v2-5-pro-ultraspeed", "display_name": "MiMo-V2.5-Pro-UltraSpeed", "family": "MiMo", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://mimo.mi.com/docs/price/tokenplan/subscription" },
+        { "model_id": "mimo-v2-5-tts", "display_name": "MiMo-V2.5-TTS", "family": "MiMo", "modalities": ["audio"], "tracking_status": "catalog_candidate", "source_url": "https://mimo.mi.com/docs/price/tokenplan/subscription" },
+        { "model_id": "mimo-v2-5-asr", "display_name": "MiMo-V2.5-ASR", "family": "MiMo", "modalities": ["audio"], "tracking_status": "catalog_candidate", "source_url": "https://mimo.mi.com/docs/price/tokenplan/subscription" }
+      ]
     }
   ],
   "inference_providers": [

@@ -16,7 +16,8 @@ const providerCatalog = Object.freeze([
   { id: "groq-gpt-oss-120b", name: "Groq", model: "GPT-OSS 120B", region: "west", code: "GQ", source: { label: "Groq rate limits", url: "https://console.groq.com/docs/rate-limits", type: "official documentation", official: true } },
   { id: "moonshot-kimi-k26", name: "Moonshot / Kimi", model: "Kimi K2.6", region: "asia", code: "MK", source: { label: "Kimi rate limits", url: "https://platform.kimi.ai/docs/pricing/limits", type: "official documentation", official: true } },
   { id: "cerebras-llama-31-8b", name: "Cerebras", model: "Llama 3.1 8B", region: "west", code: "CB", source: { label: "Cerebras rate limits", url: "https://inference-docs.cerebras.ai/support/rate-limits", type: "official documentation", official: true } },
-  { id: "sambanova-deepseek-v31", name: "SambaNova", model: "DeepSeek V3.1", region: "west", code: "SN", source: { label: "SambaNova rate limits", url: "https://docs.sambanova.ai/docs/en/models/rate-limits", type: "official documentation", official: true } }
+  { id: "sambanova-deepseek-v31", name: "SambaNova", model: "DeepSeek V3.1", region: "west", code: "SN", source: { label: "SambaNova rate limits", url: "https://docs.sambanova.ai/docs/en/models/rate-limits", type: "official documentation", official: true } },
+  { id: "xiaomi-mimo-v25", name: "Xiaomi MiMo", model: "MiMo V2.5", region: "asia", code: "XM", source: { label: "Xiaomi MiMo Token Plan", url: "https://platform.xiaomimimo.com/token-plan", type: "official documentation", official: true } }
 ]);
 
 function emptyTelemetryProvider(catalog) {

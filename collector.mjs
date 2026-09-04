@@ -25,7 +25,8 @@ export const sourceDefinitions = Object.freeze([
   { providerId: "moonshot-kimi-k26", sourceId: "kimi-k26-pricing", sourceType: "pricing", url: "https://platform.kimi.ai/docs/pricing/chat-k26" },
   { providerId: "moonshot-kimi-k26", sourceId: "kimi-rate-limits", sourceType: "rate_limit", url: "https://platform.kimi.ai/docs/pricing/limits" },
   { providerId: "cerebras-llama-31-8b", sourceId: "cerebras-rate-limits", sourceType: "rate_limit", url: "https://inference-docs.cerebras.ai/support/rate-limits" },
-  { providerId: "sambanova-deepseek-v31", sourceId: "sambanova-rate-limits", sourceType: "rate_limit", url: "https://docs.sambanova.ai/docs/en/models/rate-limits" }
+  { providerId: "sambanova-deepseek-v31", sourceId: "sambanova-rate-limits", sourceType: "rate_limit", url: "https://docs.sambanova.ai/docs/en/models/rate-limits" },
+  { providerId: "xiaomi-mimo-v25", sourceId: "xiaomi-mimo-token-plan", sourceType: "quota", url: "https://platform.xiaomimimo.com/token-plan" }
 ]);
 
 function now() {
