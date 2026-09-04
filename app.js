@@ -127,33 +127,101 @@ function escapeMarkup(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[character]);
 }
 
-function timetableEntries() {
-  return providerSchedules.flatMap((schedule) => {
-    const provider = providers.find((item) => item.id === schedule.provider_id);
-    if (!provider || schedule.public_schedule_status === "no_published_schedule") return [];
-    const windows = (schedule.windows || []).map((window) => ({
-      provider,
-      label: window.kind.replaceAll("_", " "),
-      time: `${window.days.join(", ")} · ${window.start}–${window.end}`,
-      timezone: window.timezone,
-      effect: window.effect
-    }));
-    const resets = (schedule.reset_rules || []).map((reset) => ({
-      provider,
-      label: `${reset.kind.replaceAll("_", " ")} reset`,
-      time: reset.duration || reset.at || reset.time || (reset.durations || []).join(" / ") || "published rule",
-      timezone: reset.timezone || "",
-      effect: reset.scope || "Published reset rule"
-    }));
-    return [...windows, ...resets];
-  });
+const timetableState = { timezone: "utc", format: "24h" };
+
+function parseClockMinutes(value) {
+  if (value === "24:00") return 1440;
+  const match = /^(\d{2}):(\d{2})$/.exec(value || "");
+  return match ? Number(match[1]) * 60 + Number(match[2]) : null;
+}
+
+function timezoneOffsetMinutes(timezone, date = new Date()) {
+  if (!timezone || timezone === "not specified by source") return null;
+  const fixedOffset = /^UTC([+-])(\d{1,2})(?::?(\d{2}))?$/.exec(timezone);
+  if (fixedOffset) return (fixedOffset[1] === "+" ? 1 : -1) * (Number(fixedOffset[2]) * 60 + Number(fixedOffset[3] || 0));
+  if (timezone === "UTC") return 0;
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", { timeZone: timezone, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" }).formatToParts(date);
+    const values = Object.fromEntries(parts.filter((part) => part.type !== "literal").map((part) => [part.type, Number(part.value)]));
+    return (Date.UTC(values.year, values.month - 1, values.day, values.hour, values.minute, values.second) - date.getTime()) / 60000;
+  } catch {
+    return null;
+  }
+}
+
+function sourceWindowMinutes(window) {
+  const start = parseClockMinutes(window.start);
+  const end = parseClockMinutes(window.end);
+  const offset = timezoneOffsetMinutes(window.timezone);
+  if (start == null || end == null || offset == null) return null;
+  return { start: (start - offset + 1440) % 1440, end: (end - offset + 1440) % 1440 };
+}
+
+function windowCoversHour(window, hour) {
+  const minutes = sourceWindowMinutes(window);
+  if (!minutes) return false;
+  const segmentStart = hour * 60;
+  const segmentEnd = (hour + 1) * 60;
+  if (minutes.start === minutes.end) return true;
+  if (minutes.start < minutes.end) return segmentStart < minutes.end && segmentEnd > minutes.start;
+  return segmentStart < minutes.end || segmentEnd > minutes.start;
+}
+
+function timetableWindowClass(window) {
+  if (window.kind === "off_peak") return "off-peak";
+  if (window.kind === "high_load") return "high-load";
+  return "peak";
+}
+
+function timetableWindowTip(provider, window) {
+  return `${provider.name}\n${window.days.join(", ")} · ${window.start}–${window.end} ${window.timezone}\n${window.effect}`;
+}
+
+function formatTimetableHour(hour) {
+  const offset = timetableState.timezone === "local" ? -new Date().getTimezoneOffset() : 0;
+  const displayedHour = ((hour * 60 + offset) / 60 % 24 + 24) % 24;
+  if (timetableState.format === "12h") {
+    const normalized = Math.floor(displayedHour);
+    return `${normalized % 12 || 12}${normalized < 12 ? " AM" : " PM"}`;
+  }
+  return `${String(Math.floor(displayedHour)).padStart(2, "0")}h`;
+}
+
+function timetableSchedules() {
+  return providerSchedules.filter((schedule) => schedule.windows?.some((window) => sourceWindowMinutes(window)));
 }
 
 function renderTimetable() {
-  const entries = timetableEntries();
-  $("#timetable-list").innerHTML = entries.length
-    ? `<div class="timetable-table-wrap"><table class="timetable-table"><thead><tr><th>Provider</th><th>Rule</th><th>Time</th><th>Effect</th><th>Source</th></tr></thead><tbody>${entries.map((entry) => `<tr><td data-label="Provider"><strong>${escapeMarkup(entry.provider.name)}</strong><span>${escapeMarkup(entry.provider.model)}</span></td><td data-label="Rule">${escapeMarkup(entry.label)}</td><td data-label="Time"><strong>${escapeMarkup(entry.time)}</strong>${entry.timezone ? `<span>${escapeMarkup(entry.timezone)}</span>` : ""}</td><td data-label="Effect">${escapeMarkup(entry.effect)}</td><td data-label="Source"><a class="source-link" href="${escapeMarkup(getProviderSchedule(entry.provider.id)?.source.url)}" target="_blank" rel="noreferrer">Official source ↗</a></td></tr>`).join("")}</tbody></table></div>`
-    : `<div class="empty-state">No published timetable rules have been collected.</div>`;
+  const schedules = timetableSchedules();
+  const axisHours = [0, 3, 6, 9, 12, 15, 18, 21];
+  $("#timetable-list").innerHTML = schedules.length
+    ? `<div class="timetable-legend"><span><i class="timetable-swatch peak"></i>Published window</span><span><i class="timetable-swatch off-peak"></i>Off-peak rule</span><span class="timetable-legend-note">Blank hours have no published window</span></div><div class="timetable-chart" id="timetable-chart"><div class="timetable-axis"><span></span><div class="timetable-axis-track">${axisHours.map((hour) => `<span data-timetable-axis-hour="${hour}">${formatTimetableHour(hour)}</span>`).join("")}</div><span></span></div>${schedules.map((schedule) => { const provider = providers.find((item) => item.id === schedule.provider_id); const windows = schedule.windows.filter((window) => sourceWindowMinutes(window)); return `<div class="timetable-row"><div class="timetable-provider"><strong>${escapeMarkup(provider.name)}</strong><span>${escapeMarkup(provider.model)}</span></div><div class="timetable-track">${Array.from({ length: 24 }, (_, hour) => { const window = windows.find((item) => windowCoversHour(item, hour)); return `<span class="timetable-segment${window ? ` ${timetableWindowClass(window)}` : ""}"${window ? ` tabindex="0" title="${escapeMarkup(timetableWindowTip(provider, window))}" aria-label="${escapeMarkup(timetableWindowTip(provider, window))}"` : ""}></span>`; }).join("")}</div><a class="source-link timetable-source" href="${escapeMarkup(schedule.source.url)}" target="_blank" rel="noreferrer">Source ↗</a></div>`; }).join("")}<div class="timetable-now-line" id="timetable-now-line" aria-hidden="true"><span id="timetable-now-label"></span></div></div><p class="timetable-note">The vertical line marks the current time. Every colored segment is a provider-published window; no normal baseline is inferred.</p>`
+    : `<div class="empty-state">No published clock windows have been collected.</div>`;
+  updateTimetableClock();
+}
+
+function updateTimetableClock() {
+  const now = new Date();
+  const clock = $("#timetable-clock");
+  if (clock) clock.textContent = `${timetableState.format === "12h" ? now.toLocaleTimeString([], { hour: "numeric", minute: "2-digit", hour12: true }) : now.toISOString().slice(11, 16)} ${timetableState.timezone === "local" ? "local" : "UTC"}`;
+  document.querySelectorAll("[data-timetable-axis-hour]").forEach((label) => { label.textContent = formatTimetableHour(Number(label.dataset.timetableAxisHour)); });
+  const chart = $("#timetable-chart");
+  const line = $("#timetable-now-line");
+  const track = chart?.querySelector(".timetable-track");
+  if (!chart || !line || !track) return;
+  const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes() + now.getUTCSeconds() / 60;
+  line.style.left = `${track.getBoundingClientRect().left - chart.getBoundingClientRect().left + (utcMinutes / 1440) * track.offsetWidth}px`;
+  $("#timetable-now-label").textContent = `${String(now.getUTCHours()).padStart(2, "0")}:${String(now.getUTCMinutes()).padStart(2, "0")} UTC`;
+}
+
+function setTimetableDisplay(key, value) {
+  timetableState[key] = value;
+  document.querySelectorAll(`[data-timetable-${key}]`).forEach((button) => {
+    const active = button.dataset[`timetable${key[0].toUpperCase()}${key.slice(1)}`] === value;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-pressed", String(active));
+  });
+  updateTimetableClock();
 }
 
 function renderProviderRow(provider) {
@@ -545,9 +613,12 @@ $("#compare-picker-list").addEventListener("click", (event) => { const button = 
 $("#refresh-button").addEventListener("click", refreshSnapshot);
 $("#hero-sources-button").addEventListener("click", () => showToast("Every forecast keeps its source type, confidence, and measurement boundary attached."));
 document.querySelectorAll("[data-scroll-target]").forEach((button) => button.addEventListener("click", () => { document.getElementById(button.dataset.scrollTarget).scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelectorAll(".surface-link").forEach((item) => item.classList.toggle("active", item === button)); }));
+document.querySelectorAll("[data-timetable-timezone]").forEach((button) => button.addEventListener("click", () => setTimetableDisplay("timezone", button.dataset.timetableTimezone)));
+document.querySelectorAll("[data-timetable-format]").forEach((button) => button.addEventListener("click", () => setTimetableDisplay("format", button.dataset.timetableFormat)));
 
 renderForecast();
 renderCompare();
 renderTimetable();
+window.setInterval(updateTimetableClock, 1000);
 loadSnapshot();
 loadProviderSchedules();

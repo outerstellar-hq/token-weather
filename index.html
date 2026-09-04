@@ -65,6 +65,23 @@
           <div class="signal-item signal-note"><span class="tiny-pulse"></span><span id="snapshot-label">No public forecast signals collected</span></div>
         </section>
 
+        <section class="tool-section timetable-section" id="timetable-section">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">PUBLIC TIMETABLE <span class="slash">/</span> PUBLISHED WINDOWS ONLY</p>
+              <h2>When do conditions change?</h2>
+            </div>
+            <div class="timetable-tools" aria-label="Timetable display controls">
+              <span id="timetable-clock" class="section-note">--:-- UTC</span>
+              <button class="timetable-toggle active" type="button" id="timetable-tz-utc" data-timetable-timezone="utc" aria-pressed="true">UTC</button>
+              <button class="timetable-toggle" type="button" id="timetable-tz-local" data-timetable-timezone="local" aria-pressed="false">Local</button>
+              <button class="timetable-toggle active" type="button" id="timetable-format-24" data-timetable-format="24h" aria-pressed="true">24h</button>
+              <button class="timetable-toggle" type="button" id="timetable-format-12" data-timetable-format="12h" aria-pressed="false">12h</button>
+            </div>
+          </div>
+          <div id="timetable-list" class="timetable-list" aria-live="polite"></div>
+        </section>
+
         <section class="workspace-section">
           <div class="section-heading">
             <div>
@@ -90,17 +107,6 @@
 
             <aside class="detail-panel" id="detail-panel" aria-live="polite"></aside>
           </div>
-        </section>
-
-        <section class="tool-section timetable-section" id="timetable-section">
-          <div class="section-heading compact-heading">
-            <div>
-              <p class="eyebrow">PUBLIC TIMETABLE <span class="slash">/</span> PUBLISHED RULES ONLY</p>
-              <h2>When do conditions change?</h2>
-            </div>
-            <span class="section-note">Provider-published clocks and resets</span>
-          </div>
-          <div id="timetable-list" class="timetable-list" aria-live="polite"></div>
         </section>
 
         <section class="tool-section" id="compare-section">

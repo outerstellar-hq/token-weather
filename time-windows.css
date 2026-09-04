@@ -5,15 +5,26 @@
 .detail-evidence { margin-top: 14px; padding: 13px; border: 1px solid var(--line); background: var(--panel); }
 .detail-evidence strong { display: block; margin: 7px 0; color: var(--ink); font: 500 12px var(--mono); }
 .detail-evidence p { margin: 5px 0; color: var(--ink-soft); font-size: 10px; line-height: 1.4; }
+.timetable-tools { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.timetable-toggle { border: 1px solid var(--line-bright); background: transparent; color: var(--muted); padding: 6px 8px; font: 9px var(--mono); }
+.timetable-toggle.active, .timetable-toggle:hover { border-color: var(--sage-soft); color: var(--sage-soft); background: color-mix(in oklab, var(--sage) 9%, transparent); }
 .timetable-list { border: 1px solid var(--line); background: var(--panel); }
-.timetable-table-wrap { overflow-x: auto; }
-.timetable-table { width: 100%; border-collapse: collapse; min-width: 760px; }
-.timetable-table th, .timetable-table td { padding: 15px 16px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 11px; line-height: 1.4; }
-.timetable-table th { color: var(--muted); background: var(--panel-raised); font: 9px var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-.timetable-table tr:last-child td { border-bottom: 0; }
-.timetable-table td strong, .timetable-table td span { display: block; }
-.timetable-table td span { margin-top: 4px; color: var(--muted); font: 9px var(--mono); }
-.timetable-table td:nth-child(2) { color: var(--sage-soft); font: 10px var(--mono); text-transform: capitalize; }
-.timetable-table td:nth-child(4) { max-width: 360px; color: var(--ink-soft); }
-.timetable-table .source-link { white-space: nowrap; }
-@media (max-width: 700px) { .timetable-table { min-width: 0; }.timetable-table thead { display: none; }.timetable-table, .timetable-table tbody, .timetable-table tr, .timetable-table td { display: block; }.timetable-table tr { padding: 14px 16px; border-bottom: 1px solid var(--line); }.timetable-table tr:last-child { border-bottom: 0; }.timetable-table td { display: grid; grid-template-columns: 82px 1fr; gap: 12px; padding: 5px 0; border: 0; }.timetable-table td::before { content: attr(data-label); color: var(--muted); font: 9px var(--mono); letter-spacing: .05em; text-transform: uppercase; }.timetable-table td:nth-child(4) { max-width: none; } }
+.timetable-legend { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 12px 14px; border-bottom: 1px solid var(--line); color: var(--muted); font: 9px var(--mono); text-transform: uppercase; }
+.timetable-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.timetable-legend-note { margin-left: auto; color: var(--faint); }
+.timetable-swatch { width: 10px; height: 10px; display: inline-block; border-radius: 2px; background: var(--line-bright); }
+.timetable-swatch.peak { background: var(--amber); }.timetable-swatch.off-peak { background: var(--sage); }
+.timetable-chart { position: relative; overflow-x: auto; padding: 0 14px 12px; }
+.timetable-axis, .timetable-row { display: grid; grid-template-columns: 150px minmax(520px, 1fr) 64px; align-items: center; gap: 12px; min-width: 760px; }
+.timetable-axis { min-height: 34px; color: var(--muted); font: 9px var(--mono); }
+.timetable-axis-track { display: grid; grid-template-columns: repeat(8, 1fr); }
+.timetable-axis-track span { text-align: left; }
+.timetable-row { min-height: 49px; border-top: 1px solid var(--line); }
+.timetable-provider strong, .timetable-provider span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.timetable-provider strong { color: var(--ink); font-size: 11px; font-weight: 600; }.timetable-provider span { margin-top: 4px; color: var(--muted); font: 9px var(--mono); }
+.timetable-track { height: 21px; display: flex; gap: 1px; border: 1px solid var(--line-bright); background: var(--panel-raised); }
+.timetable-segment { min-width: 0; flex: 1; background: transparent; }.timetable-segment.peak { background: color-mix(in oklab, var(--amber) 78%, transparent); }.timetable-segment.off-peak { background: color-mix(in oklab, var(--sage) 70%, transparent); }.timetable-segment.high-load { background: color-mix(in oklab, var(--rose) 72%, transparent); }.timetable-segment:hover, .timetable-segment:focus { outline: 2px solid var(--ink); outline-offset: -2px; }
+.timetable-source { color: var(--muted); font: 9px var(--mono); white-space: nowrap; text-decoration: none; }.timetable-source:hover { color: var(--sage-soft); text-decoration: underline; }
+.timetable-now-line { position: absolute; top: 34px; bottom: 12px; width: 2px; z-index: 1; background: var(--ink); box-shadow: 0 0 7px color-mix(in oklab, var(--ink) 55%, transparent); pointer-events: none; }.timetable-now-line span { position: absolute; top: -18px; left: 50%; transform: translateX(-50%); padding: 2px 4px; color: var(--panel); background: var(--ink); font: 9px var(--mono); white-space: nowrap; }
+.timetable-note { margin: 10px 14px 0; color: var(--muted); font: 10px var(--mono); line-height: 1.5; }
+@media (max-width: 700px) { .timetable-tools { margin-top: 16px; }.timetable-legend-note { margin-left: 0; }.timetable-chart { padding-left: 10px; padding-right: 10px; }.timetable-axis, .timetable-row { grid-template-columns: 120px minmax(520px, 1fr) 58px; gap: 8px; min-width: 706px; }.timetable-now-line { top: 34px; } }
