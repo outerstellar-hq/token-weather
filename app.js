@@ -602,7 +602,9 @@ async function registerWebMcpTools() {
     }
   ];
 
-  for (const tool of tools) await document.modelContext.registerTool(tool);
+  for (const { name, description, inputSchema, execute } of tools) {
+    await document.modelContext.registerTool({ name, description, inputSchema, execute });
+  }
   document.documentElement.dataset.webmcp = "ready";
 }
 

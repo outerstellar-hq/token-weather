@@ -1,12 +1,12 @@
 # OpenAI WebMCP Challenge submission checklist
 
-Checked against the [official OpenAI challenge page](https://openai.com/webmcp-challenge/) and the [official Devpost rules](https://webmcp.devpost.com/rules) on September 2, 2026.
+Checked against the [official OpenAI challenge page](https://openai.com/webmcp-challenge/) and the [official Devpost rules](https://webmcp.devpost.com/rules) on September 4, 2026.
 
 ## Current local readiness
 
 | Requirement | Status | Evidence or remaining action |
 | --- | --- | --- |
-| WebMCP-powered app | Ready locally | `app.js` registers six top-level tools through `document.modelContext.registerTool(...)`. |
+| WebMCP-powered app | Ready locally | `app.js` registers seven top-level tools through `document.modelContext.registerTool({ name, description, inputSchema, execute })`. |
 | Human-agent workflow | Ready locally | `focus_provider` updates the visible detail panel; read and planning tools reuse the dashboard’s normalized logic. |
 | Source and setup instructions | Ready locally | `README.md`, `package.json`, collector, and local server are included. |
 | Open-source license | Ready locally | Root `LICENSE` is MIT and must be visible on the public repository page. |
@@ -31,6 +31,6 @@ Recommended demo sequence:
 
 ## Final owner actions
 
-1. Register at [webmcp.devpost.com](https://webmcp.devpost.com/) with a Devpost account before the submission deadline: September 3, 2026 at 1:00 p.m. PDT (11:00 p.m. Bucharest time).
+1. Register at [webmcp.devpost.com](https://webmcp.devpost.com/) with a Devpost account and follow the current submission deadline shown by Devpost. The page currently shows the extension as September 4, 2026 at 1:00 a.m. PDT (8:00 a.m. UTC / 11:00 a.m. Bucharest time).
 2. Record and upload the under-three-minute YouTube demo.
 3. Paste the public repository, live URL, video URL, description, and testing instructions into the Devpost submission form.
