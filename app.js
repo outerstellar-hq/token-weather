@@ -199,11 +199,15 @@ function renderTimetable() {
   const rows = schedules.map((schedule) => {
     const provider = providers.find((item) => item.id === schedule.provider_id);
     const windows = schedule.windows.filter((window) => sourceWindowMinutes(window));
-    return `<div class="timetable-row"><div class="timetable-provider"><strong>${escapeMarkup(provider.name)}</strong><span>${escapeMarkup(provider.model)}</span></div><div class="timetable-track">${Array.from({ length: 24 }, (_, hour) => { const window = windows.find((item) => windowCoversHour(item, hour)); return `<span class="timetable-segment${window ? ` ${timetableWindowClass(window)}` : ""}"${window ? ` tabindex="0" title="${escapeMarkup(timetableWindowTip(provider, window))}" aria-label="${escapeMarkup(timetableWindowTip(provider, window))}"` : ""}></span>`; }).join("")}</div><a class="source-link timetable-source" href="${escapeMarkup(schedule.source.url)}" target="_blank" rel="noreferrer">Source ↗</a></div>`;
+    const sourceUrl = escapeMarkup(schedule.source.url);
+    const sourceTitle = escapeMarkup(schedule.source.title || "Direct public source");
+    return `<div class="timetable-row"><div class="timetable-provider"><strong>${escapeMarkup(provider.name)}</strong><span>${escapeMarkup(provider.model)}</span></div><div class="timetable-track">${Array.from({ length: 24 }, (_, hour) => { const window = windows.find((item) => windowCoversHour(item, hour)); return `<span class="timetable-segment${window ? ` ${timetableWindowClass(window)}` : ""}"${window ? ` tabindex="0" title="${escapeMarkup(timetableWindowTip(provider, window))}" aria-label="${escapeMarkup(timetableWindowTip(provider, window))}"` : ""}></span>`; }).join("")}</div><a class="source-link timetable-source" href="${sourceUrl}" title="${sourceTitle}" aria-label="Direct source: ${sourceTitle}" target="_blank" rel="noreferrer">Direct source ↗</a></div>`;
   }).join("");
   const details = schedules.flatMap((schedule) => {
     const provider = providers.find((item) => item.id === schedule.provider_id);
-    return schedule.windows.filter((window) => sourceWindowMinutes(window)).map((window) => `<li class="timetable-detail-line"><strong>${escapeMarkup(provider.name)}</strong><span class="timetable-detail-window">${escapeMarkup(`${window.days.join(", ")} · ${window.start}–${window.end} ${window.timezone}`)}</span><span class="timetable-detail-effect">${escapeMarkup(window.effect)}</span></li>`);
+    const sourceUrl = escapeMarkup(schedule.source.url);
+    const sourceTitle = escapeMarkup(schedule.source.title || "Direct public source");
+    return schedule.windows.filter((window) => sourceWindowMinutes(window)).map((window) => `<li class="timetable-detail-line"><strong>${escapeMarkup(provider.name)}</strong><span class="timetable-detail-window">${escapeMarkup(`${window.days.join(", ")} · ${window.start}–${window.end} ${window.timezone}`)}</span><span class="timetable-detail-effect">${escapeMarkup(window.effect)} <a class="source-link timetable-detail-source" href="${sourceUrl}" title="${sourceTitle}" aria-label="Direct source for ${escapeMarkup(provider.name)}: ${sourceTitle}" target="_blank" rel="noreferrer">Direct source ↗</a></span></li>`);
   }).join("");
   $("#timetable-list").innerHTML = schedules.length
     ? `<div class="timetable-legend"><span><i class="timetable-swatch peak"></i>Published window</span><span><i class="timetable-swatch off-peak"></i>Off-peak rule</span><span class="timetable-legend-note">Blank hours have no published window</span></div><div class="timetable-chart" id="timetable-chart"><div class="timetable-axis"><span></span><div class="timetable-axis-track">${axisHours.map((hour) => `<span data-timetable-axis-hour="${hour}">${formatTimetableHour(hour)}</span>`).join("")}</div><span></span></div>${rows}<div class="timetable-now-line" id="timetable-now-line" aria-hidden="true"><span id="timetable-now-label"></span></div></div><section class="timetable-details" aria-labelledby="timetable-details-heading"><h3 id="timetable-details-heading">Published window details</h3><ul class="timetable-detail-list">${details}</ul></section><p class="timetable-note">The vertical line marks the current time. Every colored segment is a provider-published window; no normal baseline is inferred.</p>`
@@ -256,6 +260,9 @@ function renderProviderRow(provider) {
 function detailMarkup(provider) {
   const price = hasPricing(provider) ? `${formatPrice(provider.pricing.input)} / ${formatPrice(provider.pricing.output)}` : "Not collected";
   const schedule = scheduleSummary(provider.id);
+  const scheduleSource = getProviderSchedule(provider.id)?.source || provider.source;
+  const scheduleSourceUrl = escapeMarkup(scheduleSource.url);
+  const scheduleSourceTitle = escapeMarkup(scheduleSource.title || scheduleSource.label || "Direct public source");
   const evidence = provider.publicEvidence || { documents: 0, status: null, statements: 0, latestStatement: null };
   const publicStatus = evidence.status ? provider.condition : "No public status feed";
   const latestStatement = evidence.latestStatement?.title ? `<p>Latest statement: ${evidence.latestStatement.title}</p>` : "";
@@ -270,7 +277,7 @@ function detailMarkup(provider) {
       <div class="detail-stat"><label>Evidence status</label><strong>${provider.source.confidence}</strong></div>
     </div>
     <div class="detail-evidence"><span class="detail-kicker">Public evidence</span><strong>${publicStatus} · ${evidence.documents} document${evidence.documents === 1 ? "" : "s"} checked · ${evidence.statements || "No"} statement${evidence.statements === 1 ? "" : "s"}</strong>${latestStatement}<p>Public records only. This is not a person’s remaining quota.</p></div>
-    <div class="detail-schedule"><span class="detail-kicker">Published timing</span><strong>${schedule.headline}</strong>${schedule.lines.map((line) => `<p>${line}</p>`).join("")}<a class="source-link" href="${getProviderSchedule(provider.id)?.source.url || provider.source.url}" target="_blank" rel="noreferrer">Timing source ↗</a></div>
+    <div class="detail-schedule"><span class="detail-kicker">Published timing</span><strong>${schedule.headline}</strong>${schedule.lines.map((line) => `<p>${line} <a class="source-link detail-line-source" href="${scheduleSourceUrl}" title="${scheduleSourceTitle}" aria-label="Direct source: ${scheduleSourceTitle}" target="_blank" rel="noreferrer">Direct source ↗</a></p>`).join("")}<a class="source-link" href="${scheduleSourceUrl}" target="_blank" rel="noreferrer">Timing source ↗</a></div>
     <div class="detail-callout"><strong>Forecast note</strong>${provider.note}</div>
     <div class="source-row"><span>Checked · ${provider.source.retrievedAt}</span><a class="source-link" href="${provider.source.url}" target="_blank" rel="noreferrer" data-source-id="${provider.id}">${provider.source.label} ↗</a></div>
     <div class="detail-actions"><button class="small-action" type="button" data-add-compare="${provider.id}">${state.compareIds.includes(provider.id) ? "In comparison" : "Add to compare"} <span>+</span></button><span class="mono">${provider.rateLimits.rps == null ? `RPM ${formatTokens(provider.rateLimits.rpm)}` : `RPS ${formatTokens(provider.rateLimits.rps)}`} · CONC ${formatTokens(provider.rateLimits.concurrency)}</span></div>`;
