@@ -116,7 +116,13 @@
         { "kind": "rolling", "duration": "5 hours", "scope": "M2.7 text-model quota" },
         { "kind": "daily", "scope": "non-text model quotas", "time": "not specified by source" }
       ],
-      "source": { "title": "FAQs", "url": "https://platform.minimax.io/docs/token-plan/faq", "publisher": "MiniMax", "retrieved_at": "2026-09-03", "official": true }
+      "published_conditions": [
+        "MiniMax describes peak-hour rate limiting as dynamic and cluster-load dependent, typically weekdays 15:00–17:30; the time is approximate and not a guaranteed schedule.",
+        "The current Token Plan page gives approximate peak concurrency bands of 3–4 agents for Plus, 4–5 for Max, and 6–7 for Ultra.",
+        "The current Token Plan page says included quota is controlled by 5-hour rolling and weekly windows; unused included quota does not carry over to the next billing cycle.",
+        "The current page describes the plan as individual interactive use and recommends pay-as-you-go for production; these are plan conditions, not a public global capacity measurement."
+      ],
+      "source": { "title": "Token Plan", "url": "https://platform.minimax.io/subscribe/token-plan?tab=individual__monthly", "publisher": "MiniMax", "retrieved_at": "2026-09-04", "official": true }
     },
     {
       "provider_id": "groq-gpt-oss-120b",
@@ -135,7 +141,11 @@
         { "kind": "weekly", "scope": "Kimi Code subscription quota", "time": "not specified by source" },
         { "kind": "monthly", "scope": "Kimi Code subscription quota", "time": "not specified by source" }
       ],
-      "published_conditions": ["Moonshot API limits are tiered by cumulative recharge and may be temporarily adjusted when cluster load reaches capacity; no clock schedule is published."],
+      "published_conditions": [
+        "Moonshot API limits are tiered by cumulative recharge: Tier 0 publishes 1 concurrency, 3 RPM, 500,000 TPM, and 1,500,000 TPD; higher tiers publish larger limits.",
+        "Published Tier 1–Tier 5 limits range up to 1,000 concurrency, 10,000 RPM, 5,000,000 TPM, and unlimited TPD; the exact tier depends on cumulative recharge.",
+        "Moonshot says limits may be temporarily adjusted when cluster load reaches capacity; no clock schedule is published."
+      ],
       "source": { "title": "Recharge and Rate Limiting", "url": "https://platform.kimi.ai/docs/pricing/limits", "publisher": "Moonshot AI", "retrieved_at": "2026-09-03", "official": true }
     },
     {
@@ -168,6 +178,7 @@
       "published_conditions": [
         "The public Token Plan page lists Max, Pro, Standard, and Lite plans with different published credit amounts.",
         "The public page lists no weekly cap and no 5-hour cap for the displayed plans; this is a plan-specific published rule, not a visitor's remaining quota.",
+        "The displayed monthly plans publish approximately $88 / 984 billion credits for Max, $44 / 456 billion for Pro, $14.08 / 132 billion for Standard, and $5.28 / 49.2 billion for Lite; these are plan entitlements, not remaining balances.",
         "The MiMo-V2 series is marked deprecated on the public page; the current Token Plan surface points to the V2.5 series."
       ],
       "source": { "title": "Xiaomi MiMo Token Plan", "url": "https://platform.xiaomimimo.com/token-plan", "publisher": "Xiaomi MiMo", "retrieved_at": "2026-09-04", "official": true }

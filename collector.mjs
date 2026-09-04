@@ -19,6 +19,7 @@ export const sourceDefinitions = Object.freeze([
   { providerId: "xai-grok-46", sourceId: "xai-grok-46", sourceType: "pricing", url: "https://docs.x.ai/developers/grok-4-6" },
   { providerId: "xai-grok-46", sourceId: "xai-rate-limits", sourceType: "rate_limit", url: "https://docs.x.ai/developers/rate-limits" },
   { providerId: "minimax-m27", sourceId: "minimax-token-plan", sourceType: "quota", url: "https://platform.minimax.io/docs/token-plan/intro" },
+  { providerId: "minimax-m27", sourceId: "minimax-token-plan-current", sourceType: "quota", url: "https://platform.minimax.io/subscribe/token-plan?tab=individual__monthly" },
   { providerId: "minimax-m27", sourceId: "minimax-api-pricing", sourceType: "pricing", url: "https://platform.minimax.io/subscribe/token-plan?tab=api-enterprise" },
   { providerId: "groq-gpt-oss-120b", sourceId: "groq-models", sourceType: "pricing", url: "https://console.groq.com/docs/models" },
   { providerId: "groq-gpt-oss-120b", sourceId: "groq-rate-limits", sourceType: "rate_limit", url: "https://console.groq.com/docs/rate-limits" },
