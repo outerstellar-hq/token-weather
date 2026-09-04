@@ -27,7 +27,6 @@
         <nav class="surface-nav" aria-label="Token Weather surfaces">
           <button class="surface-link active" type="button" data-scroll-target="workspace-section">Forecast</button>
           <button class="surface-link" type="button" data-scroll-target="compare-section">Compare</button>
-          <button class="surface-link" type="button" data-scroll-target="planner-section">Plan work</button>
         </nav>
         <button class="icon-button" type="button" aria-label="Open settings">•••</button>
       </header>
@@ -107,25 +106,6 @@
               <div id="compare-picker-list" class="compare-picker-list"></div>
             </div>
             <div id="compare-results" class="compare-results" aria-live="polite"></div>
-          </div>
-        </section>
-
-        <section class="tool-section" id="planner-section">
-          <div class="section-heading compact-heading">
-            <div>
-              <p class="eyebrow">WORKLOAD PLANNER <span class="slash">/</span> A RECOMMENDATION, WITH RECEIPTS</p>
-              <h2>Find a good window for the work.</h2>
-            </div>
-            <span class="section-note">Live pricing required · no requests sent</span>
-          </div>
-          <div class="planner-layout">
-            <form id="planner-form" class="planner-form">
-              <label><span class="field-label">TOTAL TOKENS</span><input id="planner-tokens" type="number" min="1" step="100000" required /></label>
-              <label><span class="field-label">WORKLOAD SHAPE</span><select id="planner-shape"><option value="balanced">Balanced</option><option value="latency">Latency sensitive</option><option value="batch">Batch / queued</option><option value="cost">Cost first</option></select></label>
-              <label><span class="field-label">REGION</span><select id="planner-region"><option value="all">Any region</option><option value="asia">Asia Pacific</option><option value="west">Western</option></select></label>
-              <button class="primary-button" type="submit">Plan this workload <span>→</span></button>
-            </form>
-            <div id="planner-result" class="planner-result" aria-live="polite"></div>
           </div>
         </section>
 

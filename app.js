@@ -374,16 +374,6 @@ function publicWorkloadPlan(plan) {
   };
 }
 
-function renderPlanner(result = planWorkload()) {
-  if (result.status === "unavailable") {
-    $("#planner-result").innerHTML = `<div class="empty-state"><strong>Live pricing required.</strong><span>${result.reason}</span></div>`;
-    return;
-  }
-  const provider = result.provider;
-  const shapeLabel = { balanced: "balanced", latency: "latency-sensitive", batch: "batch / queued", cost: "cost-first" }[result.shape];
-  $("#planner-result").innerHTML = `<div class="recommendation-top"><span class="detail-kicker">Recommended window</span><span class="recommendation-badge">${provider.condition}</span></div><h3>${provider.name} <span>${provider.model}</span></h3><p class="recommendation-copy">For a ${result.totalTokens.toLocaleString()} token ${shapeLabel} workload, ${provider.name} is the strongest current fit.</p><div class="recommendation-metrics"><div><span>Estimated cost</span><strong>${formatPrice(result.estimatedCost)}</strong></div><div><span>Latency</span><strong>${formatLatency(provider.latencyMs)}</strong></div><div><span>Quota left</span><strong>${formatQuota(provider.quota.remaining)}</strong></div></div><div class="recommendation-explain"><strong>Why this one</strong>${provider.note} The score keeps the provider’s guaranteed capacity and current condition visible.</div><div class="alternatives"><span class="field-label">NEXT BEST</span>${result.alternatives.map((item) => `<button type="button" data-provider-id="${item.provider.id}">${item.provider.name}<span>${formatPrice(item.estimatedCost)} · ${formatLatency(item.provider.latencyMs)}</span></button>`).join("")}</div>`;
-}
-
 function getSource(id) {
   return { provider_id: id, ...getProvider(id).source };
 }
@@ -531,8 +521,7 @@ $("#data-filter-button").addEventListener("click", () => { state.hasDataOnly = !
 $("#sort-button").addEventListener("click", () => { state.sortDescending = !state.sortDescending; $("#sort-button").textContent = `CONDITION ${state.sortDescending ? "↓" : "↑"}`; renderForecast(); });
 $("#provider-list").addEventListener("click", (event) => { const row = event.target.closest("[data-provider-id]"); if (row) { state.selectedId = row.dataset.providerId; renderForecast(); } });
 $("#compare-picker-list").addEventListener("click", (event) => { const button = event.target.closest("[data-toggle-compare]"); if (!button) return; const id = button.dataset.toggleCompare; if (state.compareIds.includes(id)) { if (state.compareIds.length === 1) return showToast("Keep one model selected for comparison."); state.compareIds = state.compareIds.filter((item) => item !== id); } else if (state.compareIds.length < 3) { state.compareIds = [...state.compareIds, id]; } else return showToast("Compare up to three models at a time."); renderCompare(); renderForecast(); });
-document.addEventListener("click", (event) => { const source = event.target.closest("[data-source-id]"); if (source) { const item = getSource(source.dataset.sourceId); showToast(`${item.label} · ${item.confidence} · ${item.retrievedAt}`); } const add = event.target.closest("[data-add-compare]"); if (add) { const id = add.dataset.addCompare; if (!state.compareIds.includes(id) && state.compareIds.length >= 3) return showToast("Compare up to three models at a time."); if (!state.compareIds.includes(id)) state.compareIds = [...state.compareIds, id]; renderCompare(); renderForecast(); showToast(`${getProvider(id).name} added to comparison.`); } const providerLink = event.target.closest("#planner-result [data-provider-id]"); if (providerLink) { state.selectedId = providerLink.dataset.providerId; renderForecast(); showToast(`${getProvider(state.selectedId).name} selected in the forecast.`); } });
-$("#planner-form").addEventListener("submit", (event) => { event.preventDefault(); renderPlanner(planWorkload({ tokens: $("#planner-tokens").value, shape: $("#planner-shape").value, region: $("#planner-region").value })); showToast("Workload plan requires live provider pricing."); });
+  document.addEventListener("click", (event) => { const source = event.target.closest("[data-source-id]"); if (source) { const item = getSource(source.dataset.sourceId); showToast(`${item.label} · ${item.confidence} · ${item.retrievedAt}`); } const add = event.target.closest("[data-add-compare]"); if (add) { const id = add.dataset.addCompare; if (!state.compareIds.includes(id) && state.compareIds.length >= 3) return showToast("Compare up to three models at a time."); if (!state.compareIds.includes(id)) state.compareIds = [...state.compareIds, id]; renderCompare(); renderForecast(); showToast(`${getProvider(id).name} added to comparison.`); } });
 $("#refresh-button").addEventListener("click", refreshSnapshot);
 $("#hero-sources-button").addEventListener("click", () => showToast("Every forecast keeps its source type, confidence, and measurement boundary attached."));
 $("#principle-button").addEventListener("click", () => showToast("Guaranteed capacity is the promise. Observed capacity is the possibility."));
@@ -540,6 +529,5 @@ document.querySelectorAll("[data-scroll-target]").forEach((button) => button.add
 
 renderForecast();
 renderCompare();
-renderPlanner();
 loadSnapshot();
 loadProviderSchedules();
