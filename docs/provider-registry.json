@@ -1,6 +1,6 @@
 {
   "schema": "token-weather.provider-registry.v1",
-  "registry_as_of": "2026-09-03",
+  "registry_as_of": "2026-09-04",
   "purpose": "A source-linked registry of model owners, hosted inference providers, and routing platforms considered by Token Weather.",
   "coverage_rule": "This is the complete current forecasting scope, not a claim that it contains every AI model in existence. Dynamic catalogs remain dynamic and are never copied into telemetry.",
   "hard_fact_policy": {
