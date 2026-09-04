@@ -29,7 +29,6 @@
           <button class="surface-link active" type="button" data-scroll-target="workspace-section">Forecast</button>
           <button class="surface-link" type="button" data-scroll-target="timetable-section">Timetable</button>
           <button class="surface-link" type="button" data-scroll-target="webmcp-section">WebMCP</button>
-          <button class="surface-link" type="button" data-scroll-target="compare-section">Compare</button>
         </nav>
         <button class="icon-button" type="button" aria-label="Open settings">•••</button>
       </header>
@@ -126,23 +125,6 @@ const result = await document.modelContext.executeTool(
             </div>
 
             <aside class="detail-panel" id="detail-panel" aria-live="polite"></aside>
-          </div>
-        </section>
-
-        <section class="tool-section" id="compare-section">
-          <div class="section-heading compact-heading">
-            <div>
-              <p class="eyebrow">MODEL COMPARISON <span class="slash">/</span> PROMISE VS POSSIBILITY</p>
-              <h2>Put the forecast side by side.</h2>
-            </div>
-            <span class="section-note">Choose up to 3 models</span>
-          </div>
-          <div class="compare-layout">
-            <div class="compare-picker">
-              <p class="field-label">MODELS TO COMPARE</p>
-              <div id="compare-picker-list" class="compare-picker-list"></div>
-            </div>
-            <div id="compare-results" class="compare-results" aria-live="polite"></div>
           </div>
         </section>
 
