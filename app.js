@@ -397,21 +397,6 @@ async function loadSnapshot() {
   }
 }
 
-async function refreshSnapshot() {
-  const button = $("#refresh-button");
-  button.disabled = true;
-  try {
-    const response = await fetch("/api/refresh", { method: "POST" });
-    const snapshot = await response.json();
-    applySnapshot(snapshot);
-    showToast(response.ok ? "Source snapshot refreshed." : "Source snapshot is degraded; inspect collector errors.");
-  } catch {
-    showToast("Source refresh needs the local server: npm run server.");
-  } finally {
-    button.disabled = false;
-  }
-}
-
 function compareModels(ids) {
   return ids.map(getProvider).map((provider) => ({
     ...providerWeather(provider),
@@ -566,7 +551,6 @@ document.querySelectorAll("[data-view]").forEach((button) => button.addEventList
 $("#sort-button").addEventListener("click", () => { state.sortDescending = !state.sortDescending; $("#sort-button").textContent = `CONDITION ${state.sortDescending ? "↓" : "↑"}`; renderForecast(); });
 $("#provider-list").addEventListener("click", (event) => { const row = event.target.closest("[data-provider-id]"); if (row) { state.selectedId = row.dataset.providerId; renderForecast(); } });
 document.addEventListener("click", (event) => { const source = event.target.closest("[data-source-id]"); if (source) { const item = getSource(source.dataset.sourceId); showToast(`${item.label} · ${item.confidence} · ${item.retrievedAt}`); } });
-$("#refresh-button").addEventListener("click", refreshSnapshot);
 document.querySelectorAll("[data-scroll-target]").forEach((button) => button.addEventListener("click", () => { document.getElementById(button.dataset.scrollTarget).scrollIntoView({ behavior: "smooth", block: "start" }); document.querySelectorAll(".surface-link").forEach((item) => item.classList.toggle("active", item === button)); }));
 document.querySelectorAll("[data-timetable-timezone]").forEach((button) => button.addEventListener("click", () => setTimetableDisplay("timezone", button.dataset.timetableTimezone)));
 document.querySelectorAll("[data-timetable-format]").forEach((button) => button.addEventListener("click", () => setTimetableDisplay("format", button.dataset.timetableFormat)));
