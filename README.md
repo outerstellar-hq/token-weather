@@ -79,4 +79,7 @@ See [docs/submission-checklist.md](docs/submission-checklist.md) for the current
 
 ```powershell
 npm run check
+npm test
 ```
+
+`npm test` includes the WebMCP contract test. It verifies that all seven tools register through `document.modelContext.registerTool` with the required fields and that their handlers call the same public API used by the human interface.

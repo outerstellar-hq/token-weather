@@ -10,7 +10,7 @@
     "check:collector": "node collector.mjs --check",
     "collect": "node collector.mjs --json",
     "telemetry": "node collector.mjs --telemetry",
-    "test": "node --test collector.test.mjs registry.test.mjs selection.test.mjs",
+    "test": "node --test collector.test.mjs registry.test.mjs selection.test.mjs webmcp.test.mjs",
     "server": "node server.mjs"
   }
 }
