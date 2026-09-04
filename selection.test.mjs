@@ -15,6 +15,9 @@ test("forecast rows require an active quota signal or a non-normal status", () =
   assert.equal(hasActiveForecastSignal({ publicEvidence: { status: true }, state: "watch" }), true);
   assert.equal(hasActiveForecastSignal({ state: "disrupted" }), true);
   assert.equal(hasActiveForecastSignal({ rateLimits: { tpm: 100000 }, state: "healthy" }), true);
+  assert.equal(hasActiveForecastSignal({ state: "unknown" }, { public_schedule_status: "published_clock_window" }), true);
+  assert.equal(hasActiveForecastSignal({ state: "healthy" }, { public_schedule_status: "published_clock_window" }), false);
+  assert.equal(hasActiveForecastSignal({ state: "unknown" }, { public_schedule_status: "no_published_schedule" }), false);
 });
 
 test("default selection is empty when no active public quota exists", () => {

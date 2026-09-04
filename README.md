@@ -14,7 +14,7 @@ The product is generic for every visitor. It has no login, profile, API-key inpu
 
 No seeded metric values are permitted. A displayed fact must carry the exact public source URL, retrieval timestamp, HTTP status, official-source flag, confidence, and SHA-256 response hash. If any of that evidence is missing, the UI and agent API return `Not collected` or `unavailable`.
 
-The forecast list shows only providers with an active public quota, rate-limit, or guaranteed-capacity signal, or a non-normal public status. Documentation-only records and normal/operational statuses are hidden from the forecast list. If no active signal has been collected, the detail panel says so instead of selecting a documentation-only provider.
+The forecast list shows only providers with an active public quota, rate-limit, or guaranteed-capacity signal, a non-normal public status, or a published clock/reset schedule without a normal/operational status. Documentation-only records and normal/operational status-only records are hidden from the forecast list. If no active signal has been collected, the detail panel says so instead of selecting a documentation-only provider.
 
 The browser also exposes the MVP agent contract as `window.tokenWeather` with:
 

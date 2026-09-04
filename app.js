@@ -126,9 +126,13 @@ function scheduleSummary(providerId) {
 function renderProviderRow(provider) {
   const selected = provider.id === state.selectedId ? " selected" : "";
   const evidence = provider.publicEvidence || { documents: 0, statements: 0 };
+  const schedule = getProviderSchedule(provider.id);
+  const forecastCondition = provider.state === "unknown" && schedule?.public_schedule_status?.startsWith("published_")
+    ? scheduleSummary(provider.id).headline
+    : provider.condition;
   return `<button class="provider-row${selected}" type="button" data-provider-id="${provider.id}" aria-pressed="${provider.id === state.selectedId}">
     <span class="provider-name"><span class="provider-avatar">${provider.code}</span><span class="provider-title"><strong>${provider.name}</strong><span>${provider.model}</span></span></span>
-    <span><span class="metric-label">Condition</span><span class="condition">${statusDot(provider.state)}${provider.condition}</span></span>
+    <span><span class="metric-label">Forecast</span><span class="condition">${statusDot(provider.state)}${forecastCondition}</span></span>
     <span><span class="metric-label">Public evidence</span><span class="metric-value">${evidence.status ? "Status connected" : evidence.documents ? `${evidence.documents} docs checked` : "Not collected"}</span></span>
     <span><span class="metric-label">Statements</span><span class="metric-value">${evidence.statements || "None collected"}</span></span>
   </button>`;
@@ -178,7 +182,7 @@ function visibleProviders() {
   const search = state.search.toLowerCase();
   return providers.filter((provider) => {
     const matchesSearch = `${provider.name} ${provider.model}`.toLowerCase().includes(search);
-    return matchesSearch && hasActiveForecastSignal(provider) && (state.activeView === "all" || provider.region === state.activeView);
+    return matchesSearch && hasActiveForecastSignal(provider, getProviderSchedule(provider.id)) && (state.activeView === "all" || provider.region === state.activeView);
   }).sort((a, b) => {
     if (a.state === b.state) return a.name.localeCompare(b.name);
     const result = a.state === "healthy" ? -1 : 1;
