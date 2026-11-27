@@ -4,10 +4,12 @@ import { extname, join, normalize, resolve } from "node:path";
 import { collectDocumentation } from "./collector.mjs";
 import { publicAdapters } from "./public-adapters.mjs";
 import { readSnapshot, writeSnapshot } from "./snapshot-store.mjs";
+import { readVersion } from "./version.mjs";
 
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = Number(process.env.PORT || 4173);
 const ROOT = resolve(process.cwd());
+const VERSION = readVersion(ROOT);
 const mimeTypes = { ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" };
 let snapshot = await readSnapshot();
 
@@ -36,7 +38,7 @@ async function serveStatic(request, response) {
 
 const server = createServer(async (request, response) => {
   try {
-    if (request.method === "GET" && request.url === "/api/health") return sendJson(response, 200, { status: "ok", origin: `http://${HOST}:${PORT}` });
+    if (request.method === "GET" && request.url === "/api/health") return sendJson(response, 200, { status: "ok", version: VERSION, origin: `http://${HOST}:${PORT}` });
     if (request.method === "GET" && request.url === "/api/snapshot") return sendJson(response, 200, snapshot || fallbackSnapshot());
     if (request.method === "POST" && request.url === "/api/refresh") {
       const report = await collectDocumentation({ includePublicSignals: true });
@@ -52,4 +54,4 @@ const server = createServer(async (request, response) => {
 });
 
 server.on("error", (error) => { console.error(`Token Weather server failed on ${HOST}:${PORT}: ${error.message}`); process.exitCode = 1; });
-server.listen(PORT, HOST, () => console.log(`Token Weather listening at http://${HOST}:${PORT}`));
+server.listen(PORT, HOST, () => console.log(`Token Weather ${VERSION} listening at http://${HOST}:${PORT}`));
