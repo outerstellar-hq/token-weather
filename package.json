@@ -1,16 +1,15 @@
 {
   "name": "token-weather",
   "private": true,
-  "version": "0.1.0",
   "scripts": {
-    "check": "node --check app.js && node --check selection.mjs && node --check collector.mjs && node --check public-adapters.mjs && node --check public-fetch.mjs && node --check registry-check.mjs && node --check time-window-check.mjs && node --check deploy/activate-caddy.mjs && node --check deploy/refresh-snapshot.mjs",
+    "check": "node --check app.js && node --check selection.mjs && node --check collector.mjs && node --check public-adapters.mjs && node --check public-fetch.mjs && node --check version.mjs && node --check registry-check.mjs && node --check time-window-check.mjs && node --check deploy/activate-caddy.mjs && node --check deploy/refresh-snapshot.mjs",
     "check:registry": "node registry-check.mjs",
     "check:registry:live": "node registry-check.mjs --live",
     "check:time-windows": "node time-window-check.mjs",
     "check:collector": "node collector.mjs --check",
     "collect": "node collector.mjs --json",
     "telemetry": "node collector.mjs --telemetry",
-    "test": "node --test collector.test.mjs registry.test.mjs selection.test.mjs webmcp.test.mjs",
+    "test": "node --test collector.test.mjs registry.test.mjs selection.test.mjs webmcp.test.mjs version.test.mjs",
     "server": "node server.mjs"
   }
 }

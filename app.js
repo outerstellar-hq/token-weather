@@ -467,5 +467,17 @@ $("#webmcp-run").addEventListener("click", runWebMcpExample);
 
 renderTimetable();
 window.setInterval(updateTimetableClock, 1000);
+async function loadVersion() {
+  try {
+    const response = await fetch("/api/health", { cache: "no-store" });
+    if (!response.ok) throw new Error(`health returned HTTP ${response.status}`);
+    const health = await response.json();
+    if (typeof health?.version === "string") $("#version").textContent = health.version;
+  } catch (error) {
+    console.error(`Token Weather version could not be loaded: ${error instanceof Error ? error.message : error}`);
+  }
+}
+
 loadSnapshot();
 loadProviderSchedules();
+loadVersion();
