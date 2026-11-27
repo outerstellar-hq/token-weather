@@ -3,6 +3,7 @@ import test from "node:test";
 import { collectDocumentation, collectSource, sourceDefinitions } from "./collector.mjs";
 import { collectPublicSignals, collectPublicSource, publicAdapters } from "./public-adapters.mjs";
 import { isPublicSnapshot } from "./snapshot-store.mjs";
+import { fetchPublic, readBoundedBody } from "./public-fetch.mjs";
 
 test("collectSource records official documentation provenance", async () => {
   const source = sourceDefinitions[0];
@@ -72,4 +73,51 @@ test("snapshot validation accepts only fully labeled public estimates", () => {
   assert.equal(isPublicSnapshot({ schema: "token-weather.snapshot.v1", events: [estimate] }), true);
   assert.equal(isPublicSnapshot({ schema: "token-weather.snapshot.v1", events: [{ ...estimate, is_estimate: false }] }), false);
   assert.equal(isPublicSnapshot({ schema: "token-weather.snapshot.v1", events: [{ ...estimate, method: undefined }] }), false);
+});
+
+// A body that records whether it was cancelled, the way a dropped connection is closed.
+function watchedBody(text) {
+  const state = { cancelled: false };
+  const body = new ReadableStream({
+    pull(controller) { controller.enqueue(new TextEncoder().encode(text)); },
+    cancel() { state.cancelled = true; }
+  });
+  return { body, state };
+}
+
+test("fetchPublic follows a redirect itself and cancels the redirect's body", async () => {
+  const redirect = watchedBody("<html>moved, a large page follows</html>");
+  const seen = [];
+  const fetchImpl = async (url, init) => {
+    seen.push([url, init.redirect]);
+    if (url === "https://example.test/old") return new Response(redirect.body, { status: 307, headers: { location: "/new" } });
+    return new Response("current page", { status: 200 });
+  };
+  const { response, url } = await fetchPublic("https://example.test/old", {}, fetchImpl);
+  assert.equal(url, "https://example.test/new");
+  assert.equal(await response.text(), "current page");
+  assert.equal(redirect.state.cancelled, true);
+  assert.deepEqual(seen, [["https://example.test/old", "manual"], ["https://example.test/new", "manual"]]);
+});
+
+test("fetchPublic stops after too many redirects", async () => {
+  const fetchImpl = async (url) => new Response(null, { status: 302, headers: { location: url + "x" } });
+  await assert.rejects(fetchPublic("https://example.test/a", {}, fetchImpl), /more than 5 redirects/);
+});
+
+test("readBoundedBody cancels a body that is too long", async () => {
+  const endless = watchedBody("x".repeat(1_000_000));
+  await assert.rejects(readBoundedBody(new Response(endless.body)), /exceeded/);
+  assert.equal(endless.state.cancelled, true);
+});
+
+test("collectSource records a moved source under the URL it was asked for", async () => {
+  const source = sourceDefinitions[0];
+  const fetchImpl = async (url) => url === source.url
+    ? new Response("moved", { status: 301, headers: { location: "https://example.test/moved" } })
+    : new Response("official source", { status: 200 });
+  const result = await collectSource(source, fetchImpl);
+  assert.equal(result.status, "ok");
+  assert.equal(result.source_url, source.url);
+  assert.equal(result.bytes, 15);
 });

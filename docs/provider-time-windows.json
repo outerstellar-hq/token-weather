@@ -14,7 +14,7 @@
         { "kind": "off_peak", "days": ["all"], "start": "00:00", "end": "24:00", "timezone": "UTC", "effect": "off-peak pricing outside the published weekday peak windows" }
       ],
       "reset_rules": [],
-      "source": { "title": "Models & Pricing", "url": "https://api-docs.deepseek.com/quick_start/pricing", "publisher": "DeepSeek", "retrieved_at": "2026-09-03", "official": true }
+      "source": { "title": "Models & Pricing", "url": "https://api-docs.deepseek.com/quick_start/pricing/", "publisher": "DeepSeek", "retrieved_at": "2026-09-03", "official": true }
     },
     {
       "provider_id": "qwen-3-7-plus",
@@ -86,7 +86,7 @@
         { "kind": "daily", "at": "midnight", "timezone": "America/Los_Angeles", "scope": "RPD quota" }
       ],
       "published_conditions": ["Gemini rate limits are per project and usage tier. Dynamic Shared Quota can provide more or less capacity according to real-time availability and demand, but Google publishes no universal peak/off-peak clock schedule."],
-      "source": { "title": "Rate limits", "url": "https://ai.google.dev/gemini-api/docs/rate-limits", "publisher": "Google", "retrieved_at": "2026-09-03", "official": true }
+      "source": { "title": "Rate limits", "url": "https://aistudio.google.com/docs/rate-limits", "publisher": "Google", "retrieved_at": "2026-09-03", "official": true }
     },
     {
       "provider_id": "anthropic-claude-opus",
@@ -124,7 +124,7 @@
         "The current Token Plan page says included quota is controlled by 5-hour rolling and weekly windows; unused included quota does not carry over to the next billing cycle.",
         "The current page describes the plan as individual interactive use and recommends pay-as-you-go for production; these are plan conditions, not a public global capacity measurement."
       ],
-      "source": { "title": "Token Plan", "url": "https://platform.minimax.io/subscribe/token-plan?tab=individual__monthly", "publisher": "MiniMax", "retrieved_at": "2026-09-04", "official": true }
+      "source": { "title": "Token Plan", "url": "https://www.minimax.io/m-plan?tab=individual__monthly", "publisher": "MiniMax", "retrieved_at": "2026-09-04", "official": true }
     },
     {
       "provider_id": "groq-gpt-oss-120b",
