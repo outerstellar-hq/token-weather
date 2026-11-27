@@ -10,13 +10,12 @@ This is the source-backed timing registry for Token Weather. It records only pro
 | QwenCloud / Alibaba Model Studio | Daily 22:00–08:00 | Beijing Time (Asia/Shanghai) | Qwen3.7-Plus Token Plan credits are consumed at 0.4×, an effective 2.5× usage multiplier. This is a credit discount, not a universal quota increase. [Source](https://modelstudio.alibabacloud.com/intl/blog/model-studio-token-plan-individual/) |
 | Z.ai | Typically 14:00–18:00 | Singapore | High inference load; temporary rate limits may occur. Z.ai says the window may shift. [Source](https://docs.z.ai/devpack/tool/others) |
 | Baidu Qianfan Coding Plan | Daily 10:30–12:00 and 14:00–18:00 | China Standard Time | Published peak periods; some Coding Plan model calls consume a higher quota-deduction coefficient. The source calls these times non-fixed and traffic-dependent. [Source](https://cloud.baidu.com/doc/qianfan/s/imlg0beiu) |
-| MiniMax Token Plan | Approximately weekdays 15:00–17:30 | Not specified by source | Dynamic peak-hour throttling; the current page gives approximate peak concurrency bands of 3–4 Plus, 4–5 Max, and 6–7 Ultra agents. The window depends on cluster load. [Source](https://www.minimax.io/m-plan?tab=individual__monthly) |
 | Xiaomi MiMo Token Plan | Daily 00:00–08:00 | UTC+8 | Public page lists 0.8× usage for the displayed plans; this is plan credit economics, not a universal quota. [Source](https://platform.xiaomimimo.com/token-plan) |
 
 ## Published reset windows without clock-based peak schedules
 
 - Claude: rolling five-hour usage window; Anthropic says switching is based on usage rather than time of day. [Source](https://support.anthropic.com/en/articles/11145838-using-claude-code-with-your-pro-or-max-plan)
-- MiniMax Token Plan: included quota uses five-hour rolling and weekly windows; unused included quota does not carry over. [Source](https://www.minimax.io/m-plan?tab=individual__monthly)
+- MiniMax M Plan: a five-hour window for all models except image and video, and a weekly window shared by all models; both start with the first use and reset independently. MiniMax publishes no clock window for its peak-hour limits. [Source](https://platform.minimax.io/docs/m-plan/usage-rules)
 - StepFun: five-hour and weekly Step Plan windows; no universal clock schedule. [Source](https://platform.stepfun.com/docs/zh/step-plan/overview)
 - Gemini: daily RPD reset at midnight Pacific; shared capacity varies with demand, without a universal peak schedule. [Source](https://aistudio.google.com/docs/rate-limits)
 - Kimi Code: rolling five-hour, weekly, and monthly quota windows. [Source](https://www.kimi.com/code/docs/en/kimi-code/error-reference.html)

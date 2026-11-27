@@ -8,7 +8,7 @@ export const publicAdapters = Object.freeze([
   { adapterId: "groq-status", providerId: "groq-gpt-oss-120b", kind: "public_website", url: "https://groqstatus.com/" },
   { adapterId: "cerebras-status", providerId: "cerebras-llama-31-8b", kind: "status_api", url: "https://status.cerebras.ai/api/v2/summary.json" },
   { adapterId: "sambanova-status", providerId: "sambanova-deepseek-v31", kind: "status_api", url: "https://status.sambanova.ai/api/v2/summary.json" },
-  { adapterId: "minimax-status", providerId: "minimax-m27", kind: "status_api", url: "https://status.minimaxi.com/api/v2/summary.json" },
+  { adapterId: "minimax-status", providerId: "minimax-m31-flash", kind: "status_api", url: "https://status.minimaxi.com/api/v2/summary.json" },
   { adapterId: "openai-news-feed", providerId: "openai-gpt-5", kind: "announcement_feed", url: "https://openai.com/news/rss.xml" },
   { adapterId: "google-ai-news-feed", providerId: "gemini-2-5-pro", kind: "announcement_feed", url: "https://blog.google/innovation-and-ai/technology/ai/rss/" }
 ]);

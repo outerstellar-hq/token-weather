@@ -10,10 +10,10 @@ const providerCatalog = Object.freeze([
   { id: "openai-gpt-5", name: "OpenAI", model: "GPT-5", region: "west", code: "OA", source: { label: "OpenAI rate limits", url: "https://developers.openai.com/api/docs/guides/rate-limits", type: "official documentation", official: true } },
   { id: "gemini-2-5-pro", name: "Google Gemini", model: "2.5 Pro", region: "west", code: "GG", source: { label: "Google Gemini rate limits", url: "https://aistudio.google.com/docs/rate-limits", type: "official documentation", official: true } },
   { id: "anthropic-claude-opus", name: "Anthropic", model: "Claude Opus", region: "west", code: "AN", source: { label: "Anthropic rate limits", url: "https://platform.claude.com/docs/en/api/rate-limits", type: "official documentation", official: true } },
-  { id: "xai-grok-46", name: "xAI", model: "Grok 4.6", region: "west", code: "XI", source: { label: "xAI rate limits", url: "https://docs.x.ai/developers/rate-limits", type: "official documentation", official: true } },
-  { id: "minimax-m27", name: "MiniMax", model: "M2.7", region: "asia", code: "MM", source: { label: "MiniMax Token Plan", url: "https://platform.minimax.io/docs/m-plan/intro", type: "official documentation", official: true } },
+  { id: "xai-grok-47", name: "xAI", model: "Grok 4.7", region: "west", code: "XI", source: { label: "xAI rate limits", url: "https://docs.x.ai/developers/rate-limits", type: "official documentation", official: true } },
+  { id: "minimax-m31-flash", name: "MiniMax", model: "M3.1 Flash", region: "asia", code: "MM", source: { label: "MiniMax M Plan", url: "https://platform.minimax.io/docs/m-plan/intro", type: "official documentation", official: true } },
   { id: "groq-gpt-oss-120b", name: "Groq", model: "GPT-OSS 120B", region: "west", code: "GQ", source: { label: "Groq rate limits", url: "https://console.groq.com/docs/rate-limits", type: "official documentation", official: true } },
-  { id: "moonshot-kimi-k26", name: "Moonshot / Kimi", model: "Kimi K2.6", region: "asia", code: "MK", source: { label: "Kimi rate limits", url: "https://platform.kimi.ai/docs/pricing/limits", type: "official documentation", official: true } },
+  { id: "moonshot-kimi-k31-pro", name: "Moonshot / Kimi", model: "Kimi K3.1 Pro", region: "asia", code: "MK", source: { label: "Kimi rate limits", url: "https://platform.kimi.ai/docs/pricing/limits", type: "official documentation", official: true } },
   { id: "cerebras-llama-31-8b", name: "Cerebras", model: "Llama 3.1 8B", region: "west", code: "CB", source: { label: "Cerebras rate limits", url: "https://inference-docs.cerebras.ai/support/rate-limits", type: "official documentation", official: true } },
   { id: "sambanova-deepseek-v31", name: "SambaNova", model: "DeepSeek V3.1", region: "west", code: "SN", source: { label: "SambaNova rate limits", url: "https://docs.sambanova.ai/docs/en/models/rate-limits", type: "official documentation", official: true } },
   { id: "xiaomi-mimo-v25", name: "Xiaomi MiMo", model: "MiMo V2.5", region: "asia", code: "XM", source: { label: "Xiaomi MiMo Token Plan", url: "https://platform.xiaomimimo.com/token-plan", type: "official documentation", official: true } }
@@ -409,7 +409,7 @@ async function runWebMcpExample() {
     if (typeof document.modelContext?.executeTool !== "function") throw new Error("This browser does not expose document.modelContext.executeTool().");
     const tool = tools.find(({ name }) => name === "get_published_time_windows");
     if (!tool) throw new Error("The sample tool is not available to this page.");
-    const result = await document.modelContext.executeTool(tool, JSON.stringify({ provider_id: "minimax-m27" }));
+    const result = await document.modelContext.executeTool(tool, JSON.stringify({ provider_id: "minimax-m31-flash" }));
     $("#webmcp-output").textContent = JSON.stringify(result, null, 2);
     showToast("WebMCP sample call completed.");
   } catch (error) {

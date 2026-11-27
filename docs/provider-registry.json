@@ -121,7 +121,8 @@
       "registry_status": "active_tracking",
       "official_catalog_url": "https://docs.x.ai/developers/models",
       "models": [
-        { "model_id": "grok-4-6", "display_name": "Grok 4.6", "family": "Grok", "modalities": ["text", "image"], "tracking_status": "target", "source_url": "https://docs.x.ai/developers/models/grok-4.6" },
+        { "model_id": "grok-4-7", "display_name": "Grok 4.7", "family": "Grok", "modalities": ["text", "image"], "tracking_status": "target", "source_url": "https://docs.x.ai/developers/models/grok-4.7" },
+        { "model_id": "grok-4-6", "display_name": "Grok 4.6", "family": "Grok", "modalities": ["text", "image"], "tracking_status": "catalog_candidate", "source_url": "https://docs.x.ai/developers/models/grok-4.6" },
         { "model_id": "grok-4-3", "display_name": "Grok 4.3", "family": "Grok", "modalities": ["text", "image"], "tracking_status": "catalog_candidate", "source_url": "https://docs.x.ai/developers/models" },
         { "model_id": "grok-build-0-1", "display_name": "Grok Build 0.1", "family": "Grok", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://docs.x.ai/developers/models" },
         { "model_id": "grok-imagine", "display_name": "Grok Imagine", "family": "Grok", "modalities": ["image", "video"], "tracking_status": "catalog_candidate", "source_url": "https://docs.x.ai/developers/models" }
@@ -134,10 +135,13 @@
       "registry_status": "active_tracking",
       "official_catalog_url": "https://platform.minimax.io/docs/guides/models-intro",
       "models": [
-        { "model_id": "minimax-m2-7", "display_name": "MiniMax M2.7", "family": "M", "modalities": ["text"], "tracking_status": "target", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
-        { "model_id": "minimax-m2-7-highspeed", "display_name": "MiniMax M2.7 highspeed", "family": "M", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
-        { "model_id": "minimax-m2-5", "display_name": "MiniMax M2.5", "family": "M", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
+        { "model_id": "minimax-m3-1-flash", "display_name": "MiniMax M3.1 Flash", "family": "M", "modalities": ["text", "image", "video"], "tracking_status": "target", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
+        { "model_id": "minimax-m3", "display_name": "MiniMax M3", "family": "M", "modalities": ["text", "image", "video"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
+        { "model_id": "minimax-h3", "display_name": "MiniMax H3", "family": "H", "modalities": ["video"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
+        { "model_id": "minimax-h3-image", "display_name": "MiniMax H3 Image", "family": "H", "modalities": ["image"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
+        { "model_id": "minimax-h3-image-highspeed", "display_name": "MiniMax H3 Image Highspeed", "family": "H", "modalities": ["image"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
         { "model_id": "minimax-speech-2-8", "display_name": "MiniMax Speech 2.8", "family": "Speech", "modalities": ["audio"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
+        { "model_id": "minimax-music-3-0", "display_name": "MiniMax Music 3.0", "family": "Music", "modalities": ["audio"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" },
         { "model_id": "minimax-hailuo-2-3", "display_name": "MiniMax Hailuo 2.3", "family": "Hailuo", "modalities": ["video"], "tracking_status": "catalog_candidate", "source_url": "https://platform.minimax.io/docs/guides/models-intro" }
       ]
     },
@@ -148,9 +152,11 @@
       "registry_status": "active_tracking",
       "official_catalog_url": "https://platform.kimi.ai/docs/introduction",
       "models": [
-        { "model_id": "kimi-k2-6", "display_name": "Kimi K2.6", "family": "Kimi", "modalities": ["text"], "tracking_status": "target", "source_url": "https://platform.kimi.ai/docs/pricing/chat" },
-        { "model_id": "kimi-k2-5", "display_name": "Kimi K2.5", "family": "Kimi", "modalities": ["text", "image"], "tracking_status": "catalog_candidate", "source_url": "https://platform.kimi.ai/docs/introduction" },
-        { "model_id": "kimi-k2-thinking", "display_name": "Kimi K2 Thinking", "family": "Kimi", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://platform.kimi.ai/docs/introduction" }
+        { "model_id": "kimi-k3-1-pro", "display_name": "Kimi K3.1 Pro", "family": "Kimi", "modalities": ["text", "image"], "tracking_status": "target", "source_url": "https://platform.kimi.ai/docs/introduction" },
+        { "model_id": "kimi-k3-1-pro-highspeed", "display_name": "Kimi K3.1 Pro Highspeed", "family": "Kimi", "modalities": ["text", "image"], "tracking_status": "catalog_candidate", "source_url": "https://platform.kimi.ai/docs/introduction" },
+        { "model_id": "kimi-k3", "display_name": "Kimi K3", "family": "Kimi", "modalities": ["text", "image"], "tracking_status": "catalog_candidate", "source_url": "https://platform.kimi.ai/docs/guide/kimi-k3-quickstart" },
+        { "model_id": "kimi-k2-7-code", "display_name": "Kimi K2.7 Code", "family": "Kimi", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://platform.kimi.ai/docs/pricing/chat" },
+        { "model_id": "kimi-k2-6", "display_name": "Kimi K2.6", "family": "Kimi", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://platform.kimi.ai/docs/pricing/chat" }
       ]
     },
     {
