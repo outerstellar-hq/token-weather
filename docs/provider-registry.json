@@ -35,7 +35,7 @@
       "registry_status": "active_tracking",
       "official_catalog_url": "https://www.alibabacloud.com/help/en/model-studio/getting-started/models",
       "models": [
-        { "model_id": "qwen-3-7-plus", "display_name": "Qwen 3.7 Plus", "family": "Qwen", "modalities": ["text"], "tracking_status": "target", "source_url": "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/quota-management" },
+        { "model_id": "qwen-3-7-plus", "display_name": "Qwen 3.7 Plus", "family": "Qwen", "modalities": ["text"], "tracking_status": "target", "source_url": "https://docs.modelstudio.console.alibabacloud.com/en/model-studio/rate-limit" },
         { "model_id": "qwen3-coder", "display_name": "Qwen3 Coder", "family": "Qwen", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://www.alibabacloud.com/help/en/model-studio/getting-started/models" },
         { "model_id": "qwen3-vl", "display_name": "Qwen3 VL", "family": "Qwen", "modalities": ["text", "image"], "tracking_status": "catalog_candidate", "source_url": "https://www.alibabacloud.com/help/en/model-studio/getting-started/models" },
         { "model_id": "qwen3-235b-a22b", "display_name": "Qwen3 235B A22B", "family": "Qwen3", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://www.alibabacloud.com/help/en/model-studio/getting-started/models" }
@@ -148,7 +148,7 @@
       "registry_status": "active_tracking",
       "official_catalog_url": "https://platform.kimi.ai/docs/introduction",
       "models": [
-        { "model_id": "kimi-k2-6", "display_name": "Kimi K2.6", "family": "Kimi", "modalities": ["text"], "tracking_status": "target", "source_url": "https://platform.kimi.ai/docs/pricing/chat-k26" },
+        { "model_id": "kimi-k2-6", "display_name": "Kimi K2.6", "family": "Kimi", "modalities": ["text"], "tracking_status": "target", "source_url": "https://platform.kimi.ai/docs/pricing/chat" },
         { "model_id": "kimi-k2-5", "display_name": "Kimi K2.5", "family": "Kimi", "modalities": ["text", "image"], "tracking_status": "catalog_candidate", "source_url": "https://platform.kimi.ai/docs/introduction" },
         { "model_id": "kimi-k2-thinking", "display_name": "Kimi K2 Thinking", "family": "Kimi", "modalities": ["text"], "tracking_status": "catalog_candidate", "source_url": "https://platform.kimi.ai/docs/introduction" }
       ]
