@@ -20,10 +20,10 @@ These providers are in the current browser forecast, comparison, workload planne
 | 6 | OpenAI | GPT-5 | Public tier-limit rules, pricing, service status, incidents, maintenance, and model changes | Official documentation, status, and announcements | Status/feed adapters implemented |
 | 7 | Google Gemini | Gemini 2.5 Pro | Public RPM, TPM, RPD, spend tiers, workload classes, pricing, and incidents | Official documentation, status, and announcements | Feed adapter implemented |
 | 8 | Anthropic | Claude Opus | Public rate-limit tiers, service stability, capacity changes, pricing, and model changes | Official documentation, status, and announcements | Status adapter implemented |
-| 9 | xAI / Grok | Grok 4.6 | Public spend tiers, RPS/TPM, model pricing, capacity notices, and incidents | Official documentation and announcements | Catalog + docs only |
-| 10 | MiniMax | M2.7 | Public five-hour rolling rules, daily modality quotas, pricing, and announcements | Official documentation and announcements | Status adapter implemented |
+| 9 | xAI / Grok | Grok 4.7 | Public spend tiers, RPS/TPM, model pricing, capacity notices, and incidents | Official documentation and announcements | Catalog + docs only |
+| 10 | MiniMax | M3.1 Flash | Public five-hour and weekly M Plan windows, pricing, and announcements | Official documentation and announcements | Status adapter implemented |
 | 11 | Groq | GPT-OSS 120B | Public per-minute/daily limits, reset rules, Flex capacity, pricing, and incidents | Official documentation, status, and announcements | Website adapter implemented |
-| 12 | Moonshot / Kimi | Kimi K2.6 | Public tiered concurrency, RPM, TPM, TPD, pricing, and model changes | Official documentation and announcements | Catalog + docs only |
+| 12 | Moonshot / Kimi | Kimi K3.1 Pro | Public tiered concurrency, RPM, TPM, TPD, pricing, and model changes | Official documentation and announcements | Catalog + docs only |
 | 13 | Cerebras | Llama 3.1 8B | Public minute/hour/day limits, replenishment rules, pricing, and incidents | Official documentation and announcements | Status adapter implemented |
 | 14 | SambaNova | DeepSeek V3.1 | Public per-minute/daily rules, pricing, capacity notices, and incidents | Official documentation and announcements | Status adapter implemented |
 | 15 | Z.ai | GLM-5 | Public high-load timing, dynamic concurrency policy, pricing, and incidents | Official documentation and announcements | Catalog + docs only |

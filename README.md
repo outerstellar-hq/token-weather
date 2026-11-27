@@ -28,7 +28,7 @@ const tools = await document.modelContext.getTools();
 const tool = tools.find(({ name }) => name === "get_published_time_windows");
 const result = await document.modelContext.executeTool(
   tool,
-  JSON.stringify({ provider_id: "minimax-m27" })
+  JSON.stringify({ provider_id: "minimax-m31-flash" })
 );
 ```
 
